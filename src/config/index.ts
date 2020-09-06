@@ -1,0 +1,18 @@
+let baseUrl = process.env.FRONTEGG_API_GATEWAY_URL || "https://api.frontegg.com/";
+if (baseUrl.endsWith('/')) {
+  baseUrl = baseUrl.slice(0, -1);
+}
+
+// tslint:disable-next-line:no-namespace
+export namespace config {
+  // tslint:disable-next-line:class-name
+  export class urls {
+    public static authenticationService = process.env.FRONTEGG_AUTHENTICATION_SERVICE_URL || `${baseUrl}/vendors/auth/token`;
+    public static auditsService = process.env.FRONTEGG_AUDITS_SERVICE_URL || `${baseUrl}/audits/`;
+    public static notificationService = process.env.FRONTEGG_NOTIFICATION_SERVICE_URL || `${baseUrl}/notification/`;
+    public static tenantsService = process.env.FRONTEGG_TENANTS_SERVICE_URL || `${baseUrl}/tenants/`;
+    public static metadataService = process.env.FRONTEGG_METADATA_SERVICE_URL || `${baseUrl}/metadata/`;
+    public static teamService = process.env.FRONTEGG_TEAM_MANAGEMENT_SERVICE_URL || `${baseUrl}/team`;
+    public static eventService = process.env.FRONTEGG_EVENT_SERVICE_URL || `${baseUrl}/event`;
+  }
+}

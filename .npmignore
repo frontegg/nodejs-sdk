@@ -1,0 +1,5 @@
+src/
+bitbucket-pipelines.yml
+tsconfig.json
+tslint.json
+webpack.config.js

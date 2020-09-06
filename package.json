@@ -1,0 +1,41 @@
+{
+  "name": "@frontegg/client",
+  "version": "1.0.63",
+  "description": "Frontegg Javascript Library for backend",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "tslint -c tslint.json -p tsconfig.json --fix",
+    "test": "npm run build && jest",
+    "dev": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/fronteggteam/sdk.git"
+  },
+  "author": "Frontegg",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/fronteggteam/sdk#readme",
+  "dependencies": {
+    "@slack/web-api": "^5.11.0",
+    "axios": "^0.19.0",
+    "http-proxy": "^1.18.1",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.5.4",
+    "@types/axios": "^0.14.0",
+    "@types/express": "^4.17.6",
+    "@types/http-proxy": "^1.17.0",
+    "@types/jest": "^25.2.3",
+    "@types/node": "^12.6.2",
+    "babel-core": "^6.26.3",
+    "express": "^4.17.1",
+    "jest": "^26.0.1",
+    "jest-junit": "^10.0.0",
+    "ts-jest": "^26.0.0",
+    "tslint": "^5.20.1",
+    "typescript": "^3.5.3"
+  }
+}
