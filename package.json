@@ -12,11 +12,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/fronteggteam/sdk.git"
+    "url": "git@github.com:frontegg/nodejs-sdk.git"
   },
   "author": "Frontegg",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/fronteggteam/sdk#readme",
+  "homepage": "https://github.com/frontegg/nodejs-sdk",
   "dependencies": {
     "@slack/web-api": "^5.11.0",
     "axios": "^0.19.0",
