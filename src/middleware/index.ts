@@ -1,11 +1,15 @@
+import { NextFunction, Request, Response } from 'express';
 import { IncomingMessage } from 'http';
 import * as httpProxy from 'http-proxy';
+import { stringify } from 'querystring';
 import { FronteggAuthenticator } from '../authenticator';
 import Logger from '../helpers/logger';
+import { withAuthentication } from '../identity';
 import { FronteggPermissions } from '../permissions';
+import { fronteggRoutes } from './FronteggRoutes';
 
 const proxy = httpProxy.createProxyServer({ secure: false, changeOrigin: true });
-const target = process.env.FRONTEGG_API_GATEWAY_URL || "https://api.frontegg.com/";
+const target = process.env.FRONTEGG_API_GATEWAY_URL || 'https://api.frontegg.com/';
 
 const authenticator = new FronteggAuthenticator();
 
@@ -14,15 +18,17 @@ const Whitelist = ['/metadata'];
 const MAX_RETRIES = 3;
 
 function getUrlWithoutQueryParams(req): string {
-  return req.url.split("?").shift();
+  return req.url.split('?').shift();
 }
 
 declare type fronteggContextResolver = (req: Request) => Promise<{ tenantId: string, userId: string, permissions: FronteggPermissions[] }>;
+declare type AuthMiddleware = (req: Request, res: Response, next: NextFunction) => Promise<any> | any;
 
 export interface IFronteggOptions {
   clientId: string;
   apiKey: string;
   contextResolver: fronteggContextResolver;
+  authMiddleware?: AuthMiddleware;
   disableCors?: boolean;
 }
 
@@ -122,13 +128,35 @@ async function validatePermissions(req, res, context) {
   throw new Error(`No matching permission for ${req.method} ${url}`);
 }
 
+async function callMiddleware(req, res, middleware): Promise<void> {
+  const middlewareWrap: Promise<string> = new Promise(async (next, reject) => {
+    await middleware(req, res, next).catch(reject);
+    next();
+  });
+  const nextValue: string = await middlewareWrap;
+  if (nextValue) {
+    throw new Error(nextValue);
+  }
+}
+
 export function frontegg(options: IFronteggOptions) {
   Logger.debug('you got to my frontegg middleware');
 
-  if (!options) { throw new Error('Missing options'); }
-  if (!options.clientId) { throw new Error('Missing client ID'); }
-  if (!options.apiKey) { throw new Error('Missing api key'); }
-  if (!options.contextResolver) { throw new Error('Missing context resolver'); }
+  if (!options) {
+    throw new Error('Missing options');
+  }
+  if (!options.clientId) {
+    throw new Error('Missing client ID');
+  }
+  if (!options.apiKey) {
+    throw new Error('Missing api key');
+  }
+  if (!options.contextResolver) {
+    throw new Error('Missing context resolver');
+  }
+  if (!options.authMiddleware) {
+    options.authMiddleware = withAuthentication();
+  }
 
   authenticator.init(options.clientId, options.apiKey);
 
@@ -153,7 +181,7 @@ export function frontegg(options: IFronteggOptions) {
     if (!options.disableCors) {
       enableCors(req, proxyRes);
     } else {
-      delete proxyRes.headers["access-control-allow-methods"];
+      delete proxyRes.headers['access-control-allow-methods'];
       delete proxyRes.headers['access-control-allow-headers'];
       delete proxyRes.headers['access-control-allow-origin'];
       delete proxyRes.headers['access-control-allow-credentials'];
@@ -175,7 +203,7 @@ export function frontegg(options: IFronteggOptions) {
   function enableCors(req, res: IncomingMessage) {
     if (req.headers['access-control-request-method']) {
       Logger.debug(`enableCors - going to set access-control-request-method`);
-      res.headers["access-control-allow-methods"] = req.headers['access-control-request-method'];
+      res.headers['access-control-allow-methods'] = req.headers['access-control-request-method'];
     }
 
     if (req.headers['access-control-request-headers']) {
@@ -191,7 +219,7 @@ export function frontegg(options: IFronteggOptions) {
   }
 
   proxy.on('proxyReq', (proxyReq, req: any, res, _) => {
-    proxyReq.setHeader('frontegg-vendor-host', req.host)
+    proxyReq.setHeader('frontegg-vendor-host', req.host);
     if (req.body) {
       const bodyData = JSON.stringify(req.body);
       // incase if content-type is application/x-www-form-urlencoded -> we need to change to application/json
@@ -223,7 +251,23 @@ export function frontegg(options: IFronteggOptions) {
       return res.status(403).send();
     }
 
-    if (!req.frontegg) { req.frontegg = {}; }
+    if (options.authMiddleware && !await fronteggRoutes.isFronteggPublicRoute(req)) {
+      Logger.debug('will pass request threw the auth middleware');
+      try {
+        await callMiddleware(req, res, options.authMiddleware);
+        if (res.headersSent) {
+          // response was already sent from the middleware, we have nothing left to do
+          return;
+        }
+      } catch (e) {
+        return res.status(401).send(e.message);
+      }
+    }
+
+
+    if (!req.frontegg) {
+      req.frontegg = {};
+    }
     req.frontegg.retryCount = 0;
 
     Logger.debug(`going to proxy request`);

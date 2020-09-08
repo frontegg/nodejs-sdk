@@ -91,3 +91,6 @@ typings/
 .history/
 
 jest-junit.xml
+
+#ide
+.idea/
