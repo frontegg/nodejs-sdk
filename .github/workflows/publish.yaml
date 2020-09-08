@@ -10,9 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Build
+      - name: Install
         if: steps.cache-modules.outputs.cache-hit != 'true'
         run: npm install
+      - name: Build
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: npm run build
       - name: Publish
         uses: mikeal/merge-release@master
         env:
