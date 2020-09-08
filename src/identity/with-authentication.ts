@@ -1,14 +1,15 @@
 import { verify } from 'jsonwebtoken';
-import { IdentityClient } from "./identity-client";
+import { IdentityClient } from './identity-client';
 
-function isFronteggPublicRoute() {
-  return true;
+export interface IWithAuthenticationOptions {
+  roles?: string[];
+  permissions?: string[];
 }
 
-export function withAuthentication(roles: string[], permissions: string[]) {
+export function withAuthentication({ roles = [], permissions = [] }: IWithAuthenticationOptions = {}) {
   return async (req, res, next) => {
-    const authorizationHeader: string = req.headers.get('authorization');
-    if (!authorizationHeader && !isFronteggPublicRoute()) {
+    const authorizationHeader: string = req.header('authorization');
+    if (!authorizationHeader) {
       return res.status(401).send('Unauthenticated');
     }
 
