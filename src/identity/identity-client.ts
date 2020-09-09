@@ -1,7 +1,8 @@
 import axios from 'axios';
-import { FronteggAuthenticator } from "../authenticator";
+import { FronteggAuthenticator } from '../authenticator';
 import { config } from '../config';
 import Logger from '../helpers/logger';
+import {FRONTEGG_API_KEY, FRONTEGG_CLIENT_ID} from '../middleware';
 
 export class IdentityClient {
 
@@ -32,7 +33,7 @@ export class IdentityClient {
   private async fetchPublicKey() {
     const authenticator = new FronteggAuthenticator();
     Logger.info('going to authenticate');
-    await authenticator.init(process.env.FRONTEGG_CLIENT_ID || '', process.env.FRONTEGG_API_KEY || '');
+    await authenticator.init(FRONTEGG_CLIENT_ID || process.env.FRONTEGG_CLIENT_ID || '', FRONTEGG_API_KEY || process.env.FRONTEGG_API_KEY || '');
     Logger.info('going to get identity service configuration');
     const response = await axios.get(`${config.urls.identityService}/resources/configurations/v1`, {
       headers: {
