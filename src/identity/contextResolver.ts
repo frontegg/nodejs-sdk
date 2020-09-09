@@ -1,4 +1,4 @@
-import { FronteggPermissions } from '../../dist';
+import {FronteggPermissions} from '../../index';
 
 export const contextResolver = (req ) => {
   if (!req.user) {
