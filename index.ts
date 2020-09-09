@@ -1,6 +1,6 @@
 import { AuditsClient } from './src/audits';
 import { FronteggAuthenticator } from './src/authenticator';
-import { withAuthentication } from './src/identity';
+import { contextResolver, withAuthentication } from './src/identity';
 import { frontegg, IFronteggOptions } from './src/middleware';
 import { NotificationsClient } from './src/notifications';
 import { FronteggPermissions } from './src/permissions';
@@ -20,4 +20,5 @@ export {
   RbacMiddleware,
   SsoClient,
   withAuthentication,
+  contextResolver,
 };

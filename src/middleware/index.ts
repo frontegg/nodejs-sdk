@@ -11,6 +11,9 @@ import { fronteggRoutes } from './FronteggRoutes';
 const proxy = httpProxy.createProxyServer({ secure: false, changeOrigin: true });
 const target = process.env.FRONTEGG_API_GATEWAY_URL || 'https://api.frontegg.com/';
 
+export let FRONTEGG_CLIENT_ID: string;
+export let FRONTEGG_API_KEY: string;
+
 const authenticator = new FronteggAuthenticator();
 
 const Whitelist = ['/metadata'];
@@ -157,6 +160,9 @@ export function frontegg(options: IFronteggOptions) {
   if (!options.authMiddleware) {
     options.authMiddleware = withAuthentication();
   }
+
+  FRONTEGG_CLIENT_ID = options.clientId;
+  FRONTEGG_API_KEY = options.apiKey;
 
   authenticator.init(options.clientId, options.apiKey);
 
