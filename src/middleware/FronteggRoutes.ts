@@ -11,7 +11,7 @@ export interface IRoutesConfig {
       key: string;
       value?: string;
     }>
-  }>
+  }>;
 }
 
 class FronteggRoutes {
@@ -36,8 +36,8 @@ class FronteggRoutes {
       }
       if (route.withQueryParams) {
         const hasAllQueryParams = route.withQueryParams.every(({ key, value }) => {
-          const queryParamValue = req.query[key]
-          return queryParamValue && (!value || queryParamValue === value)
+          const queryParamValue = req.query[key];
+          return queryParamValue && (!value || queryParamValue === value);
         });
         if (!hasAllQueryParams) {
           return false;

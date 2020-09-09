@@ -157,7 +157,7 @@ export function frontegg(options: IFronteggOptions) {
   if (!options.contextResolver) {
     throw new Error('Missing context resolver');
   }
-  if (!options.authMiddleware) {
+  if (!options.authMiddleware === undefined) {
     options.authMiddleware = withAuthentication();
   }
 
@@ -266,6 +266,7 @@ export function frontegg(options: IFronteggOptions) {
           return;
         }
       } catch (e) {
+        Logger.error(`Failed to call middleware - `, e);
         return res.status(401).send(e.message);
       }
     }

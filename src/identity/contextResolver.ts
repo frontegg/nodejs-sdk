@@ -1,6 +1,6 @@
-import {FronteggPermissions} from '../../index';
+import { FronteggPermissions } from '../../index';
 
-export const contextResolver = (req ) => {
+export const contextResolver = (req) => {
   if (!req.user) {
     return {
       tenantId: '',
@@ -8,9 +8,10 @@ export const contextResolver = (req ) => {
       permissions: [FronteggPermissions.All],
     };
   }
+
   return {
     tenantId: req.user.tenantId,
     userId: req.user.sub,
-    permissions: [FronteggPermissions.All]
-  }
+    permissions: [FronteggPermissions.All],
+  };
 };
