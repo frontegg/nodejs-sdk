@@ -133,7 +133,12 @@ async function validatePermissions(req, res, context) {
 
 async function callMiddleware(req, res, middleware): Promise<void> {
   const middlewareWrap: Promise<string> = new Promise(async (next, reject) => {
-    await middleware(req, res, next).catch(reject);
+    try {
+      await middleware(req, res, next);
+    } catch (e) {
+      reject(e);
+    }
+
     next();
   });
   const nextValue: string = await middlewareWrap;
@@ -157,9 +162,7 @@ export function frontegg(options: IFronteggOptions) {
   if (!options.contextResolver) {
     throw new Error('Missing context resolver');
   }
-  if (!options.authMiddleware === undefined) {
-    options.authMiddleware = withAuthentication();
-  }
+
 
   FRONTEGG_CLIENT_ID = options.clientId;
   FRONTEGG_API_KEY = options.apiKey;
