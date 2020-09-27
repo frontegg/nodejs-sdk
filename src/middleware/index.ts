@@ -241,6 +241,20 @@ export function frontegg(options: IFronteggOptions) {
 
   // tslint:disable-next-line:only-arrow-functions
   return async function(req, res) {
+    if (options.authMiddleware && !await fronteggRoutes.isFronteggPublicRoute(req)) {
+      Logger.debug('will pass request threw the auth middleware');
+      try {
+        await callMiddleware(req, res, options.authMiddleware);
+        if (res.headersSent) {
+          // response was already sent from the middleware, we have nothing left to do
+          return;
+        }
+      } catch (e) {
+        Logger.error(`Failed to call middleware - `, e);
+        return res.status(401).send(e.message);
+      }
+    }
+
     Logger.debug(`going to resolve resolve context`);
     const context = await options.contextResolver(req);
     Logger.debug(`context resolved - ${JSON.stringify(context)}`);
@@ -259,21 +273,6 @@ export function frontegg(options: IFronteggOptions) {
       Logger.error('Failed at permissions check - ', e);
       return res.status(403).send();
     }
-
-    if (options.authMiddleware && !await fronteggRoutes.isFronteggPublicRoute(req)) {
-      Logger.debug('will pass request threw the auth middleware');
-      try {
-        await callMiddleware(req, res, options.authMiddleware);
-        if (res.headersSent) {
-          // response was already sent from the middleware, we have nothing left to do
-          return;
-        }
-      } catch (e) {
-        Logger.error(`Failed to call middleware - `, e);
-        return res.status(401).send(e.message);
-      }
-    }
-
 
     if (!req.frontegg) {
       req.frontegg = {};
