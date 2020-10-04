@@ -1,24 +1,39 @@
 import { IBellAction } from './';
 
+
 export interface IBellProperties {
-  // Send the bell notification to specific user, by his ID.
+  /**
+   * Send the bell notification to specific user, by his ID.
+   */
   userId?: string;
 
-  // Notification title.
+  /**
+   * Notification title.
+   */
   title?: string;
 
-  // Notification body.
+  /**
+   * Notification body.
+   */
   body?: string;
 
-  // Notification severity, default will be Info.
+  /**
+   * Notification severity, default will be Info.
+   */
   severity?: string;
 
-  // Notification expiration Date, by default the notification won't have expiration date.
+  /**
+   * Notification expiration Date, by default the notification won't have expiration date.
+   */
   expiryDate?: Date;
 
-  // The url that will be opened on a new window on click.
+  /**
+   * The url that will be opened on a new window on click.
+   */
   url?: string;
 
-  // Actions array that will be shown in the notification.
+  /**
+   * Actions array that will be shown in the notification.
+   */
   actions?: IBellAction[];
 }

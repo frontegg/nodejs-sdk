@@ -1,10 +1,16 @@
 export interface IWebpushProperties {
-  // Webpush notification title.
+  /**
+   * Webpush notification title.
+   */
   title?: string;
 
-  // Webpush notification body.
+  /**
+   * Webpush notification body.
+   */
   body?: string;
 
-  // Send webpush to one user.
+  /**
+   * Send webpush to one user.
+   */
   userId?: string;
 }

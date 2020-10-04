@@ -6,3 +6,4 @@ export * from './BellAction.interface';
 export * from './ChannelsConfiguration.interface';
 export * from './WebhookBody.type';
 export * from './Channels.type';
+export * from './SlackProperties.interface'
