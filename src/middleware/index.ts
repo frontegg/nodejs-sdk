@@ -228,7 +228,10 @@ export function frontegg(options: IFronteggOptions) {
   }
 
   proxy.on('proxyReq', (proxyReq, req: any, res, _) => {
-    proxyReq.setHeader('frontegg-vendor-host', req.host);
+    if (req.hostname) {
+      proxyReq.setHeader('frontegg-vendor-host', req.hostname);
+    }
+
     if (req.body) {
       const bodyData = JSON.stringify(req.body);
       // incase if content-type is application/x-www-form-urlencoded -> we need to change to application/json
