@@ -38,6 +38,7 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
 
       // Store the decoded user on the request
       req.user = user;
+      req.user.id = user.sub; // The subject of the token (OpenID token) is saved on the req.user as well for easier readability
       // And move to the next handler
       next();
     });
