@@ -1,10 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { IncomingMessage } from 'http';
+import { IncomingMessage, ServerResponse } from 'http';
 import * as httpProxy from 'http-proxy';
-import { stringify } from 'querystring';
 import { FronteggAuthenticator } from '../authenticator';
 import Logger from '../helpers/logger';
-import { withAuthentication } from '../identity';
 import { FronteggPermissions } from '../permissions';
 import { fronteggRoutes } from './FronteggRoutes';
 
@@ -52,6 +50,7 @@ function flattenPermissions(permissions: FronteggPermissions[]): string[] {
   const output: string[] = [];
 
   for (const p of permissions) {
+    // noinspection SuspiciousTypeOfGuard
     if (typeof (p) === 'string') {
       output.push(p);
     } else if (Array.isArray(p)) {
@@ -181,7 +180,8 @@ export function frontegg(options: IFronteggOptions) {
 
     // Get the context again
     const context = await options.contextResolver(req);
-    proxyRequest(req, res, context);
+
+    return proxyRequest(req, res, context);
   });
 
   proxy.on('proxyRes', async (proxyRes, req: any, res) => {
@@ -234,7 +234,7 @@ export function frontegg(options: IFronteggOptions) {
 
     if (req.body) {
       const bodyData = JSON.stringify(req.body);
-      // incase if content-type is application/x-www-form-urlencoded -> we need to change to application/json
+      // in case if content-type is application/x-www-form-urlencoded -> we need to change to application/json
       proxyReq.setHeader('Content-Type', 'application/json');
       proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
       // stream the content
@@ -243,7 +243,7 @@ export function frontegg(options: IFronteggOptions) {
   });
 
   // tslint:disable-next-line:only-arrow-functions
-  return async function(req, res) {
+  return async (req, res) => {
     if (options.authMiddleware && !await fronteggRoutes.isFronteggPublicRoute(req)) {
       Logger.debug('will pass request threw the auth middleware');
       try {
@@ -283,6 +283,39 @@ export function frontegg(options: IFronteggOptions) {
     req.frontegg.retryCount = 0;
 
     Logger.debug(`going to proxy request`);
-    proxyRequest(req, res, context);
+    return proxyRequest(req, res, context);
   };
 }
+
+
+type ProxyIncomingMessage = IncomingMessage & Partial<{
+  host: string;
+  hostname: string;
+  originalUrl: string;
+}>;
+type ProxyServerResponse<T = any> = ServerResponse & {
+  status: (statusCode: number) => ProxyServerResponse<T>;
+  send: (body: T) => void;
+};
+type INextJsFronteggOptions = IFronteggOptions & {
+  prefixRoute: string;
+};
+export const fronteggNextJs = (options: INextJsFronteggOptions) => {
+  const fronteggProxy = frontegg(options);
+
+  return async (req: ProxyIncomingMessage, res: ProxyServerResponse) => {
+    if (!req.url) {
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+
+    req.host = req.headers.host;
+    req.hostname = req.headers.host;
+    req.originalUrl = req.url;
+    if (req.url.startsWith(options.prefixRoute)) {
+      req.url = req.url.substring(options.prefixRoute.length);
+    }
+    return fronteggProxy(req, res);
+  };
+};
+

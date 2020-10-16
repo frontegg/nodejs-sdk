@@ -47,6 +47,37 @@ app.use('/frontegg', frontegg({
 }))
 ```
 
+#### NextJS Middleware
+
+To use the Frontegg's middleware inside NextJS project: 
+ - Add a new route to your project `/pages/api/frontegg/[...param].ts`
+ - Import ***fronteggNextJs***  from the ***@frontegg/client*** library
+
+    ```javascript
+    const { fronteggNextJs, FronteggPermissions } = require('@frontegg/client');
+    ```
+
+ - And export the middleware from **`/pages/api/frontegg/[...param].ts`**
+
+    ```javascript
+    export default fronteggNextJs({
+     clientId: 'my-client-id',
+     apiKey: 'my-api-key',
+     contextResolver: (req) => {
+       const email = req.context.user; // The user context (after JWT verification)
+       const tenantId = req.context.tenantId; // The tenantId context (after JWT verification)
+       const permissions = [FronteggPermissions.All];
+    
+       return {
+         email,
+         tenantId,
+         permissions
+       };
+     }
+    })
+    ```
+
+
 #### Frontegg permissions
 
 When using the Frontegg middleware library, you can choose which functionality is enabled for your user based on his role or based on any other business logic your application holds.
