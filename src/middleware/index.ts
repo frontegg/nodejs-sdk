@@ -1,10 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { IncomingMessage, ServerResponse } from 'http';
 import * as httpProxy from 'http-proxy';
-import { stringify } from 'querystring';
 import { FronteggAuthenticator } from '../authenticator';
 import Logger from '../helpers/logger';
-import { withAuthentication } from '../identity';
 import { FronteggPermissions } from '../permissions';
 import { fronteggRoutes } from './FronteggRoutes';
 
@@ -182,7 +180,8 @@ export function frontegg(options: IFronteggOptions) {
 
     // Get the context again
     const context = await options.contextResolver(req);
-    proxyRequest(req, res, context);
+
+    return proxyRequest(req, res, context);
   });
 
   proxy.on('proxyRes', async (proxyRes, req: any, res) => {
@@ -244,7 +243,7 @@ export function frontegg(options: IFronteggOptions) {
   });
 
   // tslint:disable-next-line:only-arrow-functions
-  return async function(req, res) {
+  return async (req, res) => {
     if (options.authMiddleware && !await fronteggRoutes.isFronteggPublicRoute(req)) {
       Logger.debug('will pass request threw the auth middleware');
       try {
@@ -284,7 +283,7 @@ export function frontegg(options: IFronteggOptions) {
     req.frontegg.retryCount = 0;
 
     Logger.debug(`going to proxy request`);
-    proxyRequest(req, res, context);
+    return proxyRequest(req, res, context);
   };
 }
 
