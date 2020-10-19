@@ -3,6 +3,12 @@ import { FronteggAuthenticator } from '../authenticator';
 import { config } from '../config';
 import Logger from '../helpers/logger';
 import { channelTypes, ITriggerOptions } from './types';
+import { IEventStatuses } from './types/EventStatuses.interface';
+
+const POLLING_LIMIT = 20;
+const POLLING_TIMEOUT = 3 * 1000;
+
+export type EventStatusCallback = (status: IEventStatuses) => any
 
 export class EventsClient {
   private authenticator: FronteggAuthenticator = new FronteggAuthenticator();
@@ -63,7 +69,7 @@ export class EventsClient {
     }
   }
 
-  public async trigger(options: ITriggerOptions): Promise<void> {
+  public async trigger(options: ITriggerOptions, callback?: EventStatusCallback): Promise<{ eventId: string }> {
     if (!options.eventKey) {
       Logger.warn('eventKey is required');
       throw new Error('eventKey is required');
@@ -92,7 +98,7 @@ export class EventsClient {
     try {
       Logger.info('going to trigger event');
       await this.authenticator.validateAuthentication();
-      const response = await axios.post(`${config.urls.eventService}/resources/triggers/v2`, {
+      const response = await axios.post<{ eventId: string }>(`${config.urls.eventService}/resources/triggers/v2`, {
         eventKey: options.eventKey,
         properties: options.properties,
         channels: options.channels,
@@ -103,11 +109,50 @@ export class EventsClient {
         },
       });
       Logger.info('triggered event successfully');
+      if (callback) {
+        Logger.info('found callback, will poll for event status');
+        this.pollEventStatus(response.data.eventId, callback);
+      }
       return response.data;
     } catch (e) {
       Logger.error('failed to trigger event ', e);
       throw e;
     }
+  }
+
+  private pollEventStatus(eventId: string, callback: EventStatusCallback) {
+    let intervalCounter = 0;
+    const interval = setInterval(async () => {
+      Logger.info('will poll events statuses')
+      try {
+        await this.authenticator.validateAuthentication();
+        const response = await axios.get<IEventStatuses>(`${config.urls.eventService}/resources/triggers/v2/statuses/${eventId}`, {
+          headers: {
+            'x-access-token': this.authenticator.accessToken,
+          },
+        });
+
+        if (Object.values(response.data.channels).some(({ status }) => status === 'PENDING')) {
+          Logger.info('there are still channels with pending status');
+          intervalCounter++;
+        } else {
+          Logger.info('all channels statuses are not pending, will call callback');
+          callback(response.data);
+          clearInterval(interval);
+        }
+
+        if (intervalCounter >= POLLING_LIMIT) {
+          Logger.info('there are still channels with pending status, but we passed the limit of the polling');
+          callback(response.data);
+          clearInterval(interval);
+        }
+      } catch (e) {
+        Logger.error('could not get event status', e);
+        clearInterval(interval);
+        throw new Error('could not get event status');
+      }
+    }, POLLING_TIMEOUT);
+    return;
   }
 }
 
