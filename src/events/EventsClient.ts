@@ -3,12 +3,14 @@ import { FronteggAuthenticator } from '../authenticator';
 import { config } from '../config';
 import Logger from '../helpers/logger';
 import { channelTypes, ITriggerOptions } from './types';
-import { IEventStatuses } from './types/EventStatuses.interface';
+import { IEventStatuses, IEventStatusesResponse } from './types/EventStatuses.interface';
+import { sleep } from '../utils/sleep';
 
 const POLLING_LIMIT = 20;
-const POLLING_TIMEOUT = 3 * 1000;
+const POLLING_START_TIMEOUT = 3 * 1000;
+const POLLING_INCREASE_PERCENTAGE = 1.2;
 
-export type EventStatusCallback = (status: IEventStatuses) => any
+export type EventStatusCallback = (error: Error | undefined, status: IEventStatusesResponse | undefined) => any
 
 export class EventsClient {
   private authenticator: FronteggAuthenticator = new FronteggAuthenticator();
@@ -111,7 +113,7 @@ export class EventsClient {
       Logger.info('triggered event successfully');
       if (callback) {
         Logger.info('found callback, will poll for event status');
-        this.pollEventStatus(response.data.eventId, callback);
+        await this.pollEventStatus(response.data.eventId, callback);
       }
       return response.data;
     } catch (e) {
@@ -120,39 +122,71 @@ export class EventsClient {
     }
   }
 
-  private pollEventStatus(eventId: string, callback: EventStatusCallback) {
-    let intervalCounter = 0;
-    const interval = setInterval(async () => {
-      Logger.info('will poll events statuses')
-      try {
-        await this.authenticator.validateAuthentication();
-        const response = await axios.get<IEventStatuses>(`${config.urls.eventService}/resources/triggers/v2/statuses/${eventId}`, {
-          headers: {
-            'x-access-token': this.authenticator.accessToken,
-          },
-        });
+  public async triggerSync(options: ITriggerOptions): Promise<IEventStatuses> {
+    return new Promise((resolve) => {
+      this.trigger(options, (error, status) => {
+        if(error) {
+          throw error
+        }
+        resolve(status as unknown as IEventStatuses)
+      })
+    })
+  }
 
-        if (Object.values(response.data.channels).some(({ status }) => status === 'PENDING')) {
+  private async pollEventStatus(eventId: string, callback: EventStatusCallback) {
+    let intervalCounter = 0;
+    let time: number = POLLING_START_TIMEOUT;
+
+    const getStatus = async () => {
+      await this.authenticator.validateAuthentication();
+      return axios.get<IEventStatuses>(`${config.urls.eventService}/resources/triggers/v2/statuses/${eventId}`, {
+        headers: {
+          'x-access-token': this.authenticator.accessToken,
+        },
+      });
+    };
+
+    while (intervalCounter <= 20) {
+      await sleep(time);
+      time = time * POLLING_INCREASE_PERCENTAGE;
+      intervalCounter++;
+
+      try {
+        const response = await getStatus();
+        const isThereStatusPending: boolean = Object.values(response.data.channels).some(({ status }) => status === 'PENDING');
+
+        if (isThereStatusPending) {
           Logger.info('there are still channels with pending status');
           intervalCounter++;
         } else {
           Logger.info('all channels statuses are not pending, will call callback');
-          callback(response.data);
-          clearInterval(interval);
+
+          const allSucceeded = Object.values(response.data.channels).every(({ status }) => status === 'SUCCEEDED');
+
+          const callbackResponse: IEventStatusesResponse = {
+            ...response.data,
+            generalStatus: allSucceeded ? 'SUCCEEDED' : 'FAILED',
+          };
+          callback(undefined, callbackResponse);
+          break;
         }
 
         if (intervalCounter >= POLLING_LIMIT) {
           Logger.info('there are still channels with pending status, but we passed the limit of the polling');
-          callback(response.data);
-          clearInterval(interval);
+          const callbackResponse: IEventStatusesResponse = {
+            ...response.data,
+            generalStatus: 'FAILED',
+          };
+          callback(undefined, callbackResponse);
+          break;
         }
+
       } catch (e) {
         Logger.error('could not get event status', e);
-        clearInterval(interval);
-        throw new Error('could not get event status');
+        callback(e, undefined);
+        break;
       }
-    }, POLLING_TIMEOUT);
-    return;
+    }
   }
 }
 

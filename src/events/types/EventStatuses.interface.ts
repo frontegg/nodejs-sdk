@@ -29,3 +29,5 @@ export interface IEventStatuses {
     }
   }
 }
+
+export type IEventStatusesResponse = {generalStatus: eventChannelStatus}
