@@ -122,7 +122,7 @@ export class EventsClient {
     }
   }
 
-  public async triggerSync(options: ITriggerOptions): Promise<IEventStatuses> {
+  public async triggerAsync(options: ITriggerOptions): Promise<IEventStatuses> {
     return new Promise((resolve) => {
       this.trigger(options, (error, status) => {
         if(error) {
