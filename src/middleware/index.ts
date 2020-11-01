@@ -166,7 +166,7 @@ export function frontegg(options: IFronteggOptions) {
   FRONTEGG_CLIENT_ID = options.clientId;
   FRONTEGG_API_KEY = options.apiKey;
 
-  authenticator.init(options.clientId, options.apiKey);
+  const authInitedPromise = authenticator.init(options.clientId, options.apiKey);
 
   proxy.on('error', async (err, req: any, res, _) => {
     Logger.error(`Failed proxy request to ${req.url} - `, err);
@@ -244,6 +244,8 @@ export function frontegg(options: IFronteggOptions) {
 
   // tslint:disable-next-line:only-arrow-functions
   return async (req, res) => {
+    await authInitedPromise;
+
     if (options.authMiddleware && !await fronteggRoutes.isFronteggPublicRoute(req)) {
       Logger.debug('will pass request threw the auth middleware');
       try {
