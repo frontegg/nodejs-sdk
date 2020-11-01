@@ -233,7 +233,7 @@ export function frontegg(options: IFronteggOptions) {
     }
 
     if (req.body) {
-      const bodyData = JSON.stringify(req.body);
+      const bodyData = Buffer.isBuffer(req.body) ? req.body : JSON.stringify(req.body);
       // in case if content-type is application/x-www-form-urlencoded -> we need to change to application/json
       proxyReq.setHeader('Content-Type', 'application/json');
       proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
