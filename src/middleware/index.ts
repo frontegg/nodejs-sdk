@@ -25,12 +25,23 @@ function getUrlWithoutQueryParams(req): string {
 declare type fronteggContextResolver = (req: Request) => Promise<{ tenantId: string, userId: string, permissions: FronteggPermissions[] }>;
 declare type AuthMiddleware = (req: Request, res: Response, next: NextFunction) => Promise<any> | any;
 
+function rewriteCookieDomain(header, oldDomain, newDomain) {
+  if (Array.isArray(header)) {
+    return header.map(function (headerElement) {
+      return rewriteCookieDomain(headerElement, oldDomain, newDomain);
+    });
+  }
+
+  return header.replace(new RegExp(`(;\\s*domain=)${oldDomain};`, 'i'), `$1${newDomain};`)
+};
+
 export interface IFronteggOptions {
   clientId: string;
   apiKey: string;
   contextResolver: fronteggContextResolver;
   authMiddleware?: AuthMiddleware;
   disableCors?: boolean;
+  cookieDomainRewrite?: string;
 }
 
 async function proxyRequest(req, res, context) {
@@ -206,6 +217,16 @@ export function frontegg(options: IFronteggOptions) {
         const context = await options.contextResolver(req);
         return proxyRequest(req, res, context);
       }
+    }
+
+    if (options.cookieDomainRewrite) {
+      const host = req.headers.host;
+
+      Object.keys(proxyRes.headers).forEach((key) => {
+        if (key.toLowerCase() === 'set-cookie') {
+          proxyRes.headers[key] = rewriteCookieDomain(proxyRes.headers[key], host, options.cookieDomainRewrite);
+        }
+      });
     }
   });
 
