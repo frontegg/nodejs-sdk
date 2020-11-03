@@ -17,7 +17,7 @@ export class FronteggAuthenticator {
   }
 
   public async refreshAuthentication() {
-    await this.authenticate();
+    await this.authenticate(true);
   }
 
   public async validateAuthentication() {
@@ -27,7 +27,10 @@ export class FronteggAuthenticator {
     }
   }
 
-  private async authenticate() {
+  private async authenticate(force: boolean = false) {
+    if (this.accessToken !== '' && !force) {
+      return;
+    }
     Logger.info('posting authentication request');
 
     let response: AxiosResponse<any>;
