@@ -25,12 +25,23 @@ function getUrlWithoutQueryParams(req): string {
 declare type fronteggContextResolver = (req: Request) => Promise<{ tenantId: string, userId: string, permissions: FronteggPermissions[] }>;
 declare type AuthMiddleware = (req: Request, res: Response, next: NextFunction) => Promise<any> | any;
 
+function rewriteCookieDomain(header, oldDomain, newDomain) {
+  if (Array.isArray(header)) {
+    return header.map(function (headerElement) {
+      return rewriteCookieDomain(headerElement, oldDomain, newDomain);
+    });
+  }
+
+  return header.replace(new RegExp(`(;\\s*domain=)${oldDomain};`, 'i'), `$1${newDomain};`)
+};
+
 export interface IFronteggOptions {
   clientId: string;
   apiKey: string;
   contextResolver: fronteggContextResolver;
   authMiddleware?: AuthMiddleware;
   disableCors?: boolean;
+  cookieDomainRewrite?: string;
 }
 
 async function proxyRequest(req, res, context) {
@@ -166,7 +177,7 @@ export function frontegg(options: IFronteggOptions) {
   FRONTEGG_CLIENT_ID = options.clientId;
   FRONTEGG_API_KEY = options.apiKey;
 
-  authenticator.init(options.clientId, options.apiKey);
+  const authInitedPromise = authenticator.init(options.clientId, options.apiKey);
 
   proxy.on('error', async (err, req: any, res, _) => {
     Logger.error(`Failed proxy request to ${req.url} - `, err);
@@ -207,6 +218,16 @@ export function frontegg(options: IFronteggOptions) {
         return proxyRequest(req, res, context);
       }
     }
+
+    if (options.cookieDomainRewrite) {
+      const host = req.headers.host;
+
+      Object.keys(proxyRes.headers).forEach((key) => {
+        if (key.toLowerCase() === 'set-cookie') {
+          proxyRes.headers[key] = rewriteCookieDomain(proxyRes.headers[key], host, options.cookieDomainRewrite);
+        }
+      });
+    }
   });
 
   function enableCors(req, res: IncomingMessage) {
@@ -233,7 +254,7 @@ export function frontegg(options: IFronteggOptions) {
     }
 
     if (req.body) {
-      const bodyData = JSON.stringify(req.body);
+      const bodyData = Buffer.isBuffer(req.body) ? req.body : JSON.stringify(req.body);
       // in case if content-type is application/x-www-form-urlencoded -> we need to change to application/json
       proxyReq.setHeader('Content-Type', 'application/json');
       proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
@@ -244,6 +265,8 @@ export function frontegg(options: IFronteggOptions) {
 
   // tslint:disable-next-line:only-arrow-functions
   return async (req, res) => {
+    await authInitedPromise;
+
     if (options.authMiddleware && !await fronteggRoutes.isFronteggPublicRoute(req)) {
       Logger.debug('will pass request threw the auth middleware');
       try {
