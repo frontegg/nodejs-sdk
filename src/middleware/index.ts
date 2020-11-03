@@ -27,13 +27,13 @@ declare type AuthMiddleware = (req: Request, res: Response, next: NextFunction) 
 
 function rewriteCookieDomain(header, oldDomain, newDomain) {
   if (Array.isArray(header)) {
-    return header.map(function (headerElement) {
+    return header.map((headerElement) => {
       return rewriteCookieDomain(headerElement, oldDomain, newDomain);
     });
   }
 
-  return header.replace(new RegExp(`(;\\s*domain=)${oldDomain};`, 'i'), `$1${newDomain};`)
-};
+  return header.replace(new RegExp(`(;\\s*domain=)${oldDomain};`, 'i'), `$1${newDomain};`);
+}
 
 export interface IFronteggOptions {
   clientId: string;
@@ -42,17 +42,19 @@ export interface IFronteggOptions {
   authMiddleware?: AuthMiddleware;
   disableCors?: boolean;
   cookieDomainRewrite?: string;
+  // default: 3
+  maxRetries?: number;
 }
 
 async function proxyRequest(req, res, context) {
   Logger.log(`going to proxy request - ${req.originalUrl} to ${target}`);
-
   await proxy.web(req, res, {
     target,
     headers: {
       'x-access-token': authenticator.accessToken,
       'frontegg-tenant-id': context && context.tenantId ? context.tenantId : '',
       'frontegg-user-id': context && context.userId ? context.userId : '',
+      'frontegg-vendor-host': req.hostname,
     },
   });
 }
@@ -158,6 +160,7 @@ async function callMiddleware(req, res, middleware): Promise<void> {
 }
 
 export function frontegg(options: IFronteggOptions) {
+  const { maxRetries = MAX_RETRIES } = options;
   Logger.debug('you got to my frontegg middleware');
 
   if (!options) {
@@ -184,7 +187,7 @@ export function frontegg(options: IFronteggOptions) {
     req.frontegg.retryCount++;
     Logger.info(`retry count of ${req.url} - `, req.frontegg.retryCount);
 
-    if (req.frontegg.retryCount >= MAX_RETRIES) {
+    if (req.frontegg.retryCount >= maxRetries) {
       res.writeHead(500).end('Frontegg request failed');
       return;
     }
@@ -196,7 +199,7 @@ export function frontegg(options: IFronteggOptions) {
   });
 
   proxy.on('proxyRes', async (proxyRes, req: any, res) => {
-    Logger.debug(`proxyReq - returned for ${req.originalUrl}`);
+    Logger.debug(`proxyRes - returned for ${req.originalUrl}`);
 
     if (!options.disableCors) {
       enableCors(req, proxyRes);
@@ -324,7 +327,7 @@ type INextJsFronteggOptions = IFronteggOptions & {
   prefixRoute: string;
 };
 export const fronteggNextJs = (options: INextJsFronteggOptions) => {
-  const fronteggProxy = frontegg(options);
+  const fronteggProxy = frontegg({ maxRetries: 0, ...options });
 
   return async (req: ProxyIncomingMessage, res: ProxyServerResponse) => {
     if (!req.url) {
