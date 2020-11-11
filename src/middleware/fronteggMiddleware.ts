@@ -122,10 +122,13 @@ export function frontegg(options: IFronteggOptions) {
       if (!contentLength || !contentType || contentType === 'application/x-www-form-urlencoded') {
         contentType = 'application/json';
         contentLength = Buffer.byteLength(bodyData);
+        proxyReq.setHeader('Content-Type', contentType);
+        proxyReq.setHeader('Content-Length', contentLength);
         proxyReq.write(bodyData);
+      } else {
+        proxyReq.setHeader('Content-Type', contentType);
+        proxyReq.setHeader('Content-Length', contentLength);
       }
-      proxyReq.setHeader('Content-Type', contentType);
-      proxyReq.setHeader('Content-Length', contentLength);
     }
   });
 
