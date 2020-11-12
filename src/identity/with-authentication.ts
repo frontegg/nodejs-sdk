@@ -22,15 +22,31 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
         return next(err);
       }
 
-      for (const requestedRole of roles) {
-        if (!user.roles || !user.roles.includes(requestedRole)) {
+      if (roles && roles.length > 0) {
+        let haveAtLeastOneRole = false;
+        for (const requestedRole of roles) {
+          if (user.roles && user.roles.includes(requestedRole)) {
+            haveAtLeastOneRole = true;
+            break;
+          }
+        }
+
+        if (!haveAtLeastOneRole) {
           res.status(403).send('Insufficient role');
           return next('Insufficient role');
         }
       }
 
-      for (const requestedPermission of permissions) {
-        if (!user.permissions || !user.permissions.includes(requestedPermission)) {
+      if (permissions && permissions.length > 0) {
+        let haveAtLeastOnePermission = false;
+        for (const requestedPermission of permissions) {
+          if (user.permissions && user.permissions.includes(requestedPermission)) {
+            haveAtLeastOnePermission = true;
+            break;
+          }
+        }
+
+        if (!haveAtLeastOnePermission) {
           res.status(403).send('Insufficient permission');
           return next('Insufficient permission');
         }
