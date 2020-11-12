@@ -118,17 +118,9 @@ export function frontegg(options: IFronteggOptions) {
         return;
       }
       const bodyData = Buffer.isBuffer(req.body) ? req.body : JSON.stringify(req.body);
-      // in case if content-type is application/x-www-form-urlencoded -> we need to change to application/json
-      if (!contentLength || !contentType || contentType === 'application/x-www-form-urlencoded') {
-        contentType = 'application/json';
-        contentLength = Buffer.byteLength(bodyData);
-        proxyReq.setHeader('Content-Type', contentType);
-        proxyReq.setHeader('Content-Length', contentLength);
-        proxyReq.write(bodyData);
-      } else {
-        proxyReq.setHeader('Content-Type', contentType);
-        proxyReq.setHeader('Content-Length', contentLength);
-      }
+      contentType = 'application/json';
+      contentLength = Buffer.byteLength(bodyData);
+      proxyReq.write(bodyData);
     }
   });
 
