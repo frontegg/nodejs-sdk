@@ -14,6 +14,7 @@ const authenticator = new FronteggAuthenticator();
 const MAX_RETRIES = 3;
 
 async function proxyRequest(req, res, context) {
+  await authenticator.validateAuthentication();
   Logger.log(`going to proxy request - ${req.originalUrl} to ${target}`);
   await proxy.web(req, res, {
     target,
