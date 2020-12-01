@@ -3,7 +3,7 @@ import { FronteggPermissions } from '../../index';
 export const contextResolver = (req) => {
   if (!req.user) {
     return {
-      tenantId: 'NOT_A_REAL_TENANT_ID',
+      tenantId: '',
       userId: '',
       permissions: [FronteggPermissions.All],
     };

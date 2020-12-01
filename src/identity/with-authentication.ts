@@ -6,6 +6,12 @@ export interface IWithAuthenticationOptions {
   permissions?: string[];
 }
 
+export enum tokenTypes {
+  UserApiToken = 'userApiToken',
+  TenantApiToken = 'tenantApiToken',
+  UserToken = 'userToken'
+}
+
 export interface IUser {
   sub: string
   tenantId: string
@@ -13,7 +19,7 @@ export interface IUser {
   permissions: string[]
   metadata: Record<string, any>
   createdByUserId: string
-  type: 'userApiToken' | 'tenantApiToken' | 'userToken'
+  type: tokenTypes;
   name?: string;
   email?: string;
   email_verified?: boolean;
@@ -74,10 +80,10 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
       req.user.id = ''
 
       switch (req.user.type) {
-        case 'userToken':
+        case tokenTypes.UserToken:
           req.user.id = user.sub; // The subject of the token (OpenID token) is saved on the req.user as well for easier readability
           break;
-        case 'userApiToken':
+        case tokenTypes.UserApiToken:
           req.user.id = user.createdByUserId
           break;
       }

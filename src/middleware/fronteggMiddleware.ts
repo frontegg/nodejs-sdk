@@ -20,7 +20,7 @@ async function proxyRequest(req, res, context) {
     target,
     headers: {
       'x-access-token': authenticator.accessToken,
-      'frontegg-tenant-id': context && context.tenantId ? context.tenantId : '',
+      'frontegg-tenant-id': context && context.tenantId ? context.tenantId : 'WITHOUT_TENANT_ID',
       'frontegg-user-id': context && context.userId ? context.userId : '',
       'frontegg-vendor-host': req.hostname,
     },
