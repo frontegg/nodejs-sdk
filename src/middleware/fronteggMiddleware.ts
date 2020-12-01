@@ -5,9 +5,12 @@ import { ContextHolder } from './ContextHolder';
 import { fronteggRoutes } from './FronteggRoutes';
 import { IFronteggOptions } from './types';
 import { callMiddleware, enableCors, rewriteCookieDomain, validatePermissions } from './utils';
+import { getPackageJson } from '../utils/getPackageJSON';
 
 const proxy = httpProxy.createProxyServer({ secure: false, changeOrigin: true });
 const target = process.env.FRONTEGG_API_GATEWAY_URL || 'https://api.frontegg.com/';
+
+const pjson = getPackageJson() || {version: 'unknown'}
 
 const authenticator = new FronteggAuthenticator();
 
@@ -23,6 +26,7 @@ async function proxyRequest(req, res, context) {
       'frontegg-tenant-id': context && context.tenantId ? context.tenantId : 'WITHOUT_TENANT_ID',
       'frontegg-user-id': context && context.userId ? context.userId : '',
       'frontegg-vendor-host': req.hostname,
+      'frontegg-middleware-client': `Node.js@${pjson.version}`
     },
   });
 }
