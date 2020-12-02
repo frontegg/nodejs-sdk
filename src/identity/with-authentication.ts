@@ -6,6 +6,28 @@ export interface IWithAuthenticationOptions {
   permissions?: string[];
 }
 
+export enum tokenTypes {
+  UserApiToken = 'userApiToken',
+  TenantApiToken = 'tenantApiToken',
+  UserToken = 'userToken'
+}
+
+export interface IUser {
+  sub: string
+  tenantId: string
+  roles: string[]
+  permissions: string[]
+  metadata: Record<string, any>
+  createdByUserId: string
+  type: tokenTypes;
+  name?: string;
+  email?: string;
+  email_verified?: boolean;
+  invisible?: true;
+  tenantIds?: string[];
+  profilePictureUrl?: string;
+}
+
 export function withAuthentication({ roles = [], permissions = [] }: IWithAuthenticationOptions = {}) {
   return async (req, res, next) => {
     const authorizationHeader: string = req.header('authorization');
@@ -16,7 +38,8 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
     const token = authorizationHeader.replace('Bearer ', '');
     const publicKey = await IdentityClient.getInstance().getPublicKey();
 
-    verify(token, publicKey, { algorithms: ['RS256'] }, (err, user: any) => {
+    verify(token, publicKey, { algorithms: ['RS256'] }, (err, decoded: any) => {
+      const user: IUser = decoded
       if (err) {
         res.status(401).send('Authentication failed');
         return next(err);
@@ -54,7 +77,17 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
 
       // Store the decoded user on the request
       req.user = user;
-      req.user.id = user.sub; // The subject of the token (OpenID token) is saved on the req.user as well for easier readability
+      req.user.id = ''
+
+      switch (req.user.type) {
+        case tokenTypes.UserToken:
+          req.user.id = user.sub; // The subject of the token (OpenID token) is saved on the req.user as well for easier readability
+          break;
+        case tokenTypes.UserApiToken:
+          req.user.id = user.createdByUserId
+          break;
+      }
+
       // And move to the next handler
       next();
     });

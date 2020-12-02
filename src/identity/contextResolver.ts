@@ -11,7 +11,7 @@ export const contextResolver = (req) => {
 
   return {
     tenantId: req.user.tenantId,
-    userId: req.user.sub,
+    userId: req.user.id,
     permissions: [FronteggPermissions.All],
   };
 };
