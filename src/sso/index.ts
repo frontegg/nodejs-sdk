@@ -19,11 +19,12 @@ export class SsoClient {
 
     /**
      * @param payload - email or tenantId
+     * @param scopes -  list of scopes in case of Open ID Connect based SSO request (optional)
      */
-    public async prelogin(payload: string): Promise<string> {
+    public async prelogin(payload: string, scopes?: string[]): Promise<string> {
         const preloginRes = await Axios.post(
             `${config.urls.teamService}/resources/sso/v1/prelogin`,
-            { payload },
+            { payload, scopes },
             {
                 headers: {
                     'x-access-token': this.authenticator.accessToken,
