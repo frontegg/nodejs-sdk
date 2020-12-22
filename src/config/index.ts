@@ -7,7 +7,7 @@ if (baseUrl.endsWith('/')) {
 export namespace config {
   // tslint:disable-next-line:class-name
   export class urls {
-    public static authenticationService = process.env.FRONTEGG_AUTHENTICATION_SERVICE_URL || `${baseUrl}/vendors/auth/token`;
+    public static authenticationService = process.env.FRONTEGG_AUTHENTICATION_SERVICE_URL || `${baseUrl}/auth/vendor`;
     public static auditsService = process.env.FRONTEGG_AUDITS_SERVICE_URL || `${baseUrl}/audits/`;
     public static notificationService = process.env.FRONTEGG_NOTIFICATION_SERVICE_URL || `${baseUrl}/notification/`;
     public static tenantsService = process.env.FRONTEGG_TENANTS_SERVICE_URL || `${baseUrl}/tenants/`;
