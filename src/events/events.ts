@@ -1,11 +1,11 @@
 import axios from 'axios';
-import { FronteggAuthenticator } from "../../authenticator";
-import { config } from '../../config';
+import { FronteggAuthenticator } from "../authenticator";
+import { config } from '../config';
 import { NoDataException, NoEventKeyException } from "./types/errors";
 import { EventId, EventIdResponse, EventTrigger } from "./types/event-types";
 import { EventStatus } from './types/status-types';
 
-export class Events {
+export class EventsClient {
 	constructor(private readonly authenticator: FronteggAuthenticator) { }
 
 	public async send(tenantId: string, ev: EventTrigger): Promise<EventId> {

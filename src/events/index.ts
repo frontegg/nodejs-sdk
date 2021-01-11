@@ -1,3 +1,2 @@
-export * from './EventsClient';
 export * from './types';
-export * from './v3';
+export * from './events';
