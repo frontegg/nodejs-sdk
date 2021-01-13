@@ -105,11 +105,16 @@ export const fronteggNextJs = (options: INextJsFronteggOptions) => {
         nextJsReq.body = JSON.stringify(nextJsReq.body);
       }
 
-      proxy
-        .once('proxyReq', ((proxyReq: any, req: any): void => {
+      proxy.
+        once('proxyReq', ((proxyReq: any, req: any): void => {
           if (['POST', 'PUT'].indexOf(req.method as string) >= 0 && typeof req.body === 'string') {
-            proxyReq.write(req.body);
-            proxyReq.end();
+            try {
+              proxyReq.write(req.body);
+              proxyReq.end();
+            } catch (e) {
+              Logger.error('Failed to write to proxy - ', e);
+              reject(e);
+            }
           }
         }) as any)
         .once('proxyRes', ((proxyRes, req: any, res): void => {
