@@ -19,7 +19,7 @@
   "homepage": "https://github.com/frontegg/nodejs-sdk",
   "dependencies": {
     "@slack/web-api": "^5.11.0",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "http-proxy": "^1.18.1",
     "jsonwebtoken": "^8.5.1",
     "winston": "^3.2.1"
