@@ -19,15 +19,24 @@ const MAX_RETRIES = 3;
 async function proxyRequest(req, res, context) {
   await authenticator.validateAuthentication();
   Logger.log(`going to proxy request - ${req.originalUrl} to ${target}`);
+
+  const headers = {
+     'x-access-token': authenticator.accessToken,
+     'frontegg-tenant-id': context && context.tenantId ? context.tenantId : 'WITHOUT_TENANT_ID',
+     'frontegg-user-id': context && context.userId ? context.userId : '',
+     'frontegg-vendor-host': req.hostname,
+     'frontegg-middleware-client': `Node.js@${pjson.version}`,
+     'frontegg-user-permissions': (context.userPermissions || []).join(','),
+   }
+
+  if (context.userPermissions) {
+    headers['frontegg-user-permissions'] = context.userPermissions.join(',');
+  }
+
+
   await proxy.web(req, res, {
     target,
-    headers: {
-      'x-access-token': authenticator.accessToken,
-      'frontegg-tenant-id': context && context.tenantId ? context.tenantId : 'WITHOUT_TENANT_ID',
-      'frontegg-user-id': context && context.userId ? context.userId : '',
-      'frontegg-vendor-host': req.hostname,
-      'frontegg-middleware-client': `Node.js@${pjson.version}`,
-    },
+    headers
   });
 }
 
