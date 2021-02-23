@@ -1,4 +1,5 @@
 import { AuditsClient } from './src/audits';
+import { IdentityClient } from './src/identity';
 import { FronteggAuthenticator } from './src/authenticator';
 import { contextResolver, withAuthentication } from './src/identity';
 import { frontegg, fronteggNextJs, IFronteggOptions } from './src/middleware';
@@ -23,4 +24,5 @@ export {
   SsoClient,
   withAuthentication,
   contextResolver,
+  IdentityClient
 };
