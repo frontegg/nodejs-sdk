@@ -13,6 +13,49 @@ Use the package manager [npm](https://www.npmjs.com/) to install frontegg client
 npm install @frontegg/client
 ```
 
+## Breaking changes
+
+### v2.0 Events client upgraded to use the v3 Events API
+
+As we grow as a company we also provide new and improved APIs such as the new v3 Events API.
+This will allow your to configure more and worry less about channels. It is still not perfect, but we're getting there.
+With the new v3 api you'll be able to use the frontegg portal to map events to channels in order to allow your customers to configure their own channels.
+The new client will no longer send the channels you wish to trigger, and just use the event's payload.
+
+Please note that email & slack may still require further data (like the email template or slack message format).
+
+Unlike previous clients, the new client requires that you pass a separate authenticator.
+
+E`xample: 
+```javascript
+	const authenticator = new FronteggAuthenticator();
+	await authenticator.init('<YOUR_CLIENT_ID>', '<YOUR_API_KEY>')
+	const eventsClient = new EventsClient(authenticator);
+	const id = await eventsClient.send(
+		'my-tenant-id',
+		{
+			eventKey: 'my.event',
+			data: {
+				description: 'my description',
+				title: 'my title'
+			},
+			channelConfiguration: {
+				email: {
+					from: 'email@email.com',
+					html: '<div>{{title}}</div>', // data interpolation using the event data
+					subject: 'subject'
+				},
+				slack: {
+					emails: ['email@email.com'],
+					slackMessageConfig: {
+						// use https://api.slack.com/methods/chat.postMessage data format to fill this configuration
+					}
+				}
+			}
+		})
+```
+
+---
 ## Usage
 
 Frontegg offers multiple components for integration with the Frontegg's scaleable back end and front end libraries
@@ -100,9 +143,6 @@ const permissions = [FronteggPermissions.Audit];
 /// Allow the user to read audits and audits stats but not exporting it
 const permissions = [FronteggPermissions.Audit.Read, FronteggPermissions.Audit.Stats]; 
 ```
-
-
-
 ### Audits
 
 Let your customers record the events, activities and changes made to their tenant.
