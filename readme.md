@@ -26,7 +26,7 @@ Please note that email & slack may still require further data (like the email te
 
 Unlike previous clients, the new client requires that you pass a separate authenticator.
 
-E`xample: 
+Example: 
 ```javascript
 	const authenticator = new FronteggAuthenticator();
 	await authenticator.init('<YOUR_CLIENT_ID>', '<YOUR_API_KEY>')
