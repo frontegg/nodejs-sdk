@@ -89,6 +89,7 @@ typings/
 .dynamodb/
 
 .history/
+.vscode/
 
 jest-junit.xml
 
