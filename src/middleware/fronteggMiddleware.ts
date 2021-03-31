@@ -26,7 +26,6 @@ async function proxyRequest(req, res, context) {
      'frontegg-user-id': context && context.userId ? context.userId : '',
      'frontegg-vendor-host': req.hostname,
      'frontegg-middleware-client': `Node.js@${pjson.version}`,
-     'frontegg-user-permissions': (context.userPermissions || []).join(','),
    }
 
   if (context.userPermissions) {
