@@ -12,11 +12,9 @@ const target = process.env.FRONTEGG_API_GATEWAY_URL || 'https://api.frontegg.com
 
 const pjson = getPackageJson() || { version: 'unknown' };
 
-const authenticator = new FronteggAuthenticator();
-
 const MAX_RETRIES = 3;
 
-async function proxyRequest(req, res, context) {
+async function proxyRequest(req, res, context, authenticator) {
   await authenticator.validateAuthentication();
   Logger.log(`going to proxy request - ${req.originalUrl} to ${target}`);
 
@@ -26,7 +24,7 @@ async function proxyRequest(req, res, context) {
      'frontegg-user-id': context && context.userId ? context.userId : '',
      'frontegg-vendor-host': req.hostname,
      'frontegg-middleware-client': `Node.js@${pjson.version}`,
-   }
+   };
 
   if (context.userPermissions) {
     headers['frontegg-user-permissions'] = context.userPermissions.join(',');
@@ -35,7 +33,7 @@ async function proxyRequest(req, res, context) {
 
   await proxy.web(req, res, {
     target,
-    headers
+    headers,
   });
 }
 
@@ -58,6 +56,8 @@ export function frontegg(options: IFronteggOptions) {
   }
 
 
+  const authenticator = new FronteggAuthenticator();
+
   ContextHolder.setContext({
     FRONTEGG_CLIENT_ID: options.clientId,
     FRONTEGG_API_KEY: options.apiKey,
@@ -78,7 +78,7 @@ export function frontegg(options: IFronteggOptions) {
     // Get the context again
     const context = await options.contextResolver(req);
 
-    return proxyRequest(req, res, context);
+    return proxyRequest(req, res, context, authenticator);
   });
 
   proxy.on('proxyRes', async (proxyRes, req: any, res) => {
@@ -168,7 +168,7 @@ export function frontegg(options: IFronteggOptions) {
     req.frontegg.retryCount = 0;
 
     Logger.debug(`going to proxy request`);
-    return proxyRequest(req, res, context);
+    return proxyRequest(req, res, context, authenticator);
   };
 }
 
