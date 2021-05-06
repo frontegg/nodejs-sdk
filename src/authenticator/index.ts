@@ -8,6 +8,8 @@ export class FronteggAuthenticator {
   private accessTokenExpiry = Date.now();
   private clientId: string = '';
   private apiKey: string = '';
+  private refreshTimeout: NodeJS.Timeout | null = null;
+  private shuttingDown: boolean = false;
 
   public async init(clientId: string, apiKey: string) {
     this.clientId = clientId;
@@ -24,6 +26,13 @@ export class FronteggAuthenticator {
     if (this.accessToken === '' || this.accessTokenExpiry === 0 || Date.now() >= this.accessTokenExpiry) {
       Logger.info('authentication token needs refresh - going to refresh it');
       await this.refreshAuthentication();
+    }
+  }
+
+  public async shutdown() {
+    this.shuttingDown = true;
+    if (this.refreshTimeout !== null) {
+      clearTimeout(this.refreshTimeout);
     }
   }
 
@@ -64,8 +73,10 @@ export class FronteggAuthenticator {
     const nextRefresh = (expiresIn * 1000) * 0.8;
     this.accessTokenExpiry = Date.now() + nextRefresh;
 
-    setTimeout(() => {
-      this.refreshAuthentication();
-    }, nextRefresh);
+    if (!this.shuttingDown) {
+      this.refreshTimeout = setTimeout(() => {
+        this.refreshAuthentication();
+      }, nextRefresh);
+    }
   }
 }
