@@ -51,6 +51,7 @@ export class IdentityClient {
     // And save it as member of the class
     Logger.info('going to extract public key from response');
     this.publicKey = publicKey;
+    await authenticator.shutdown();
   }
 
 }
