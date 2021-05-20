@@ -139,6 +139,10 @@ export function frontegg(options: IFronteggOptions) {
         }
       } catch (e) {
         Logger.error(`Failed to call middleware - `, e);
+        if (res.headersSent) {
+          // response was already sent from the middleware, we have nothing left to do
+          return;
+        }
         return res.status(401).send(e.message);
       }
     }
