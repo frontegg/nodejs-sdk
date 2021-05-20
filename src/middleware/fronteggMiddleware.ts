@@ -135,12 +135,14 @@ export function frontegg(options: IFronteggOptions) {
         await callMiddleware(req, res, options.authMiddleware);
         if (res.headersSent) {
           // response was already sent from the middleware, we have nothing left to do
+          Logger.debug('Headers was already sent from authMiddleware');
           return;
         }
       } catch (e) {
         Logger.error(`Failed to call middleware - `, e);
         if (res.headersSent) {
           // response was already sent from the middleware, we have nothing left to do
+          Logger.debug('authMiddleware threw error, but headers was already sent');
           return;
         }
         return res.status(401).send(e.message);
