@@ -110,7 +110,7 @@ export function frontegg(options: IFronteggOptions) {
       proxyReq.setHeader('frontegg-vendor-host', req.hostname);
     }
 
-    if (req.body) {
+    if (Object.keys(req.body || {}).length) {
       let contentType = proxyReq.getHeader('Content-Type') as string;
       let contentLength = proxyReq.getHeader('Content-Length') as number;
       if (contentType && contentType.startsWith('multipart/form-data')) {
