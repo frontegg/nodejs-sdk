@@ -1,8 +1,8 @@
 import { AuditsClient } from './src/audits';
-import { IdentityClient } from './src/identity';
 import { FronteggAuthenticator } from './src/authenticator';
+import { IdentityClient } from './src/identity';
 import { contextResolver, withAuthentication } from './src/identity';
-import { frontegg, fronteggNextJs, IFronteggOptions, ContextHolder } from './src/middleware';
+import { ContextHolder, frontegg, fronteggNextJs, IFronteggOptions } from './src/middleware';
 import { NotificationsClient } from './src/notifications';
 import { FronteggPermissions } from './src/permissions';
 import { RbacMiddleware } from './src/rbac';
@@ -13,7 +13,7 @@ export * from './src/events';
 
 export {
   AuditsClient,
-  ContextHolder
+  ContextHolder,
   NotificationsClient,
   TenantsClient,
   frontegg,
@@ -25,5 +25,5 @@ export {
   SsoClient,
   withAuthentication,
   contextResolver,
-  IdentityClient
+  IdentityClient,
 };
