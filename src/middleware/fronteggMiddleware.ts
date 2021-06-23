@@ -7,7 +7,7 @@ import { fronteggRoutes } from './FronteggRoutes';
 import { IFronteggOptions } from './types';
 import { callMiddleware, enableCors, rewriteCookieDomain, validatePermissions } from './utils';
 
-const proxy = httpProxy.createProxyServer({ secure: false, changeOrigin: true });
+const proxy = httpProxy.createProxyServer({ secure: false, changeOrigin: true, xfwd: true });
 const target = process.env.FRONTEGG_API_GATEWAY_URL || 'https://api.frontegg.com/';
 
 const pjson = getPackageJson() || { version: 'unknown' };
@@ -19,12 +19,12 @@ async function proxyRequest(req, res, context, authenticator) {
   Logger.log(`going to proxy request - ${req.originalUrl} to ${target}`);
 
   const headers = {
-     'x-access-token': authenticator.accessToken,
-     'frontegg-tenant-id': context && context.tenantId ? context.tenantId : 'WITHOUT_TENANT_ID',
-     'frontegg-user-id': context && context.userId ? context.userId : '',
-     'frontegg-vendor-host': req.hostname,
-     'frontegg-middleware-client': `Node.js@${pjson.version}`,
-   };
+    'x-access-token': authenticator.accessToken,
+    'frontegg-tenant-id': context && context.tenantId ? context.tenantId : 'WITHOUT_TENANT_ID',
+    'frontegg-user-id': context && context.userId ? context.userId : '',
+    'frontegg-vendor-host': req.hostname,
+    'frontegg-middleware-client': `Node.js@${pjson.version}`,
+  };
 
   if (context.userPermissions) {
     headers['frontegg-user-permissions'] = context.userPermissions.join(',');
