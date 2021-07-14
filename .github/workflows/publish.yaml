@@ -2,7 +2,7 @@ name: Build, Test and Publish
 
 on:
   push:
-    branches: [master]
+    branches: [master, demo-app-test]
 
 jobs:
   publish:
