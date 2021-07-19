@@ -9,7 +9,7 @@ import { RbacMiddleware } from './src/rbac';
 import { SsoClient } from './src/sso';
 import { TenantsClient } from './src/tenants';
 
-export * from './src/events';
+export * from './src/events'; 
 
 export {
   AuditsClient,
