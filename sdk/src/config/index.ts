@@ -1,4 +1,4 @@
-export let baseUrl = process.env.FRONTEGG_API_GATEWAY_URL || "https://api.frontegg.com/";
+export let baseUrl = process.env.FRONTEGG_API_GATEWAY_URL || "https://dev-api.frontegg.com/";
 if (baseUrl.endsWith('/')) {
   baseUrl = baseUrl.slice(0, -1);
 }
