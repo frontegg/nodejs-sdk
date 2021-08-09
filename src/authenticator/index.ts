@@ -52,7 +52,7 @@ export class FronteggAuthenticator {
       Logger.error('failed to authenticate with frontegg - ', e);
 
       if (e.response) {
-        Logger.error('failed response - ');
+        Logger.error('failed response: ');
         Logger.error(e.response.data);
         Logger.error(e.response.status);
         Logger.error(e.response.headers);
