@@ -1,6 +1,6 @@
 {
   "name": "@frontegg/client",
-  "version": "2.0.15",
+  "version": "2.0.16",
   "description": "Frontegg Javascript Library for backend",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
