@@ -1,4 +1,3 @@
-import { verify } from 'jsonwebtoken';
 import { IdentityClient } from './identity-client';
 
 export interface IWithAuthenticationOptions {
@@ -36,60 +35,30 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
     }
 
     const token = authorizationHeader.replace('Bearer ', '');
-    const publicKey = await IdentityClient.getInstance().getPublicKey();
 
-    verify(token, publicKey, { algorithms: ['RS256'] }, (err, decoded: any) => {
-      const user: IUser = decoded;
-      if (err) {
-        res.status(401).send('Authentication failed');
-        return next(err);
-      }
+    let user: IUser;
+    try {
+      user = await IdentityClient.getInstance().validateIdentityOnToken(token, { roles, permissions });
+    } catch (e) {
+      const { statusCode, message } = e;
+      res.status(statusCode).send(message);
+      return next(e);
+    }
 
-      if (roles && roles.length > 0) {
-        let haveAtLeastOneRole = false;
-        for (const requestedRole of roles) {
-          if (user.roles && user.roles.includes(requestedRole)) {
-            haveAtLeastOneRole = true;
-            break;
-          }
-        }
+    // Store the decoded user on the request
+    req.user = user;
+    req.user.id = '';
 
-        if (!haveAtLeastOneRole) {
-          res.status(403).send('Insufficient role');
-          return next('Insufficient role');
-        }
-      }
+    switch (req.user.type) {
+      case tokenTypes.UserToken:
+        req.user.id = user.sub; // The subject of the token (OpenID token) is saved on the req.user as well for easier readability
+        break;
+      case tokenTypes.UserApiToken:
+        req.user.id = user.createdByUserId;
+        break;
+    }
 
-      if (permissions && permissions.length > 0) {
-        let haveAtLeastOnePermission = false;
-        for (const requestedPermission of permissions) {
-          if (user.permissions && user.permissions.includes(requestedPermission)) {
-            haveAtLeastOnePermission = true;
-            break;
-          }
-        }
-
-        if (!haveAtLeastOnePermission) {
-          res.status(403).send('Insufficient permission');
-          return next('Insufficient permission');
-        }
-      }
-
-      // Store the decoded user on the request
-      req.user = user;
-      req.user.id = '';
-
-      switch (req.user.type) {
-        case tokenTypes.UserToken:
-          req.user.id = user.sub; // The subject of the token (OpenID token) is saved on the req.user as well for easier readability
-          break;
-        case tokenTypes.UserApiToken:
-          req.user.id = user.createdByUserId;
-          break;
-      }
-
-      // And move to the next handler
-      next();
-    });
+    // And move to the next handler
+    next();
   };
 }
