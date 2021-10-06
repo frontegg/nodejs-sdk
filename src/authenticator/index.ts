@@ -10,7 +10,7 @@ export class FronteggAuthenticator {
   private apiKey: string = '';
   private refreshTimeout: NodeJS.Timeout | null = null;
   private shuttingDown: boolean = false;
-  private retriesCount = 0;
+  private retriesCount: number = 0;
 
   public async init(clientId: string, apiKey: string) {
     this.clientId = clientId;
