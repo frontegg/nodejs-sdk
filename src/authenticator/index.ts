@@ -10,6 +10,7 @@ export class FronteggAuthenticator {
   private apiKey: string = '';
   private refreshTimeout: NodeJS.Timeout | null = null;
   private shuttingDown: boolean = false;
+  private retriesCount = 0;
 
   public async init(clientId: string, apiKey: string) {
     this.clientId = clientId;
@@ -60,6 +61,13 @@ export class FronteggAuthenticator {
 
       this.accessToken = '';
       this.accessTokenExpiry = 0;
+
+      if (config.authenticator.maxRetries > this.retriesCount) {
+        Logger.info(`try [${this.retriesCount}] failed to authenticate with frontegg, trying again`);
+        this.retriesCount += 1;
+        this.refreshAuthentication();
+      }
+
       throw new Error('Failed to authenticate with frontegg');
     }
 
