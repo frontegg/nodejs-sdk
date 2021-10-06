@@ -17,9 +17,4 @@ export namespace config {
     public static eventService = process.env.FRONTEGG_EVENT_SERVICE_URL || `${baseUrl}/event`;
     public static identityService = process.env.FRONTEGG_IDENTITY_SERVICE_URL || `${baseUrl}/identity`;
   }
-
-  // tslint:disable-next-line:class-name
-  export class authenticator {
-    public static maxRetries = process.env.FRONTEGG_AUTHENTICATOR_MAX_RETRIES || 10;
-  }
 }

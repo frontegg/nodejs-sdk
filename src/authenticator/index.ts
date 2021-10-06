@@ -3,6 +3,9 @@ import { config } from '../config';
 import Logger from '../helpers/logger';
 
 export class FronteggAuthenticator {
+  constructor(maxRetries?: number) {
+    this.maxRetries = maxRetries ?? 10;
+  }
 
   public accessToken: string = '';
   private accessTokenExpiry = Date.now();
@@ -11,6 +14,7 @@ export class FronteggAuthenticator {
   private refreshTimeout: NodeJS.Timeout | null = null;
   private shuttingDown: boolean = false;
   private retriesCount: number = 0;
+  private maxRetries: number;
 
   public async init(clientId: string, apiKey: string) {
     this.clientId = clientId;
@@ -62,7 +66,7 @@ export class FronteggAuthenticator {
       this.accessToken = '';
       this.accessTokenExpiry = 0;
 
-      if (config.authenticator.maxRetries > this.retriesCount) {
+      if (this.maxRetries > this.retriesCount) {
         Logger.info(`try [${this.retriesCount}] failed to authenticate with frontegg, trying again`);
         this.retriesCount += 1;
         this.refreshAuthentication();
@@ -71,6 +75,7 @@ export class FronteggAuthenticator {
       throw new Error('Failed to authenticate with frontegg');
     }
 
+    this.retriesCount = 0;
     Logger.info('authenticated with frontegg');
 
     // Get the token and the expiration time
