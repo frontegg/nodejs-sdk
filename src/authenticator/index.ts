@@ -69,7 +69,7 @@ export class FronteggAuthenticator {
       if (this.maxRetries > this.retriesCount) {
         Logger.info(`try [${this.retriesCount}] failed to authenticate with frontegg, trying again`);
         this.retriesCount += 1;
-        this.refreshAuthentication();
+        setTimeout(() => this.refreshAuthentication(), this.getRetryTimeInSeconds() * 1000);
       }
 
       throw new Error('Failed to authenticate with frontegg');
@@ -91,5 +91,10 @@ export class FronteggAuthenticator {
         this.refreshAuthentication();
       }, nextRefresh);
     }
+  }
+  private getRetryTimeInSeconds(): number {
+    const time = Math.pow(2 ,this.retriesCount) + Math.random();
+    const maxTime = 3000;
+    return time > maxTime ? maxTime : time;
   }
 }
