@@ -4,7 +4,7 @@ import Logger from '../helpers/logger';
 
 export class FronteggAuthenticator {
   constructor(maxRetries?: number) {
-    this.maxRetries = maxRetries ?? 10;
+    this.maxRetries = maxRetries || 10;
   }
 
   public accessToken: string = '';
