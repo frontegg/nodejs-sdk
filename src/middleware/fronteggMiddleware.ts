@@ -106,22 +106,26 @@ export function frontegg(options: IFronteggOptions) {
 
 
   proxy.on('proxyReq', (proxyReq, req: any, res, _) => {
-    if (req.hostname) {
-      proxyReq.setHeader('frontegg-vendor-host', req.hostname);
-    }
-
-    if (req.body) {
-      let contentType = proxyReq.getHeader('Content-Type') as string;
-      let contentLength = proxyReq.getHeader('Content-Length') as number;
-      if (contentType && contentType.startsWith('multipart/form-data')) {
-        proxyReq.setHeader('Content-Type', contentType);
-        proxyReq.setHeader('Content-Length', contentLength);
-        return;
+    try {
+      if (req.hostname) {
+        proxyReq.setHeader('frontegg-vendor-host', req.hostname);
       }
-      const bodyData = Buffer.isBuffer(req.body) ? req.body : JSON.stringify(req.body);
-      contentType = 'application/json';
-      contentLength = Buffer.byteLength(bodyData);
-      proxyReq.write(bodyData);
+
+      if (req.body) {
+        let contentType = proxyReq.getHeader('Content-Type') as string;
+        let contentLength = proxyReq.getHeader('Content-Length') as number;
+        if (contentType && contentType.startsWith('multipart/form-data')) {
+          proxyReq.setHeader('Content-Type', contentType);
+          proxyReq.setHeader('Content-Length', contentLength);
+          return;
+        }
+        const bodyData = Buffer.isBuffer(req.body) ? req.body : JSON.stringify(req.body);
+        contentType = 'application/json';
+        contentLength = Buffer.byteLength(bodyData);
+        proxyReq.write(bodyData);
+      }
+    } catch (e) {
+      Logger.error('could not proxy request to frontegg', ...e)
     }
   });
 
