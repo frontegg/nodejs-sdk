@@ -30,7 +30,6 @@ async function proxyRequest(req, res, context, authenticator) {
     headers['frontegg-user-permissions'] = context.userPermissions.join(',');
   }
 
-
   await proxy.web(req, res, {
     target,
     headers,
@@ -110,6 +109,10 @@ export function frontegg(options: IFronteggOptions) {
       if (req.hostname) {
         proxyReq.setHeader('frontegg-vendor-host', req.hostname);
       }
+
+      // We are removing the authorization header as this is not used when proxying
+      proxyReq.removeHeader('authorization');
+      proxyReq.removeHeader('Authorization');
 
       if (req.body) {
         let contentType = proxyReq.getHeader('Content-Type') as string;
