@@ -13,9 +13,9 @@ export class AuthzClient {
         this.clientId = options.clientId;
         this.authenticator = options.authenticator;
         switch(options.strategy) {
-            case StrategyType.OnPremise:
+            case StrategyType.Opa:
                 this.strategy = new OnPremiseStrategy(); break;
-            case StrategyType.SaaS:
+            case StrategyType.Frontegg:
                 this.strategy = new SaaSStrategy(); break;
             default: this.strategy = new OnPremiseStrategy();
         }
@@ -28,8 +28,8 @@ export class AuthzClient {
 }
 
 export enum StrategyType {
-    SaaS,
-    OnPremise
+    Frontegg,
+    Opa
 }
 
 export interface IAuthzOptions {
