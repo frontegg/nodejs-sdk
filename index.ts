@@ -8,6 +8,7 @@ import { FronteggPermissions } from './src/permissions';
 import { RbacMiddleware } from './src/rbac';
 import { SsoClient } from './src/sso';
 import { TenantsClient } from './src/tenants';
+import { AuthzClient, StrategyType } from "./src/authz";
 
 export * from './src/events';
 
@@ -26,4 +27,6 @@ export {
   withAuthentication,
   contextResolver,
   IdentityClient,
+  AuthzClient,
+  StrategyType
 };
