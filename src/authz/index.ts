@@ -2,49 +2,54 @@ import axios from 'axios';
 import {FronteggAuthenticator} from "../authenticator";
 import { config } from '../config';
 import Logger from "../helpers/logger";
+import {StrategyType} from "./strategy-types";
 
 export class AuthzClient {
 
-    private authenticator: FronteggAuthenticator | undefined;
-    private readonly clientId: string;
+    private readonly authenticator: FronteggAuthenticator | undefined;
+    private readonly clientId: string | undefined;
     private strategy: IAuthzStrategy;
 
-    constructor(options: IAuthzOptions) {
-        this.clientId = options.clientId;
-        this.authenticator = options.authenticator;
-        switch(options.strategy) {
+    constructor(options: IFronteggAuthzOptions | IOpaAuthzOptions) {
+        if ('authenticator' in options) {
+            this.authenticator = options.authenticator;
+        } else if ('clientId' in options) {
+            this.clientId = options.clientId;
+        }
+
+        switch (options.strategy) {
             case StrategyType.Opa:
-                this.strategy = new OnPremiseStrategy(); break;
+                this.strategy = new OpaStrategy(); break;
             case StrategyType.Frontegg:
-                this.strategy = new SaaSStrategy(); break;
-            default: this.strategy = new OnPremiseStrategy();
+                this.strategy = new FronteggStrategy(); break;
+            default: this.strategy = new OpaStrategy();
         }
     }
 
     public async hasScopes(user: object, scope: string[], assetId?: string): Promise<boolean> {
-        return await this.strategy.hasScopes(this.clientId, user, scope, assetId);
+        const auth = this.clientId ? this.clientId : this.authenticator ? this.authenticator : "";
+        return await this.strategy.hasScopes(auth, user, scope, assetId);
     }
 
 }
 
-export enum StrategyType {
-    Frontegg,
-    Opa
+export interface IFronteggAuthzOptions {
+    authenticator: FronteggAuthenticator;
+    strategy?: StrategyType.Frontegg;
 }
 
-export interface IAuthzOptions {
-    strategy: StrategyType;
+export interface IOpaAuthzOptions {
     clientId: string;
-    authenticator?: FronteggAuthenticator;
+    strategy?: StrategyType.Opa;
 }
 
 interface IAuthzStrategy {
-    hasScopes(clientId: string, user:object, scope: string[], assetId?: string): Promise<boolean>;
+    hasScopes(auth: string | FronteggAuthenticator, user:object, scope: string[], assetId?: string): Promise<boolean>;
 }
 
-class OnPremiseStrategy implements IAuthzStrategy {
+class OpaStrategy implements IAuthzStrategy {
 
-    public async hasScopes(clientId:string, user: object, scope: string[], assetId?: string): Promise<boolean> {
+    public async hasScopes(clientId: string, user: object, scope: string[], assetId?: string): Promise<boolean> {
         try {
             Logger.info('going to verify scope');
 
@@ -77,9 +82,9 @@ class OnPremiseStrategy implements IAuthzStrategy {
     }
 }
 
-class SaaSStrategy implements IAuthzStrategy {
+class FronteggStrategy implements IAuthzStrategy {
 
-    public async hasScopes(clientId: string, user: object, scope: Array<string>, assetId?: string): Promise<boolean> {
+    public async hasScopes(clientId: FronteggAuthenticator, user: object, scope: Array<string>, assetId?: string): Promise<boolean> {
         return true;
     }
 }
