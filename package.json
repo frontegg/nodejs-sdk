@@ -19,7 +19,7 @@
   "homepage": "https://github.com/frontegg/nodejs-sdk",
   "dependencies": {
     "@slack/web-api": "^5.11.0",
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "http-proxy": "^1.18.1",
     "jsonwebtoken": "^8.5.1",
     "winston": "^3.2.1"
@@ -35,7 +35,7 @@
     "babel-core": "^6.26.3",
     "express": "^4.17.1",
     "jest": "^26.0.1",
-    "jest-junit": "^10.0.0",
+    "jest-junit": "^13.0.0",
     "ts-jest": "^26.0.0",
     "tslint": "^5.20.1",
     "typescript": "^3.5.3"
