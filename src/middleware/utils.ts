@@ -141,3 +141,36 @@ export async function callMiddleware(req, res, middleware): Promise<void> {
     throw new Error(nextValue);
   }
 }
+
+interface Options {
+  numberOfTries: number;
+  secondsDelayRange: {
+    min: number;
+    max: number;
+  };
+}
+
+export const retry = async (
+  func: Function,
+  { numberOfTries, secondsDelayRange }: Options,
+) => {
+
+  try {
+    const res = await func();
+    return res;
+  } catch (error) {    
+    Logger.debug(`Failed, remaining tries: ${numberOfTries-1}`);
+    if (numberOfTries === 1) {
+      throw error;
+    }
+    const delayTime =
+      Math.floor(
+        Math.random() * (secondsDelayRange.max - secondsDelayRange.min + 1),
+      ) + secondsDelayRange.min;
+    Logger.debug(`trying again in ${delayTime} seconds`);
+    await delay(delayTime * 1000);
+    return retry(func, { numberOfTries: numberOfTries - 1, secondsDelayRange });
+  }
+};
+
+const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
