@@ -18,7 +18,7 @@ export class FronteggAuthenticator {
     let numberOfTries: number = 3;
     if(process.env.FRONTEGG_AUTHENTICATOR_NUMBER_OF_TRIES) {
       if(isNaN(+(process.env.FRONTEGG_AUTHENTICATOR_NUMBER_OF_TRIES))) { 
-        throw new Error('got invalid value for FRONTEGG_AUTHENTICATOR_NUMBER_OF_TRIES');
+        Logger.error('got invalid value for FRONTEGG_AUTHENTICATOR_NUMBER_OF_TRIES');
       } else { 
         numberOfTries = +(process.env.FRONTEGG_AUTHENTICATOR_NUMBER_OF_TRIES);
       }
