@@ -23,11 +23,11 @@ export class FronteggAuthenticator {
         numberOfTries = +(process.env.FRONTEGG_AUTHENTICATOR_NUMBER_OF_TRIES);
       }
     }
-    
-    return retry(this.authenticate, { 
+
+    return retry(() => this.authenticate(), { 
       numberOfTries,
       secondsDelayRange: {
-          min: 500, max: 5000
+          min: 0.5, max: 5
         }
       }
     );

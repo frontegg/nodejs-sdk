@@ -142,7 +142,7 @@ export async function callMiddleware(req, res, middleware): Promise<void> {
   }
 }
 
-interface Options {
+interface RetryOptions {
   numberOfTries: number;
   secondsDelayRange: {
     min: number;
@@ -152,7 +152,7 @@ interface Options {
 
 export const retry = async (
   func: Function,
-  { numberOfTries, secondsDelayRange }: Options,
+  { numberOfTries, secondsDelayRange }: RetryOptions,
 ) => {
 
   try {
