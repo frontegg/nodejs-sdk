@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { config } from '../config';
 import Logger from '../helpers/logger';
+import { retry } from '../middleware/utils';
 
 export class FronteggAuthenticator {
 
@@ -14,8 +15,22 @@ export class FronteggAuthenticator {
   public async init(clientId: string, apiKey: string) {
     this.clientId = clientId;
     this.apiKey = apiKey;
+    let numberOfTries: number = 3;
+    if(process.env.FRONTEGG_AUTHENTICATOR_NUMBER_OF_TRIES) {
+      if(isNaN(+(process.env.FRONTEGG_AUTHENTICATOR_NUMBER_OF_TRIES))) { 
+        Logger.error('got invalid value for FRONTEGG_AUTHENTICATOR_NUMBER_OF_TRIES');
+      } else { 
+        numberOfTries = +(process.env.FRONTEGG_AUTHENTICATOR_NUMBER_OF_TRIES);
+      }
+    }
 
-    return this.authenticate();
+    return retry(() => this.authenticate(), { 
+      numberOfTries,
+      secondsDelayRange: {
+          min: 0.5, max: 5
+        }
+      }
+    );
   }
 
   public async refreshAuthentication() {
