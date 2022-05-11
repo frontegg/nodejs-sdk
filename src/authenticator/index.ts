@@ -64,18 +64,16 @@ export class FronteggAuthenticator {
         secret: this.apiKey,
       });
     } catch (e) {
-      Logger.error('failed to authenticate with frontegg - ', e);
+      Logger.error('Failed to authenticate with Frontegg');
 
       if (e.response) {
-        Logger.error('failed response - ');
-        Logger.error(e.response.data);
+        Logger.error('Failed with status - ');
         Logger.error(e.response.status);
-        Logger.error(e.response.headers);
       }
 
       this.accessToken = '';
       this.accessTokenExpiry = 0;
-      throw new Error('Failed to authenticate with frontegg');
+      throw new Error('Failed to authenticate with Frontegg');
     }
 
     Logger.info('authenticated with frontegg');
