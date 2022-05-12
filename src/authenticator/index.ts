@@ -67,8 +67,7 @@ export class FronteggAuthenticator {
       Logger.error('Failed to authenticate with Frontegg');
 
       if (e.response) {
-        Logger.error('Failed with status - ');
-        Logger.error(e.response.status);
+        Logger.error(`Failed with status - ${e.response.status}`);
       }
 
       this.accessToken = '';
