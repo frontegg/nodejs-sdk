@@ -194,67 +194,21 @@ const { data, total } = await audits.getAudits({
 
 ```
 
+### Working with the REST API
 
-### Notifications
-
-Allow your customers to be aware of any important business related event they need to pay attention to, both in the dashboard and even when offline.
-
-Frontegg’s Managed Notifications feature allows a SaaS company to embed an end-to-end working feature in just 5 lines of code.
-
-
-#### Sending notifications
+Frontegg provides a comprehensive REST API for your application.
+In order to use the API from your backend it is required to initialize the client and the 
+authenticator which maintains the backend to backend session.
 
 ```javascript
-import { NotificationsClient } from '@frontegg/client'
-const notificationsClient = new NotificationsClient();
+const authenticator = new FronteggAuthenticator();
+await authenticator.init('<YOUR_CLIENT_ID>', '<YOUR_API_KEY>')
+const httpClient = new HttpClient(authenticator);
 
-// First initialize the module
-await notificationsClient.init('YOUR-CLIENT-ID', 'YOUR-API-KEY');
+await httpClient.post('https://api.frontegg.com/identity/resources/auth/v1/user', {
+    email: 'johndoe@acme.com',
+    password: 'my-super-duper-password'
+}, {
+   frontegg-vendor-host: 'https://acme.frontegg.com'
+});
 
-// Set the notification you want to send
-const notification = {
-  "title": "Notification Title",
-  "body": "Notification Body",
-  "severity": "info",
-  "url": "example.com" // url to be opened when user clicks on the notification
-}
-
-// send the notification to a specific user 
-await notificationsClient.sendToUser('RECEPIENT-USER-ID', 'RECEPIENT-TENANT-ID', notification)
-
-// send the notification to all tenant users
-await notificationsClient.sendToTenantUsers('RECEPIENT-TENANT-ID', notification)
-
-// send the notification to all users
-await notificationsClient.sendToAllUsers(notification)
-
-```
-
-### Role Based Access Middleware
-Protect your routes and controllers with a simple middleware and policy
-The middleware needs to run **BEFORE** the rest of your routes and controllers and is initiated via a simple policy and context hook
-
-```javascript
-app.use(RbacMiddleware({
-  // Hook to the role in the context of the request (each request can contain several roles / permissions)
-  contextResolver: async (req) => { return { roles: ['admin'], permissions: ['rule.delete'] } },
-  // Define the policy
-  policy: {
-    default: 'deny', // Can be 'allow' as default as well
-    rules: [{
-      url: '/api/admin/*',
-      method: '*',
-      requiredPermissions: ['write'] // For each of the admin routes require 'write' permissions
-    }, {
-      url: '/api/*',
-      method: '*',
-      requiredPermissions: ['read']  // For all the /api require 'read' permissions
-    }, {
-      url: '*',
-      method: '*',
-      requiredRoles: [],
-      requiredPermissions: []  // For all the other APIs allow without any required permissions / roles
-    }]
-  }
-}));
-```
