@@ -6,6 +6,8 @@ export const contextResolver = (req) => {
       tenantId: '',
       userId: '',
       permissions: [FronteggPermissions.All],
+      authenticatedEntityId: '',
+      authenticatedEntityType: '',
     };
   }
 
@@ -13,6 +15,8 @@ export const contextResolver = (req) => {
     tenantId: req.user.tenantId,
     userId: req.user.id,
     permissions: [FronteggPermissions.All],
+    authenticatedEntityId: req.user.sub,
+    authenticatedEntityType: req.user.type,
   };
 };
 
@@ -22,7 +26,9 @@ export const contextResolverWithPermissions = (req) => {
       tenantId: '',
       userId: '',
       permissions: [FronteggPermissions.All],
-      userPermissions: []
+      userPermissions: [],
+      authenticatedEntityId: '',
+      authenticatedEntityType: '',
     };
   }
 
@@ -30,6 +36,9 @@ export const contextResolverWithPermissions = (req) => {
     tenantId: req.user.tenantId,
     userId: req.user.id,
     permissions: [FronteggPermissions.All],
-    userPermissions: req.user.permissions
+    userPermissions: req.user.permissions,
+    authenticatedEntityId: req.user.sub,
+    authenticatedEntityType: req.user.type,
+
   };
 };
