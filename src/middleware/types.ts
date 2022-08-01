@@ -14,7 +14,7 @@ export interface IFronteggOptions {
   maxRetries?: number;
 }
 
-export type fronteggContextResolverRes = { tenantId: string, userId: string, permissions: FronteggPermissions[], userPermissions?: string[] }
+export type fronteggContextResolverRes = { tenantId: string, userId: string, permissions: FronteggPermissions[], userPermissions?: string[]; authenticatedEntityId: string; authenticatedEntityType: string; }
 
 export type fronteggContextResolver = (req: Request) => Promise<fronteggContextResolverRes> | fronteggContextResolverRes;
 export type AuthMiddleware = (req: Request, res: Response, next: NextFunction) => Promise<any> | any;

@@ -79,12 +79,16 @@ app.use('/frontegg', frontegg({
   contextResolver: (req) => {
     const email = req.context.user; // The user context (after JWT verification)
     const tenantId = req.context.tenantId; // The tenantId context (after JWT verification)
+    const authenticatedEntityType = req.context.authenticatedEntityType; // The authenticated entity type (user/user api token/tenant api token) context (after JWT verification)
+    const authenticatedEntityId = req.context.authenticatedEntityId; // The authenticated entity id context (after JWT verification)
     const permissions = [FronteggPermissions.All];
 
     return {
       email,
       tenantId,
-      permissions
+      permissions,
+      authenticatedEntityType,
+      authenticatedEntityId
     };
   }
 }))
@@ -109,12 +113,17 @@ To use the Frontegg's middleware inside NextJS project:
      contextResolver: (req) => {
        const email = req.context.user; // The user context (after JWT verification)
        const tenantId = req.context.tenantId; // The tenantId context (after JWT verification)
+       const authenticatedEntityType = req.context.authenticatedEntityType; // The authenticated entity type (user/user api token/tenant api token) context (after JWT verification)
+       const authenticatedEntityId = req.context.authenticatedEntityId; // The authenticated entity id context (after JWT verification)
+
        const permissions = [FronteggPermissions.All];
     
        return {
          email,
          tenantId,
-         permissions
+         permissions,
+         authenticatedEntityType,
+         authenticatedEntityId
        };
      }
     })

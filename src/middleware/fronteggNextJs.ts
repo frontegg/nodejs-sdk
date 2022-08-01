@@ -143,6 +143,8 @@ export const fronteggNextJs = (options: INextJsFronteggOptions) => {
             'x-access-token': authenticator.accessToken,
             'frontegg-tenant-id': context && context.tenantId ? context.tenantId : '',
             'frontegg-user-id': context && context.userId ? context.userId : '',
+            'frontegg-authenticated-entity-id': context && context.authenticatedEntityId ? context.authenticatedEntityId : '',
+            'frontegg-authenticated-entity-type': context && context.authenticatedEntityType ? context.authenticatedEntityType : '',
             'frontegg-vendor-host': nextJsReq.hostname,
           },
         });
