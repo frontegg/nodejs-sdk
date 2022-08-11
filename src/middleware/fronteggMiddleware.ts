@@ -96,7 +96,7 @@ export function frontegg(options: IFronteggOptions) {
     if (res.headersSent) {
       // response was already sent from the middleware, we have nothing left to do
       Logger.debug(
-        'error has been thrown, but headers was already sent'
+        'error has been thrown, but headers were already sent'
       );
       return;
     }
