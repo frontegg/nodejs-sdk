@@ -1,7 +1,7 @@
 import { AuditsClient } from "./src/audits";
 import { FronteggAuthenticator } from "./src/authenticator";
 import { IdentityClient } from "./src/identity";
-import { contextResolver, withAuthentication } from "./src/identity";
+import { contextResolver, withAuthentication, contextResolverWithPermissions } from "./src/identity";
 import {
   ContextHolder,
   frontegg,
@@ -32,6 +32,7 @@ export {
   SsoClient,
   withAuthentication,
   contextResolver,
+  contextResolverWithPermissions,
   IdentityClient,
   AuthzClient,
   HttpClient,
