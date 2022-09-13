@@ -76,6 +76,7 @@ describe("http.client", () => {
     };
 
     const url = "/identity/resources/users/v2/me";
+    const alteredBaseURL = baseURL.replace('api', 'app-qwerty')
 
     mock
       .onPost(url, expect.objectContaining(data), {
@@ -90,7 +91,7 @@ describe("http.client", () => {
     });
 
     expect(res.data).toEqual(mockPostRes);
-    expect(res.config.url).toEqual(`${baseURL}${url}`);
+    expect(res.config.url).toEqual(`${alteredBaseURL}${url}`);
   });
 
   it("should put", async () => {
