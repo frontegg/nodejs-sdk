@@ -26,7 +26,7 @@ Please note that email & slack may still require further data (like the email te
 
 Unlike previous clients, the new client requires that you pass a separate authenticator.
 
-Example: 
+Example:
 ```javascript
 	const authenticator = new FronteggAuthenticator();
 	await authenticator.init('<YOUR_CLIENT_ID>', '<YOUR_API_KEY>')
@@ -96,7 +96,7 @@ app.use('/frontegg', frontegg({
 
 #### NextJS Middleware
 
-To use the Frontegg's middleware inside NextJS project: 
+To use the Frontegg's middleware inside NextJS project:
  - Add a new route to your project `/pages/api/frontegg/[...param].ts`
  - Import ***fronteggNextJs***  from the ***@frontegg/client*** library
 
@@ -117,7 +117,7 @@ To use the Frontegg's middleware inside NextJS project:
        const authenticatedEntityId = req.context.authenticatedEntityId; // The authenticated entity id context (after JWT verification)
 
        const permissions = [FronteggPermissions.All];
-    
+
        return {
          email,
          tenantId,
@@ -140,17 +140,17 @@ Controlling the permissions is done via the Frontegg middleware by injecting the
 
 ```javascript
 /// Allow the user to do everything on all enabled Frontegg modules
-const permissions = [FronteggPermissions.All]; 
+const permissions = [FronteggPermissions.All];
 ```
 
 ```javascript
 /// Allow the user to do everything on Frontegg audits module
-const permissions = [FronteggPermissions.Audit]; 
+const permissions = [FronteggPermissions.Audit];
 ```
 
 ```javascript
 /// Allow the user to read audits and audits stats but not exporting it
-const permissions = [FronteggPermissions.Audit.Read, FronteggPermissions.Audit.Stats]; 
+const permissions = [FronteggPermissions.Audit.Read, FronteggPermissions.Audit.Stats];
 ```
 ### Audits
 
@@ -206,18 +206,20 @@ const { data, total } = await audits.getAudits({
 ### Working with the REST API
 
 Frontegg provides a comprehensive REST API for your application.
-In order to use the API from your backend it is required to initialize the client and the 
+In order to use the API from your backend it is required to initialize the client and the
 authenticator which maintains the backend to backend session.
 
 ```javascript
 const authenticator = new FronteggAuthenticator();
 await authenticator.init('<YOUR_CLIENT_ID>', '<YOUR_API_KEY>')
-const httpClient = new HttpClient(authenticator);
 
-await httpClient.post('https://api.frontegg.com/identity/resources/auth/v1/user', {
+// You can optionally set the base url from the HttpClient
+const httpClient = new HttpClient(authenticator, { baseURL: 'https://api.frontegg.com' });
+
+await httpClient.post('identity/resources/auth/v1/user', {
     email: 'johndoe@acme.com',
     password: 'my-super-duper-password'
 }, {
-   frontegg-vendor-host: 'https://acme.frontegg.com'
+   'frontegg-vendor-host': 'https://acme.frontegg.com'
 });
 
