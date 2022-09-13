@@ -14,7 +14,9 @@ export class HttpClient {
 
   private setupRequestInterceptor() {
     this.axios.interceptors.request.use(
-      (request: AxiosRequestConfig) => {
+      async (request: AxiosRequestConfig) => {
+        await this.authenticator.validateAuthentication();
+
         request.headers = {
           ...request.headers,
           ["x-access-token"]: this.authenticator.accessToken,
@@ -35,27 +37,22 @@ export class HttpClient {
   }
 
   public async get<T = any>(url: string, headers?: Record<string, any>): Promise<AxiosResponse<T>> {
-    await this.authenticator.validateAuthentication();
     return this.axios.get(url, { headers });
   }
 
   public async post<T = any>(url: string, data: any, headers?: Record<string, any>): Promise<AxiosResponse<T>> {
-    await this.authenticator.validateAuthentication();
     return this.axios.post(url, data, { headers });
   }
 
   public async put<T = any>(url: string, data: any, headers?: Record<string, any>): Promise<AxiosResponse<T>> {
-    await this.authenticator.validateAuthentication();
     return this.axios.put(url, data, { headers });
   }
 
   public async delete<T = any>(url: string, headers?: Record<string, any>): Promise<AxiosResponse<T>> {
-    await this.authenticator.validateAuthentication();
     return this.axios.delete(url, { headers });
   }
 
   public async patch<T = any>(url: string, data: any, headers?: Record<string, any>): Promise<AxiosResponse<T>> {
-    await this.authenticator.validateAuthentication();
     return this.axios.patch(url, data, { headers });
   }
 }
