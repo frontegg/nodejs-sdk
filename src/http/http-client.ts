@@ -21,6 +21,9 @@ export class HttpClient {
         };
 
         if (request.baseURL) {
+          if(request.headers["frontegg-vendor-host"]) {
+            request.baseURL = request.baseURL.replace('api', request.headers["frontegg-vendor-host"] as string)
+          }
           // This will contruct a valid url in case the url starts with a '/' and the baseUrl end withs a '/'
           request.url = new URL(request.url || "", request.baseURL).href;
         }
