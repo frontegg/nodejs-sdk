@@ -8,6 +8,7 @@
     "build": "tsc",
     "lint": "tslint -c tslint.json -p tsconfig.json --fix",
     "test": "npm run build && jest",
+    "test:watch": "npm run build && jest --watch",
     "dev": "tsc --watch"
   },
   "repository": {
@@ -19,7 +20,7 @@
   "homepage": "https://github.com/frontegg/nodejs-sdk",
   "dependencies": {
     "@slack/web-api": "^5.11.0",
-    "axios": "^0.21.4",
+    "axios": "^0.27.2",
     "http-proxy": "^1.18.1",
     "jsonwebtoken": "^8.5.1",
     "winston": "^3.2.1"
@@ -29,14 +30,16 @@
     "@types/axios": "^0.14.0",
     "@types/express": "^4.17.6",
     "@types/http-proxy": "^1.17.0",
-    "@types/jest": "^25.2.3",
+    "@types/jest": "^26.0.24",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/node": "^12.6.2",
+    "axios-mock-adapter": "^1.21.2",
     "babel-core": "^6.26.3",
     "express": "^4.17.1",
-    "jest": "^26.0.1",
+    "jest": "^26.6.3",
+    "jest-environment-node": "^26.6.2",
     "jest-junit": "^13.0.0",
-    "ts-jest": "^26.0.0",
+    "ts-jest": "^26.5.6",
     "tslint": "^5.20.1",
     "typescript": "^3.5.3"
   }
