@@ -220,6 +220,7 @@ await httpClient.post('identity/resources/auth/v1/user', {
     email: 'johndoe@acme.com',
     password: 'my-super-duper-password'
 }, {
-   'frontegg-vendor-host': 'https://acme.frontegg.com'
+    // When providing vendor-host, it will replace(<...>) https://<api>.frontegg.com with vendor host
+   'frontegg-vendor-host': 'acme.frontegg'
 });
 
