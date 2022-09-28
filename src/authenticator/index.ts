@@ -14,7 +14,7 @@ export class FronteggAuthenticator {
   public async init(clientId: string, apiKey: string) {
     this.clientId = clientId;
     this.apiKey = apiKey;
-    let numberOfTries: number = 3;
+    let numberOfTries = 3;
     if (process.env.FRONTEGG_AUTHENTICATOR_NUMBER_OF_TRIES) {
       if (isNaN(+process.env.FRONTEGG_AUTHENTICATOR_NUMBER_OF_TRIES)) {
         Logger.error(
@@ -56,7 +56,7 @@ export class FronteggAuthenticator {
     }
   }
 
-  private async authenticate(force: boolean = false) {
+  private async authenticate(force = false) {
     if (this.accessToken !== "" && !force) {
       return;
     }

@@ -1,0 +1,6 @@
+node_modules
+dist
+jest.config.js
+tests
+src/**/*.spec.ts
+src/middleware/*

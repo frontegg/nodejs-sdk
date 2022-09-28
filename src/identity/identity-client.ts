@@ -4,7 +4,7 @@ import { FronteggAuthenticator } from '../authenticator';
 import { config } from '../config';
 import Logger from '../helpers/logger';
 import { ContextHolder } from '../middleware';
-import {IUser, IWithAuthenticationOptions, tokenTypes} from "./with-authentication";
+import {IUser, IWithAuthenticationOptions} from "./with-authentication";
 
 export class IdentityClient {
 
@@ -34,6 +34,7 @@ export class IdentityClient {
   }
 
   public async validateIdentityOnToken(token: string, options?: IWithAuthenticationOptions): Promise<IUser> {
+    /* eslint-disable no-async-promise-executor */
     return new Promise<IUser>(async (resolve, reject) => {
       try {
         token = token.replace('Bearer ', '');

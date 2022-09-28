@@ -43,7 +43,7 @@ export class OpaStrategy implements IAuthzStrategy {
 }
 
 export class FronteggStrategy implements IAuthzStrategy {
-
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     public async hasScopes(clientId: FronteggAuthenticator, user: object, scope: Array<string>, assetId?: string): Promise<boolean> {
         return true;
     }
