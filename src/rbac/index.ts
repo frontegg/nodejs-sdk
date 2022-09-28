@@ -88,9 +88,15 @@ function validateRequiredRoles(requiredRoles: string[], context: IRbacContext) {
 }
 
 export function RbacMiddleware(options: IRoleBasedAccessControlOptions) {
-  if (!options) { throw new Error('Missing options'); }
-  if (!options.contextResolver) { throw new Error('Missing context resolver'); }
-  if (!options.policy) { throw new Error('Missing configuration'); }
+  if (!options) {
+    throw new Error('Missing options');
+  }
+  if (!options.contextResolver) {
+    throw new Error('Missing context resolver');
+  }
+  if (!options.policy) {
+    throw new Error('Missing configuration');
+  }
 
   return async (req, res, next) => {
     // First get the role
@@ -100,7 +106,6 @@ export function RbacMiddleware(options: IRoleBasedAccessControlOptions) {
       Logger.error(`context doesn't have roles and permissions`);
       return throwIfRequired(res, next, options);
     }
-
 
     const { rules } = options.policy;
     for (const rule of rules) {
@@ -124,7 +129,6 @@ export function RbacMiddleware(options: IRoleBasedAccessControlOptions) {
       Logger.info(`Allowed to pass on url - ${rule.url}`);
       return next();
     }
-
 
     // We have gone over all the rules in the policy - continue based on the default behavior
     return throwIfRequired(res, next, options);

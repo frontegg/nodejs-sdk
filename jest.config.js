@@ -5,13 +5,13 @@ module.exports = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   rootDir: 'src',
   reporters: [
-    "default",
+    'default',
     [
       'jest-junit',
       {
         outputDirectory: 'test-results',
         outputName: 'jest-junit.xml',
-      }
-    ]
-  ]
+      },
+    ],
+  ],
 };

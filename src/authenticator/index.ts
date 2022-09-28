@@ -1,13 +1,13 @@
-import axios, { AxiosResponse } from "axios";
-import { config } from "../config";
-import Logger from "../helpers/logger";
-import { retry } from "../middleware/utils";
+import axios, { AxiosResponse } from 'axios';
+import { config } from '../config';
+import Logger from '../helpers/logger';
+import { retry } from '../middleware/utils';
 
 export class FronteggAuthenticator {
-  public accessToken: string = "";
+  public accessToken: string = '';
   private accessTokenExpiry = Date.now();
-  private clientId: string = "";
-  private apiKey: string = "";
+  private clientId: string = '';
+  private apiKey: string = '';
   private refreshTimeout: NodeJS.Timeout | null = null;
   private shuttingDown: boolean = false;
 
@@ -17,9 +17,7 @@ export class FronteggAuthenticator {
     let numberOfTries = 3;
     if (process.env.FRONTEGG_AUTHENTICATOR_NUMBER_OF_TRIES) {
       if (isNaN(+process.env.FRONTEGG_AUTHENTICATOR_NUMBER_OF_TRIES)) {
-        Logger.error(
-          "got invalid value for FRONTEGG_AUTHENTICATOR_NUMBER_OF_TRIES"
-        );
+        Logger.error('got invalid value for FRONTEGG_AUTHENTICATOR_NUMBER_OF_TRIES');
       } else {
         numberOfTries = +process.env.FRONTEGG_AUTHENTICATOR_NUMBER_OF_TRIES;
       }
@@ -39,12 +37,8 @@ export class FronteggAuthenticator {
   }
 
   public async validateAuthentication() {
-    if (
-      this.accessToken === "" ||
-      this.accessTokenExpiry === 0 ||
-      Date.now() >= this.accessTokenExpiry
-    ) {
-      Logger.info("authentication token needs refresh - going to refresh it");
+    if (this.accessToken === '' || this.accessTokenExpiry === 0 || Date.now() >= this.accessTokenExpiry) {
+      Logger.info('authentication token needs refresh - going to refresh it');
       await this.refreshAuthentication();
     }
   }
@@ -57,10 +51,10 @@ export class FronteggAuthenticator {
   }
 
   private async authenticate(force = false) {
-    if (this.accessToken !== "" && !force) {
+    if (this.accessToken !== '' && !force) {
       return;
     }
-    Logger.info("posting authentication request");
+    Logger.info('posting authentication request');
 
     let response: AxiosResponse<any>;
     try {
@@ -69,18 +63,18 @@ export class FronteggAuthenticator {
         secret: this.apiKey,
       });
     } catch (e) {
-      Logger.error("Failed to authenticate with Frontegg");
+      Logger.error('Failed to authenticate with Frontegg');
 
       if (e.response) {
         Logger.error(`Failed with status - ${e.response.status}`);
       }
 
-      this.accessToken = "";
+      this.accessToken = '';
       this.accessTokenExpiry = 0;
-      throw new Error("Failed to authenticate with Frontegg");
+      throw new Error('Failed to authenticate with Frontegg');
     }
 
-    Logger.info("authenticated with frontegg");
+    Logger.info('authenticated with frontegg');
 
     // Get the token and the expiration time
     const { token, expiresIn } = response.data;

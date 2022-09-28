@@ -1,4 +1,4 @@
 export enum StrategyType {
-    Frontegg,
-    Opa,
+  Frontegg,
+  Opa,
 }

@@ -17,15 +17,16 @@ export class ContextHolder {
   }
 
   public static getContext(): IContextOptions {
-    return ContextHolder.getInstance().context || {
-      FRONTEGG_CLIENT_ID: '',
-      FRONTEGG_API_KEY: '',
-    };
+    return (
+      ContextHolder.getInstance().context || {
+        FRONTEGG_CLIENT_ID: '',
+        FRONTEGG_API_KEY: '',
+      }
+    );
   }
 
   private static instance: ContextHolder;
   private context: IContextOptions | null = null;
 
   private constructor() {}
-
 }

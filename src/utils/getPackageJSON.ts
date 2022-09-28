@@ -9,8 +9,7 @@ export const getPackageJson = (): Package | void => {
       pjson = require('../../package.json');
     }
     return pjson;
-  }
-  /* eslint-disable no-empty */
-  catch (e) {
+  } catch (e) {
+    /* eslint-disable no-empty */
   }
 };

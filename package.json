@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint --ignore-path .eslintignore --ext .js,.ts .",
-    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
+    "format": "prettier --write \"**/*.+(js|ts|json)\"",
     "test": "npm run build && jest",
     "test:watch": "npm run build && jest --watch",
     "dev": "tsc --watch"

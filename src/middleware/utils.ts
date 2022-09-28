@@ -16,7 +16,7 @@ export function flattenPermissions(permissions: FronteggPermissions[]): string[]
 
   for (const p of permissions) {
     // noinspection SuspiciousTypeOfGuard
-    if (typeof (p) === 'string') {
+    if (typeof p === 'string') {
       output.push(p);
     } else if (Array.isArray(p)) {
       for (const item of p) {
@@ -88,13 +88,11 @@ export async function validatePermissions(req, res, context) {
       Logger.log(`User is authorized for ${req.method} ${req.baseUrl}`);
       return;
     }
-
   }
 
   Logger.error(`No matching permission for ${req.method} ${url}. Permissions - ${allowedOperations}`);
   throw new Error(`No matching permission for ${req.method} ${url}`);
 }
-
 
 export function rewriteCookieDomain(header, oldDomain, newDomain) {
   if (Array.isArray(header)) {
@@ -105,7 +103,6 @@ export function rewriteCookieDomain(header, oldDomain, newDomain) {
 
   return header.replace(new RegExp(`(;\\s*domain=)${oldDomain};`, 'i'), `$1${newDomain};`);
 }
-
 
 export function enableCors(req, res: IncomingMessage) {
   if (req.headers['access-control-request-method']) {
@@ -124,7 +121,6 @@ export function enableCors(req, res: IncomingMessage) {
     res.headers['access-control-allow-credentials'] = 'true';
   }
 }
-
 
 export async function callMiddleware(req, res, middleware): Promise<void> {
   const middlewareWrap: Promise<string> = new Promise(async (next, reject) => {
@@ -150,23 +146,17 @@ interface RetryOptions {
   };
 }
 
-export const retry = async (
-  func: Function,
-  { numberOfTries, secondsDelayRange }: RetryOptions,
-) => {
-
+export const retry = async (func: Function, { numberOfTries, secondsDelayRange }: RetryOptions) => {
   try {
     const res = await func();
     return res;
-  } catch (error) {    
-    Logger.debug(`Failed, remaining tries: ${numberOfTries-1}`);
+  } catch (error) {
+    Logger.debug(`Failed, remaining tries: ${numberOfTries - 1}`);
     if (numberOfTries === 1) {
       throw error;
     }
     const delayTime =
-      Math.floor(
-        Math.random() * (secondsDelayRange.max - secondsDelayRange.min + 1),
-      ) + secondsDelayRange.min;
+      Math.floor(Math.random() * (secondsDelayRange.max - secondsDelayRange.min + 1)) + secondsDelayRange.min;
     Logger.debug(`trying again in ${delayTime} seconds`);
     await delay(delayTime * 1000);
     return retry(func, { numberOfTries: numberOfTries - 1, secondsDelayRange });
