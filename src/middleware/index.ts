@@ -1,4 +1,4 @@
-export * from './fronteggMiddleware';
-export * from './fronteggNextJs';
+export * from './frontegg-middleware';
+export * from './frontegg-nextjs';
 export * from './types';
-export * from './ContextHolder';
+export * from './context-holder';

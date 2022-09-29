@@ -1,8 +1,8 @@
 import * as httpProxy from 'http-proxy';
 import { FronteggAuthenticator } from '../authenticator';
 import Logger from '../helpers/logger';
-import { ContextHolder } from './ContextHolder';
-import { fronteggRoutes } from './FronteggRoutes';
+import { ContextHolder } from './context-holder';
+import { fronteggRoutes } from './frontegg-routes';
 import { INextJsFronteggOptions } from './types';
 import { callMiddleware, enableCors, validatePermissions } from './utils';
 
