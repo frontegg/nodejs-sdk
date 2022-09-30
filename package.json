@@ -32,7 +32,7 @@
     "@types/http-proxy": "^1.17.0",
     "@types/jest": "^26.0.24",
     "@types/jsonwebtoken": "^8.5.0",
-    "@types/node": "^12.6.2",
+    "@types/node": "^12.20.55",
     "axios-mock-adapter": "^1.21.2",
     "babel-core": "^6.26.3",
     "express": "^4.17.1",
