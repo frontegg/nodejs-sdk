@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { config } from '../config';
-import Logger from '../helpers/logger';
-import { retry } from '../middleware/utils';
+import Logger from '../components/logger';
+import { retry } from '../utils';
 
 export class FronteggAuthenticator {
   public accessToken: string = '';
