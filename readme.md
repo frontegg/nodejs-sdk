@@ -1,19 +1,131 @@
-# Frontegg Client
+<br />
+<div align="center">
+<img src="https://fronteggstuff.blob.core.windows.net/frongegg-logos/logo-transparent.png" alt="Frontegg Logo" width="400" height="90">
 
-![alt text](https://fronteggstuff.blob.core.windows.net/frongegg-logos/logo-transparent.png)
+<h3 align="center">Frontegg Node.js client</h3>
 
-Frontegg is a web platform where SaaS companies can set up their fully managed, scalable and brand aware - SaaS features and integrate them into their SaaS portals in up to 5 lines of code.
+  <p align="center">
+    Frontegg is a web platform where SaaS companies can set up their fully managed, scalable and brand aware - SaaS features and integrate them into their SaaS portals in up to 5 lines of code.
+    <br />
+    <a href="https://docs.frontegg.com/docs/using-frontegg-sdk"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/frontegg-samples/nodejs-sample">Sample Project</a>
+    ·
+    <a href="https://github.com/frontegg/nodejs-sdk/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/frontegg/nodejs-sdk/issues">Request Feature</a>
+  </p>
+</div>
 
+<h3>Table of Contents</h3>
+<ul>
+    <li><a href="#installation">Installation</a></li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#breaking-changes">Events Client upgrade notice</a></li>
+</ul>
 
 ## Installation
 
-Use the package manager [npm](https://www.npmjs.com/) to install frontegg client.
+Install the package using [npm](https://www.npmjs.com/).
 
 ```bash
 npm install @frontegg/client
 ```
 
-## Breaking changes
+---
+## Usage
+
+Frontegg offers multiple components for integration with the Frontegg's scaleable back end and front end libraries
+
+### Middleware
+
+Use Frontegg's "withAuthentication" auth guard to protect your routes.
+
+Head over to the <a href="https://docs.frontegg.com/docs/using-frontegg-sdk">Docs</a> to find more usage examples of the guard.
+
+```javascript
+const { withAuthentication, ContextHolder } = require('@frontegg/client');
+
+ContextHolder.setContext({
+   FRONTEGG_CLIENT_ID: '<YOUR_CLIENT_ID>',
+   FRONTEGG_API_KEY: '<YOUR_API_KEY>',
+});
+
+// This route can now only be accessed by authenticated users
+app.use('/protected', withAuthentication(), (req, res) => {
+    res.status(200);
+});
+```
+
+### Clients
+
+Frontegg provides various clients for seamless integration with the Frontegg API.
+
+For example, Frontegg’s Managed Audit Logs feature allows a SaaS company to embed an end-to-end working feature in just 5 lines of code.
+
+#### Create a new Audits client
+
+```javascript
+const { AuditsClient } = require('@frontegg/client');
+const audits = new AuditsClient()
+
+// initialize the module
+await audits.init('MY-CLIENT-ID', 'MY-AUDITS-KEY');
+```
+
+#### Sending audits
+
+```javascript
+await audits.sendAudit({
+    tenantId: 'my-tenant-id',
+    time: Date(),
+    user: 'info@frontegg.com',
+    resource: 'Portal',
+    action: 'Login',
+    severity: 'Medium',
+    ip: '1.2.3.4'
+});
+```
+
+#### Fetching audits
+
+```javascript
+const { data, total } = await audits.getAudits({
+    tenantId: 'my-tenant-id',
+    filter: 'any-text-filter',
+    sortBy: 'my-sort-field',
+    sortDirection: 'asc | desc',
+    offset: 0,  // Offset for starting the page
+    count: 50   // Number of desired items
+});
+```
+
+### Working with the REST API
+
+Frontegg provides a comprehensive REST API for your application.
+In order to use the API from your backend it is required to initialize the client and the
+authenticator which maintains the backend to backend session.
+
+```javascript
+const authenticator = new FronteggAuthenticator();
+await authenticator.init('<YOUR_CLIENT_ID>', '<YOUR_API_KEY>')
+
+// You can optionally set the base url from the HttpClient
+const httpClient = new HttpClient(authenticator, { baseURL: 'https://api.frontegg.com' });
+
+await httpClient.post('identity/resources/auth/v1/user', {
+    email: 'johndoe@acme.com',
+    password: 'my-super-duper-password'
+}, {
+    // When providing vendor-host, it will replace(<...>) https://<api>.frontegg.com with vendor host
+   'frontegg-vendor-host': 'acme.frontegg'
+});
+```
+
+---
+
+## Event Client upgrade notice
 
 ### v2.0 Events client upgraded to use the v3 Events API
 
@@ -54,173 +166,3 @@ Example:
 			}
 		})
 ```
-
----
-## Usage
-
-Frontegg offers multiple components for integration with the Frontegg's scaleable back end and front end libraries
-
-### Middleware
-
-When using Frontegg's managed UI features and UI libraries, Frontegg allow simple integration via middleware usage
-
-To use the Frontegg's middleware import the ***frontegg*** middleware from the ***@frontegg/client*** library
-
-```javascript
-const { frontegg, FronteggPermissions } = require('@frontegg/client');
-```
-
-And use the following lines ***after the authentication verification***
-
-```javascript
-app.use('/frontegg', frontegg({
-  clientId: 'my-client-id',
-  apiKey: 'my-api-key',
-  contextResolver: (req) => {
-    const email = req.context.user; // The user context (after JWT verification)
-    const tenantId = req.context.tenantId; // The tenantId context (after JWT verification)
-    const authenticatedEntityType = req.context.authenticatedEntityType; // The authenticated entity type (user/user api token/tenant api token) context (after JWT verification)
-    const authenticatedEntityId = req.context.authenticatedEntityId; // The authenticated entity id context (after JWT verification)
-    const permissions = [FronteggPermissions.All];
-
-    return {
-      email,
-      tenantId,
-      permissions,
-      authenticatedEntityType,
-      authenticatedEntityId
-    };
-  }
-}))
-```
-
-#### NextJS Middleware
-
-To use the Frontegg's middleware inside NextJS project:
- - Add a new route to your project `/pages/api/frontegg/[...param].ts`
- - Import ***fronteggNextJs***  from the ***@frontegg/client*** library
-
-    ```javascript
-    const { fronteggNextJs, FronteggPermissions } = require('@frontegg/client');
-    ```
-
- - And export the middleware from **`/pages/api/frontegg/[...param].ts`**
-
-    ```javascript
-    export default fronteggNextJs({
-     clientId: 'my-client-id',
-     apiKey: 'my-api-key',
-     contextResolver: (req) => {
-       const email = req.context.user; // The user context (after JWT verification)
-       const tenantId = req.context.tenantId; // The tenantId context (after JWT verification)
-       const authenticatedEntityType = req.context.authenticatedEntityType; // The authenticated entity type (user/user api token/tenant api token) context (after JWT verification)
-       const authenticatedEntityId = req.context.authenticatedEntityId; // The authenticated entity id context (after JWT verification)
-
-       const permissions = [FronteggPermissions.All];
-
-       return {
-         email,
-         tenantId,
-         permissions,
-         authenticatedEntityType,
-         authenticatedEntityId
-       };
-     }
-    })
-    ```
-
-
-#### Frontegg permissions
-
-When using the Frontegg middleware library, you can choose which functionality is enabled for your user based on his role or based on any other business logic your application holds.
-
-##### Controlling Frontegg permissions
-
-Controlling the permissions is done via the Frontegg middleware by injecting the permissions array
-
-```javascript
-/// Allow the user to do everything on all enabled Frontegg modules
-const permissions = [FronteggPermissions.All];
-```
-
-```javascript
-/// Allow the user to do everything on Frontegg audits module
-const permissions = [FronteggPermissions.Audit];
-```
-
-```javascript
-/// Allow the user to read audits and audits stats but not exporting it
-const permissions = [FronteggPermissions.Audit.Read, FronteggPermissions.Audit.Stats];
-```
-### Audits
-
-Let your customers record the events, activities and changes made to their tenant.
-
-Frontegg’s Managed Audit Logs feature allows a SaaS company to embed an end-to-end working feature in just 5 lines of code.
-
-
-#### Sending audits
-
-```javascript
-const { AuditsClient } = require('@frontegg/client')
-const audits = new AuditsClient()
-
-// First initialize the module
-await audits.init('MY-CLIENT-ID', 'MY-AUDITS-KEY')
-
-// And add audits
-await audits.sendAudit({
-    tenantId: 'my-tenant-id',
-    time: Date(),
-    user: 'info@frontegg.com',
-    resource: 'Portal',
-    action: 'Login',
-    severity: 'Medium',
-    ip: '1.2.3.4'
-})
-
-```
-
-#### Fetching audits
-
-```javascript
-const { AuditsClient } = require('@frontegg/client')
-const audits = new AuditsClient()
-
-// First initialize the module
-await audits.init('MY-CLIENT-ID', 'MY-AUDITS-KEY')
-
-// And add audits
-const { data, total } = await audits.getAudits({
-    tenantId: 'my-tenant-id',
-    filter: 'any-text-filter',
-    sortBy: 'my-sort-field',
-    sortDirection: 'asc | desc'
-    offset: 0,  // Offset for starting the page
-    count: 50   // Number of desired items
-
-})
-
-```
-
-### Working with the REST API
-
-Frontegg provides a comprehensive REST API for your application.
-In order to use the API from your backend it is required to initialize the client and the
-authenticator which maintains the backend to backend session.
-
-```javascript
-const authenticator = new FronteggAuthenticator();
-await authenticator.init('<YOUR_CLIENT_ID>', '<YOUR_API_KEY>')
-
-// You can optionally set the base url from the HttpClient
-const httpClient = new HttpClient(authenticator, { baseURL: 'https://api.frontegg.com' });
-
-await httpClient.post('identity/resources/auth/v1/user', {
-    email: 'johndoe@acme.com',
-    password: 'my-super-duper-password'
-}, {
-    // When providing vendor-host, it will replace(<...>) https://<api>.frontegg.com with vendor host
-   'frontegg-vendor-host': 'acme.frontegg'
-});
-
