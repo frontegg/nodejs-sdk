@@ -1,13 +1,12 @@
 import axios from 'axios';
-import {verify} from "jsonwebtoken";
+import { verify } from 'jsonwebtoken';
 import { FronteggAuthenticator } from '../authenticator';
 import { config } from '../config';
 import Logger from '../helpers/logger';
 import { ContextHolder } from '../middleware';
-import {IUser, IWithAuthenticationOptions, tokenTypes} from "./with-authentication";
+import { IUser, IWithAuthenticationOptions } from './with-authentication';
 
 export class IdentityClient {
-
   public static getInstance() {
     if (!IdentityClient.instance) {
       IdentityClient.instance = new IdentityClient();
@@ -34,6 +33,7 @@ export class IdentityClient {
   }
 
   public async validateIdentityOnToken(token: string, options?: IWithAuthenticationOptions): Promise<IUser> {
+    /* eslint-disable no-async-promise-executor */
     return new Promise<IUser>(async (resolve, reject) => {
       try {
         token = token.replace('Bearer ', '');
@@ -108,7 +108,8 @@ export class IdentityClient {
     const { FRONTEGG_CLIENT_ID, FRONTEGG_API_KEY } = ContextHolder.getContext();
     await authenticator.init(
       FRONTEGG_CLIENT_ID || process.env.FRONTEGG_CLIENT_ID || '',
-      FRONTEGG_API_KEY || process.env.FRONTEGG_API_KEY || '');
+      FRONTEGG_API_KEY || process.env.FRONTEGG_API_KEY || '',
+    );
     Logger.info('going to get identity service configuration');
     const response = await axios.get(`${config.urls.identityService}/resources/configurations/v1`, {
       headers: {

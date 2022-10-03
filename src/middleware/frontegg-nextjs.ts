@@ -1,8 +1,8 @@
 import * as httpProxy from 'http-proxy';
 import { FronteggAuthenticator } from '../authenticator';
 import Logger from '../helpers/logger';
-import { ContextHolder } from './ContextHolder';
-import { fronteggRoutes } from './FronteggRoutes';
+import { ContextHolder } from './context-holder';
+import { fronteggRoutes } from './frontegg-routes';
 import { INextJsFronteggOptions } from './types';
 import { callMiddleware, enableCors, validatePermissions } from './utils';
 
@@ -65,7 +65,7 @@ export const fronteggNextJs = (options: INextJsFronteggOptions) => {
     nextJsReq.originalUrl = nextJsReq.url;
     nextJsReq.path = nextJsReq.url.replace(/\?.*/g, '');
 
-    if (options.authMiddleware && !await fronteggRoutes.isFronteggPublicRoute(nextJsReq)) {
+    if (options.authMiddleware && !(await fronteggRoutes.isFronteggPublicRoute(nextJsReq))) {
       Logger.debug('will pass request threw the auth middleware');
       try {
         await callMiddleware(nextJsReq, nextJsRes, options.authMiddleware);
@@ -98,15 +98,13 @@ export const fronteggNextJs = (options: INextJsFronteggOptions) => {
       return nextJsRes.status(403).send();
     }
 
-
     return new Promise((resolve, reject) => {
-
       if (['POST', 'PUT'].indexOf(nextJsReq.method as string) >= 0 && typeof nextJsReq.body === 'object') {
         nextJsReq.body = JSON.stringify(nextJsReq.body);
       }
 
-      proxy.
-        once('proxyReq', ((proxyReq: any, req: any): void => {
+      proxy
+        .once('proxyReq', ((proxyReq: any, req: any): void => {
           if (['POST', 'PUT'].indexOf(req.method as string) >= 0 && typeof req.body === 'string') {
             try {
               proxyReq.write(req.body);
@@ -143,12 +141,13 @@ export const fronteggNextJs = (options: INextJsFronteggOptions) => {
             'x-access-token': authenticator.accessToken,
             'frontegg-tenant-id': context && context.tenantId ? context.tenantId : '',
             'frontegg-user-id': context && context.userId ? context.userId : '',
-            'frontegg-authenticated-entity-id': context && context.authenticatedEntityId ? context.authenticatedEntityId : '',
-            'frontegg-authenticated-entity-type': context && context.authenticatedEntityType ? context.authenticatedEntityType : '',
+            'frontegg-authenticated-entity-id':
+              context && context.authenticatedEntityId ? context.authenticatedEntityId : '',
+            'frontegg-authenticated-entity-type':
+              context && context.authenticatedEntityType ? context.authenticatedEntityType : '',
             'frontegg-vendor-host': nextJsReq.hostname,
           },
         });
     });
   };
 };
-

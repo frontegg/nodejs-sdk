@@ -1,9 +1,9 @@
-import axios from "axios";
-import { FronteggAuthenticator } from "../authenticator";
-import { config } from "../config";
-import { NoDataException, NoEventKeyException } from "./types/errors";
-import { EventId, EventIdResponse, EventTrigger } from "./types/event-types";
-import { EventStatus } from "./types/status-types";
+import axios from 'axios';
+import { FronteggAuthenticator } from '../authenticator';
+import { config } from '../config';
+import { NoDataException, NoEventKeyException } from './types/errors';
+import { EventId, EventIdResponse, EventTrigger } from './types/event-types';
+import { EventStatus } from './types/status-types';
 
 export class EventsClient {
   constructor(private readonly authenticator: FronteggAuthenticator) {}
@@ -31,20 +31,13 @@ export class EventsClient {
     }
   }
 
-  private async sendEventRequest(
-    tenantId: string,
-    ev: EventTrigger
-  ): Promise<EventIdResponse> {
-    const response = await axios.post<EventIdResponse>(
-      `${config.urls.eventService}/resources/triggers/v3`,
-      ev,
-      {
-        headers: {
-          "x-access-token": this.authenticator.accessToken,
-          "frontegg-tenant-id": tenantId,
-        },
-      }
-    );
+  private async sendEventRequest(tenantId: string, ev: EventTrigger): Promise<EventIdResponse> {
+    const response = await axios.post<EventIdResponse>(`${config.urls.eventService}/resources/triggers/v3`, ev, {
+      headers: {
+        'x-access-token': this.authenticator.accessToken,
+        'frontegg-tenant-id': tenantId,
+      },
+    });
 
     return response.data;
   }
@@ -54,9 +47,9 @@ export class EventsClient {
       `${config.urls.eventService}/resources/triggers/v3/${eventId}/statuses`,
       {
         headers: {
-          "x-access-token": this.authenticator.accessToken,
+          'x-access-token': this.authenticator.accessToken,
         },
-      }
+      },
     );
     return response.data;
   }

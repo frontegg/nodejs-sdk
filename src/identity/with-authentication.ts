@@ -51,7 +51,8 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
 
     switch (req.user.type) {
       case tokenTypes.UserToken:
-        req.user.id = user.sub; // The subject of the token (OpenID token) is saved on the req.user as well for easier readability
+        // The subject of the token (OpenID token) is saved on the req.user as well for easier readability
+        req.user.id = user.sub;
         break;
       case tokenTypes.UserApiToken:
         req.user.id = user.createdByUserId;

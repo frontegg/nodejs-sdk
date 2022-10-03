@@ -10,7 +10,7 @@ export interface IRoutesConfig {
     withQueryParams?: Array<{
       key: string;
       value?: string;
-    }>
+    }>;
   }>;
 }
 
@@ -45,7 +45,6 @@ class FronteggRoutes {
       }
       return true;
     });
-
   }
 
   private async fetchRoutesConfig(): Promise<IRoutesConfig> {
@@ -55,4 +54,3 @@ class FronteggRoutes {
 }
 
 export const fronteggRoutes = new FronteggRoutes();
-

@@ -1,5 +1,5 @@
 export class FronteggPermissions {
-  public static All = "*";
+  public static All = '*';
 
   public static Audits = {
     All: '* /audits',

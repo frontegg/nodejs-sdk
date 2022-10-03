@@ -10,5 +10,6 @@ export const getPackageJson = (): Package | void => {
     }
     return pjson;
   } catch (e) {
+    /* eslint-disable no-empty */
   }
 };

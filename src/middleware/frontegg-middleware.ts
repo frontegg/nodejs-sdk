@@ -1,9 +1,9 @@
 import * as httpProxy from 'http-proxy';
 import { FronteggAuthenticator } from '../authenticator';
 import Logger from '../helpers/logger';
-import { getPackageJson } from '../utils/getPackageJSON';
-import { ContextHolder } from './ContextHolder';
-import { fronteggRoutes } from './FronteggRoutes';
+import { getPackageJson } from '../utils/get-package-json';
+import { ContextHolder } from './context-holder';
+import { fronteggRoutes } from './frontegg-routes';
 import { IFronteggOptions } from './types';
 import { callMiddleware, enableCors, rewriteCookieDomain, validatePermissions } from './utils';
 
@@ -25,7 +25,7 @@ async function proxyRequest(req, res, context, authenticator) {
     'frontegg-vendor-host': req.hostname,
     'frontegg-middleware-client': `Node.js@${pjson.version}`,
     'frontegg-authenticated-entity-id': context.authenticatedEntityId,
-    'frontegg-authenticated-entity-type': context.authenticatedEntityType
+    'frontegg-authenticated-entity-type': context.authenticatedEntityType,
   };
 
   if (context.userPermissions) {
@@ -37,7 +37,6 @@ async function proxyRequest(req, res, context, authenticator) {
     headers,
   });
 }
-
 
 export function frontegg(options: IFronteggOptions) {
   const { maxRetries = MAX_RETRIES } = options;
@@ -55,7 +54,6 @@ export function frontegg(options: IFronteggOptions) {
   if (!options.contextResolver) {
     throw new Error('Missing context resolver');
   }
-
 
   const authenticator = new FronteggAuthenticator();
 
@@ -105,7 +103,6 @@ export function frontegg(options: IFronteggOptions) {
     }
   });
 
-
   proxy.on('proxyReq', (proxyReq, req: any, res, _) => {
     try {
       if (req.hostname) {
@@ -130,7 +127,7 @@ export function frontegg(options: IFronteggOptions) {
         proxyReq.write(bodyData);
       }
     } catch (e) {
-      Logger.error('could not proxy request to frontegg', ...e)
+      Logger.error('could not proxy request to frontegg', ...e);
     }
   });
 
@@ -143,8 +140,8 @@ export function frontegg(options: IFronteggOptions) {
       authInitedPromise = authenticator.init(options.clientId, options.apiKey);
       throw e;
     }
-    
-    if (options.authMiddleware && !await fronteggRoutes.isFronteggPublicRoute(req)) {
+
+    if (options.authMiddleware && !(await fronteggRoutes.isFronteggPublicRoute(req))) {
       Logger.debug('will pass request threw the auth middleware');
       try {
         await callMiddleware(req, res, options.authMiddleware);
@@ -192,6 +189,3 @@ export function frontegg(options: IFronteggOptions) {
     return proxyRequest(req, res, context, authenticator);
   };
 }
-
-
-

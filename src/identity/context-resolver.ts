@@ -39,6 +39,5 @@ export const contextResolverWithPermissions = (req) => {
     userPermissions: req.user.permissions,
     authenticatedEntityId: req.user.sub,
     authenticatedEntityType: req.user.type,
-
   };
 };

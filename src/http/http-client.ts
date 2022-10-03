@@ -1,13 +1,10 @@
-import Axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
-import { FronteggAuthenticator } from "../authenticator";
+import Axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { FronteggAuthenticator } from '../authenticator';
 
 export class HttpClient {
   axios: AxiosInstance;
 
-  constructor(
-    private readonly authenticator: FronteggAuthenticator,
-    axiosConfig?: AxiosRequestConfig
-  ) {
+  constructor(private readonly authenticator: FronteggAuthenticator, axiosConfig?: AxiosRequestConfig) {
     this.axios = Axios.create(axiosConfig);
     this.setupRequestInterceptor();
   }
@@ -19,20 +16,20 @@ export class HttpClient {
 
         request.headers = {
           ...request.headers,
-          ["x-access-token"]: this.authenticator.accessToken,
+          ['x-access-token']: this.authenticator.accessToken,
         };
 
         if (request.baseURL) {
-          if(request.headers["frontegg-vendor-host"]) {
-            request.baseURL = request.baseURL.replace('api', request.headers["frontegg-vendor-host"] as string)
+          if (request.headers['frontegg-vendor-host']) {
+            request.baseURL = request.baseURL.replace('api', request.headers['frontegg-vendor-host'] as string);
           }
           // This will contruct a valid url in case the url starts with a '/' and the baseUrl end withs a '/'
-          request.url = new URL(request.url || "", request.baseURL).href;
+          request.url = new URL(request.url || '', request.baseURL).href;
         }
 
         return request;
       },
-      (err) => Promise.reject(err)
+      (err) => Promise.reject(err),
     );
   }
 

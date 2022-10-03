@@ -1,12 +1,11 @@
-export let baseUrl = process.env.FRONTEGG_API_GATEWAY_URL || "https://api.frontegg.com/";
+export let baseUrl = process.env.FRONTEGG_API_GATEWAY_URL || 'https://api.frontegg.com/';
 if (baseUrl.endsWith('/')) {
   // Take the base url
   baseUrl = baseUrl.slice(0, -1);
 }
 
-// tslint:disable-next-line:no-namespace
+/* eslint-disable @typescript-eslint/no-namespace */
 export namespace config {
-  // tslint:disable-next-line:class-name
   export class urls {
     public static authenticationService = process.env.FRONTEGG_AUTHENTICATION_SERVICE_URL || `${baseUrl}/auth/vendor`;
     public static auditsService = process.env.FRONTEGG_AUDITS_SERVICE_URL || `${baseUrl}/audits/`;
