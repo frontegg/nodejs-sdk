@@ -9,6 +9,7 @@
     "lint": "eslint --ignore-path .eslintignore --ext .js,.ts .",
     "format": "prettier --write \"**/*.+(js|ts|json)\"",
     "test": "npm run build && jest",
+    "test:coverage": "npm test -- --coverage",
     "test:watch": "npm run build && jest --watch",
     "dev": "tsc --watch"
   },
