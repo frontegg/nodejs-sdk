@@ -2,7 +2,7 @@
 <div align="center">
 <img src="https://fronteggstuff.blob.core.windows.net/frongegg-logos/logo-transparent.png" alt="Frontegg Logo" width="400" height="90">
 
-<h3 align="center">Frontegg Node.js client</h3>
+<h3 align="center">Frontegg Node.js Client</h3>
 
   <p align="center">
     Frontegg is a web platform where SaaS companies can set up their fully managed, scalable and brand aware - SaaS features and integrate them into their SaaS portals in up to 5 lines of code.
@@ -22,7 +22,7 @@
 <ul>
     <li><a href="#installation">Installation</a></li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#breaking-changes">Events Client upgrade notice</a></li>
+    <li><a href="#event-client-upgrade-notice">Events Client upgrade notice</a></li>
 </ul>
 
 ## Installation

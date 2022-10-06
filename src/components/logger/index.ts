@@ -1,6 +1,6 @@
 import * as winston from 'winston';
 
-const index = winston.createLogger({
+const logger = winston.createLogger({
   level: process.env.FRONTEGG_DEBUG_LEVEL || 'error',
   format: winston.format.combine(winston.format.timestamp(), winston.format.simple()),
   transports: [
@@ -12,22 +12,22 @@ const index = winston.createLogger({
 
 export default class Logger {
   public static log(message: string, ...meta: any[]) {
-    index.debug(message, meta);
+    logger.debug(message, meta);
   }
 
   public static debug(message: string, ...meta: any[]) {
-    index.debug(message, meta);
+    logger.debug(message, meta);
   }
 
   public static info(message: string, ...meta: any[]) {
-    index.info(message, meta);
+    logger.info(message, meta);
   }
 
   public static warn(message: string, ...meta: any[]) {
-    index.warn(message, meta);
+    logger.warn(message, meta);
   }
 
   public static error(message: string, ...meta: any[]) {
-    index.error(message, meta);
+    logger.error(message, meta);
   }
 }
