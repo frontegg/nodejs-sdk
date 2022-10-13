@@ -1,6 +1,6 @@
 import { FronteggAuthenticator } from './src/authenticator';
 import { ContextHolder } from './src/components/context';
-import { withAuthentication } from './src/middleware';
+import { withAuthentication } from './src/middlewares';
 import {
   AuditsClient,
   NotificationsClient,

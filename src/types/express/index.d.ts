@@ -1,4 +1,4 @@
-import { IUser } from '../../middleware';
+import { IUser } from '../../middlewares';
 
 export {};
 

@@ -1,4 +1,5 @@
 import { IdentityClient } from '../clients';
+import Logger from "../components/logger";
 
 export interface IWithAuthenticationOptions {
   roles?: string[];
@@ -41,7 +42,8 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
       user = await IdentityClient.getInstance().validateIdentityOnToken(token, { roles, permissions });
     } catch (e) {
       const { statusCode, message } = e;
-      res.status(statusCode).send(message);
+      Logger.debug(message);
+      res.status(statusCode).send(`Failed to verify authentication`);
       return next(e);
     }
 

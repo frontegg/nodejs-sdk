@@ -4,7 +4,7 @@ import { FronteggAuthenticator } from '../../authenticator';
 import { config } from '../../config';
 import Logger from '../../components/logger';
 import { ContextHolder } from '../../components/context';
-import { IUser, IWithAuthenticationOptions } from '../../middleware';
+import { IUser, IWithAuthenticationOptions } from '../../middlewares';
 
 export class IdentityClient {
   public static getInstance() {
