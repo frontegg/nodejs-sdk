@@ -4,8 +4,10 @@ export {};
 
 declare global {
   namespace Express {
-    export interface Request {
-      user?: IUser;
+    interface Request {
+      frontegg?: {
+        user: IUser
+      };
     }
   }
 }

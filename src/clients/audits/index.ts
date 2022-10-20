@@ -30,7 +30,6 @@ export class AuditsClient {
     Logger.info('sent audit successfully');
   }
 
-  // tslint:disable-next-line:max-line-length
   public async getAudits(params: {
     tenantId: string;
     filter?: string;
@@ -100,58 +99,6 @@ export class AuditsClient {
     });
 
     Logger.info('done updating audits metadata');
-    const { data } = response;
-    return data;
-  }
-
-  public async exportPdf(
-    params: { tenantId: string; filter?: string; sortBy?: string; sortDirection?: string; filters: any },
-    properties: any[],
-  ) {
-    Logger.info('going to export audits to pdf');
-    const paramsToSend = { ...params, ...params.filters };
-    delete paramsToSend.filters;
-
-    await this.authenticator.validateAuthentication();
-    const response = await axios.post(
-      `${config.urls.auditsService}/export/pdf`,
-      { properties },
-      {
-        params: paramsToSend,
-        responseType: 'blob',
-        headers: {
-          'x-access-token': this.authenticator.accessToken,
-          'frontegg-tenant-id': params.tenantId,
-        },
-      },
-    );
-
-    const { data } = response;
-    return data;
-  }
-
-  public async exportCsv(
-    params: { tenantId: string; filter?: string; sortBy?: string; sortDirection?: string; filters: any },
-    properties: any[],
-  ) {
-    Logger.info('going to export audits to pdf');
-    const paramsToSend = { ...params, ...params.filters };
-    delete paramsToSend.filters;
-
-    await this.authenticator.validateAuthentication();
-    const response = await axios.post(
-      `${config.urls.auditsService}/export/csv`,
-      { properties },
-      {
-        params: paramsToSend,
-        responseType: 'blob',
-        headers: {
-          'x-access-token': this.authenticator.accessToken,
-          'frontegg-tenant-id': params.tenantId,
-        },
-      },
-    );
-
     const { data } = response;
     return data;
   }

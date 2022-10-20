@@ -1,4 +1,3 @@
-// import mockAxios from 'jest-mock-axios';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { FronteggAuthenticator } from '../../authenticator';

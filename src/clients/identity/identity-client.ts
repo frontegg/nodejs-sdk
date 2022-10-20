@@ -3,7 +3,7 @@ import { verify } from 'jsonwebtoken';
 import { FronteggAuthenticator } from '../../authenticator';
 import { config } from '../../config';
 import Logger from '../../components/logger';
-import { ContextHolder } from '../../components/context';
+import { FronteggContext } from '../../components/frontegg-context';
 import { IUser, IWithAuthenticationOptions } from '../../middlewares';
 
 export class IdentityClient {
@@ -105,7 +105,7 @@ export class IdentityClient {
   private async fetchPublicKey() {
     const authenticator = new FronteggAuthenticator();
     Logger.info('going to authenticate');
-    const { FRONTEGG_CLIENT_ID, FRONTEGG_API_KEY } = ContextHolder.getContext();
+    const { FRONTEGG_CLIENT_ID, FRONTEGG_API_KEY } = FronteggContext.getContext();
     await authenticator.init(
       FRONTEGG_CLIENT_ID || process.env.FRONTEGG_CLIENT_ID || '',
       FRONTEGG_API_KEY || process.env.FRONTEGG_API_KEY || '',

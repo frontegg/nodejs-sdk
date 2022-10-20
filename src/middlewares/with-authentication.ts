@@ -1,5 +1,6 @@
 import { IdentityClient } from '../clients';
-import Logger from "../components/logger";
+import Logger from '../components/logger';
+import { Request, Response } from 'express';
 
 export interface IWithAuthenticationOptions {
   roles?: string[];
@@ -12,11 +13,14 @@ export enum tokenTypes {
   UserToken = 'userToken',
 }
 
+export type Role = string;
+export type Permission = string;
 export interface IUser {
+  id?: string;
   sub: string;
   tenantId: string;
-  roles: string[];
-  permissions: string[];
+  roles: Role[];
+  permissions: Permission[];
   metadata: Record<string, any>;
   createdByUserId: string;
   type: tokenTypes;
@@ -29,7 +33,7 @@ export interface IUser {
 }
 
 export function withAuthentication({ roles = [], permissions = [] }: IWithAuthenticationOptions = {}) {
-  return async (req, res, next) => {
+  return async (req: Request, res: Response, next) => {
     const authorizationHeader: string | undefined = req.header('authorization');
     if (!authorizationHeader) {
       return res.status(401).send('Unauthenticated');
@@ -42,22 +46,24 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
       user = await IdentityClient.getInstance().validateIdentityOnToken(token, { roles, permissions });
     } catch (e) {
       const { statusCode, message } = e;
-      Logger.debug(message);
+      Logger.error(message);
       res.status(statusCode).send(`Failed to verify authentication`);
       return next(e);
     }
 
     // Store the decoded user on the request
-    req.user = user;
-    req.user.id = '';
+    req.frontegg = {
+      user: { ...user, id: '' }
+    };
 
-    switch (req.user.type) {
+    const userType = user.type;
+    switch (req.frontegg.user.type) {
       case tokenTypes.UserToken:
-        // The subject of the token (OpenID token) is saved on the req.user as well for easier readability
-        req.user.id = user.sub;
+        // The subject of the token (OpenID token) is saved on the req.frontegg.user as well for easier readability
+        req.frontegg.user.id = user.sub;
         break;
       case tokenTypes.UserApiToken:
-        req.user.id = user.createdByUserId;
+        req.frontegg.user.id = user.createdByUserId;
         break;
     }
 
