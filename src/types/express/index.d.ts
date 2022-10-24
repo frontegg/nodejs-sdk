@@ -6,7 +6,7 @@ declare global {
   namespace Express {
     interface Request {
       frontegg?: {
-        user: IUser
+        user: IUser;
       };
     }
   }
