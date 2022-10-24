@@ -3,4 +3,4 @@ dist
 jest.config.js
 tests
 src/**/*.spec.ts
-src/middleware/*
+src/middlewares/*

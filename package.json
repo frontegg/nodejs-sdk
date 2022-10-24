@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "lint": "eslint --ignore-path .eslintignore --ext .js,.ts .",
     "format": "prettier --write \"**/*.+(js|ts|json)\"",
     "test": "npm run build && jest",
@@ -22,7 +22,6 @@
   "dependencies": {
     "@slack/web-api": "^6.7.2",
     "axios": "^0.27.2",
-    "http-proxy": "^1.18.1",
     "jsonwebtoken": "^8.5.1",
     "winston": "^3.8.2"
   },
@@ -30,7 +29,6 @@
     "@babel/preset-env": "^7.5.4",
     "@types/axios": "^0.14.0",
     "@types/express": "^4.17.6",
-    "@types/http-proxy": "^1.17.0",
     "@types/jest": "^26.0.24",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/node": "^12.6.2",
