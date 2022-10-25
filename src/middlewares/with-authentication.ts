@@ -53,7 +53,7 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
 
     // Store the decoded user on the request
     req.frontegg = {
-      user: { ...user, id: '' }
+      user: { ...user, id: '' },
     };
 
     const userType = user.type;

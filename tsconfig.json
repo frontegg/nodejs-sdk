@@ -10,10 +10,7 @@
     "strict": true,
     "sourceMap": true,
     "skipLibCheck": true,
-    "typeRoots": [
-      "src/types",
-      "node_modules/@types/"
-    ]
+    "typeRoots": ["src/types", "node_modules/@types/"]
   },
   "exclude": ["node_modules", "dist"],
   "include": ["index.ts"]
