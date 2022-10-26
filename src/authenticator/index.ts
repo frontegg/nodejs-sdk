@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { config } from '../config';
 import Logger from '../components/logger';
 import { retry } from '../utils';
