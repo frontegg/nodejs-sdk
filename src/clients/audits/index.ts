@@ -2,6 +2,7 @@ import axios from 'axios';
 import { FronteggAuthenticator } from '../../authenticator';
 import { config } from '../../config';
 import Logger from '../../components/logger';
+import { AuditRequestParams, GetAuditStatsParams, SendAuditParams } from './types';
 
 export class AuditsClient {
   private authenticator: FronteggAuthenticator = new FronteggAuthenticator();
@@ -12,14 +13,14 @@ export class AuditsClient {
     Logger.info('Authenticated with frontegg');
   }
 
-  public async sendAudit(audits: any) {
+  public async sendAudit(audit: SendAuditParams) {
     try {
       Logger.info('going to send audit');
       await this.authenticator.validateAuthentication();
-      await axios.post(config.urls.auditsService, audits, {
+      await axios.post(config.urls.auditsService, audit, {
         headers: {
           'x-access-token': this.authenticator.accessToken,
-          'frontegg-tenant-id': audits.tenantId,
+          'frontegg-tenant-id': audit.tenantId,
         },
       });
     } catch (e) {
@@ -30,15 +31,7 @@ export class AuditsClient {
     Logger.info('sent audit successfully');
   }
 
-  public async getAudits(params: {
-    tenantId: string;
-    filter?: string;
-    sortBy?: string;
-    sortDirection?: string;
-    offset: number;
-    count: number;
-    filters: any;
-  }) {
+  public async getAudits(params: AuditRequestParams) {
     Logger.info('going to get audits');
     const paramsToSend = { ...params, ...params.filters };
     delete paramsToSend.filters;
@@ -56,7 +49,7 @@ export class AuditsClient {
     return data;
   }
 
-  public async getAuditsStats(params: { tenantId: string }) {
+  public async getAuditsStats(params: GetAuditStatsParams) {
     Logger.info('going to get audits stats');
     const paramsToSend: any = { ...params };
     delete paramsToSend.filters;
