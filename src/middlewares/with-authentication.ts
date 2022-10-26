@@ -32,6 +32,11 @@ export interface IUser {
   profilePictureUrl?: string;
 }
 
+export interface StatusCodeError {
+  statusCode: number;
+  message: string;
+}
+
 export function withAuthentication({ roles = [], permissions = [] }: IWithAuthenticationOptions = {}) {
   return async (req: Request, res: Response, next) => {
     const authorizationHeader: string | undefined = req.header('authorization');
@@ -45,7 +50,7 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
     try {
       user = await IdentityClient.getInstance().validateIdentityOnToken(token, { roles, permissions });
     } catch (e) {
-      const { statusCode, message } = e;
+      const { statusCode, message } = <StatusCodeError>e;
       Logger.error(message);
       res.status(statusCode).send(`Failed to verify authentication`);
       return next(e);

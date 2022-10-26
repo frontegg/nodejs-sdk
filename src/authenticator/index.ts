@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { config } from '../config';
 import Logger from '../components/logger';
 import { retry } from '../utils';
@@ -65,8 +65,9 @@ export class FronteggAuthenticator {
     } catch (e) {
       Logger.error('Failed to authenticate with Frontegg');
 
-      if (e.response) {
-        Logger.error(`Failed with status - ${e.response.status}`);
+      if (e instanceof AxiosError) {
+        const axiosError = <AxiosError>e;
+        Logger.error(`Failed with status - ${axiosError.response?.status}`);
       }
 
       this.accessToken = '';
