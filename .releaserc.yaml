@@ -1,5 +1,5 @@
 branches:
-  - main
+  - master
   - name: next
     prerelease: 'alpha'
 tagFormat: "${version}"
