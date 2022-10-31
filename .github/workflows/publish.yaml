@@ -5,7 +5,7 @@ on:
     branches: [ master, next ]
 
 env:
-  GH_TOKEN: ${{ secrets.PROTECTED_BRANCH_PUSH_TOKEN }}
+  GH_TOKEN: ${{ secrets.GH_ADMIN_REPO_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
 jobs:
@@ -15,13 +15,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          token: ${{ secrets.PROTECTED_BRANCH_PUSH_TOKEN }}
+          token: ${{ secrets.GH_ADMIN_REPO_TOKEN }}
       - name: Set git config
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.event.pusher.email }}"
         env:
-          GITHUB_TOKEN: ${{ secrets.PROTECTED_BRANCH_PUSH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_ADMIN_REPO_TOKEN }}
       - name: Use Node.js 16
         uses: actions/setup-node@v3
         with:

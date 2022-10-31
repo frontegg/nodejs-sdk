@@ -20,9 +20,9 @@ jobs:
       - name: Test Release
         env:
           CI: true
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_ADMIN_REPO_TOKEN }}
           GITHUB_HEAD_REF: $GITHUB_HEAD_REF
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_ADMIN_REPO_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
         run: |
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > /home/runner/work/_temp/.npmrc
