@@ -35,7 +35,7 @@
     "@types/jsonwebtoken": "^8.5.0",
     "@types/node": "^12.6.2",
     "@typescript-eslint/eslint-plugin": "^5.38.1",
-    "@typescript-eslint/parser": "^5.38.1",
+    "@typescript-eslint/parser": "^5.40.0",
     "axios-mock-adapter": "^1.21.2",
     "babel-core": "^6.26.3",
     "eslint": "^8.24.0",
