@@ -1,0 +1,22 @@
+name: On Pull Request
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    branches: [ master, next ]
+
+jobs:
+  call-lint:
+    uses: ./.github/workflows/_lint.yaml
+
+  call-build-and-test:
+    needs: call-lint
+    uses: ./.github/workflows/_build-and-test.yaml
+
+  call-pre-release:
+    needs: call-build-and-test
+    uses: ./.github/workflows/_pre-release.yaml

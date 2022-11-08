@@ -20,6 +20,7 @@ lib-cov
 
 # Coverage directory used by tools like istanbul
 coverage
+test-results
 *.lcov
 
 # nyc test coverage
@@ -95,3 +96,4 @@ jest-junit.xml
 
 #ide
 .idea/
+.fleet/
