@@ -22,7 +22,7 @@ jobs:
         run: npm ci
 
       - name: Build the lib
-        run: npm run build --if-present
+        run: npm run build
 
       - name: Run tests
         run: npm run test:coverage

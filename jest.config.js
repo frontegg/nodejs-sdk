@@ -5,6 +5,14 @@ module.exports = {
   moduleFileExtensions: ['ts', 'js', 'json', 'node'],
   rootDir: '.',
   collectCoverageFrom: ['src/**/*.{js,ts}', '!**/node_modules/**', '!**/dist/**', '!**/vendor/**'],
+  "coverageThreshold": {
+    "global": {
+      "statements": 17,
+      "branches": 24,
+      "functions": 20,
+      "lines": 18
+    }
+  },
   reporters: [
     'default',
     [
