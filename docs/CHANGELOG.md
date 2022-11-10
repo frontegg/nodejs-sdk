@@ -1,3 +1,15 @@
+# [3.0.0](https://github.com/frontegg/nodejs-sdk/compare/v2.0.32...3.0.0) (2022-11-08)
+
+
+### breaking
+
+* proxy middlewares removal and general enhancements ([#106](https://github.com/frontegg/nodejs-sdk/issues/106)) ([9e6d944](https://github.com/frontegg/nodejs-sdk/commit/9e6d94487dd28d6181120232c61f612cfb2a44bb))
+
+
+### BREAKING CHANGES
+
+* support for outdated "frontegg"/"fronteggNextJs" middlewares is now dropped
+
 # [3.0.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/v2.0.31...3.0.0-alpha.1) (2022-10-31)
 
 
