@@ -1,0 +1,28 @@
+name: UnPublish
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: number
+        required: true
+        description: version to un-publish
+
+env:
+  NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+
+jobs:
+  unpublish:
+    name: UnPublish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+
+      - name: unpublish
+        run: npm unpublish @frontegg/client@{{ inputs.version }}
