@@ -1,1 +1,1 @@
-export { IdentityClient } from './identity-client';
+export * from './identity-client';
