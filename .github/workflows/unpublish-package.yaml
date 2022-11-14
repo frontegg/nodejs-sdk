@@ -25,4 +25,4 @@ jobs:
           cache: 'npm'
 
       - name: unpublish
-        run: npm unpublish @frontegg/client@{{ inputs.version }}
+        run: npm unpublish @frontegg/client@4.0.0
