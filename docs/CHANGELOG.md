@@ -1,10 +1,3 @@
-# [3.0.0-alpha.2](https://github.com/frontegg/nodejs-sdk/compare/3.0.0-alpha.1...3.0.0-alpha.2) (2022-11-10)
-
-
-### Bug Fixes
-
-* re-export identity client ([#107](https://github.com/frontegg/nodejs-sdk/issues/107)) ([6624706](https://github.com/frontegg/nodejs-sdk/commit/66247066c727b06d85da453534b60bf4f5a4fdc3))
-
 # [3.0.0](https://github.com/frontegg/nodejs-sdk/compare/v2.0.32...3.0.0) (2022-11-08)
 
 
