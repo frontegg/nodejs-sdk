@@ -1,3 +1,10 @@
+## [4.0.1](https://github.com/frontegg/nodejs-sdk/compare/4.0.0...4.0.1) (2022-11-14)
+
+
+### Bug Fixes
+
+* **readme:** update readme and deprecate 3.0.0 ([#117](https://github.com/frontegg/nodejs-sdk/issues/117)) ([bd4617a](https://github.com/frontegg/nodejs-sdk/commit/bd4617a4608fc17b059ce1d6f0155ea59c742149))
+
 ## [4.0.1-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/4.0.0...4.0.1-alpha.1) (2022-11-14)
 
 
