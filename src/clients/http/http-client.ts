@@ -45,8 +45,8 @@ export class HttpClient {
     return this.axios.put(url, data, { headers });
   }
 
-  public async delete<T = any>(url: string, headers?: Record<string, any>): Promise<AxiosResponse<T>> {
-    return this.axios.delete(url, { headers });
+  public async delete<T = any>(url: string, headers?: Record<string, any>, data?: any): Promise<AxiosResponse<T>> {
+    return this.axios.delete(url, { headers, data });
   }
 
   public async patch<T = any>(url: string, data: any, headers?: Record<string, any>): Promise<AxiosResponse<T>> {
