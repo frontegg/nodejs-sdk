@@ -25,13 +25,13 @@
 
 ## Notice
 
----
 ### Version 3.0.0 is Deprecated. Please use versions 4.x.x
 ### If you are upgrading from version 2.x.x skip version 3.0.0 by installing the latest version
 
 ---
 
 ## Breaking Changes
+
 ### As of version 3.0.0 and 4.0.0, we will no longer provide proxy middlewares
 To see an example implementation, head over to our 
 <a href="https://github.com/frontegg-samples/nodejs-proxy-sample">sample proxy project</a>
@@ -70,6 +70,8 @@ const { withAuthentication } = require('@frontegg/client');
 
 // This route can now only be accessed by authenticated users
 app.use('/protected', withAuthentication(), (req, res) => {
+    // Authenticated user data will be available on the req.frontegg object
+    callSomeAction(req.frontegg.user)
     res.status(200);
 });
 ```

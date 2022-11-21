@@ -132,6 +132,18 @@ describe('http.client', () => {
     expect(res.config.url).toEqual(`${baseURL}${url}`);
   });
 
+  it('should delete with body', async () => {
+    const url = '/identity/resources/users/v1/12345';
+    const data = { scope: 'Inner' };
+
+    mock.onDelete(url).reply((config) => [200, config.data]);
+
+    const res = await httpClient.delete(url, {}, data);
+
+    expect(res.data).toStrictEqual(data);
+    expect(res.config.url).toEqual(`${baseURL}${url}`);
+  });
+
   it('should patch', async () => {
     const mockPatchRes = {
       id: '12345',
