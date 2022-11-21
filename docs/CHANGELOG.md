@@ -1,3 +1,10 @@
+# [4.1.0](https://github.com/frontegg/nodejs-sdk/compare/4.0.1...4.1.0) (2022-11-21)
+
+
+### Features
+
+* **http-client:** add option to send body on delete request ([#122](https://github.com/frontegg/nodejs-sdk/issues/122)) ([c62b9a7](https://github.com/frontegg/nodejs-sdk/commit/c62b9a7b3f51fc3f80cc6892b3c9fee13d16e928))
+
 # [4.1.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/4.0.1...4.1.0-alpha.1) (2022-11-21)
 
 
