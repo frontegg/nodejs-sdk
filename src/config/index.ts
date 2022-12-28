@@ -12,5 +12,7 @@ export namespace config {
     public static metadataService = process.env.FRONTEGG_METADATA_SERVICE_URL || `${baseUrl}/metadata/`;
     public static eventService = process.env.FRONTEGG_EVENT_SERVICE_URL || `${baseUrl}/event`;
     public static identityService = process.env.FRONTEGG_IDENTITY_SERVICE_URL || `${baseUrl}/identity`;
+    public static vendorsService = process.env.FRONTEGG_VENDORS_SERVICE_URL || `${baseUrl}/vendors`;
+    public static oauthService = process.env.FRONTEGG_OAUTH_SERVICE_URL || `${baseUrl}/oauth`;
   }
 }
