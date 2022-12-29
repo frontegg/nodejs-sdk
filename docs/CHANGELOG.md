@@ -1,3 +1,10 @@
+## [4.1.1](https://github.com/frontegg/nodejs-sdk/compare/4.1.0...4.1.1) (2022-12-29)
+
+
+### Bug Fixes
+
+* package.json & package-lock.json to reduce vulnerabilities ([016941a](https://github.com/frontegg/nodejs-sdk/commit/016941ab45bf5020239c596e3c90c470d3a18c28))
+
 # [4.1.0](https://github.com/frontegg/nodejs-sdk/compare/4.0.1...4.1.0) (2022-11-21)
 
 
