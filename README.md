@@ -141,3 +141,35 @@ await httpClient.post('identity/resources/auth/v1/user', {
    'frontegg-vendor-host': 'acme.frontegg'
 });
 ```
+
+### Validating JWT manually
+If required you can implement your own middleware which will validate the Frontegg JWT using the `IdentityClient`
+
+First, let's import the `IdentityClient`
+```javascript
+const { IdentityClient } = require('@frontegg/client');
+```
+
+Then, initialize the client
+```javascript
+const identityClient = new IdentityClient({ FRONTEGG_CLIENT_ID: 'your-client-id', FRONTEGG_API_KEY: 'your-api-key' });
+identityClient.validateIdentityOnToken(token, { roles: ['admin'], permissions: ['read'] });
+```
+
+And use this client to validate
+```javascript
+app.use('/protected', (req, res, next) => {
+    const token = req.headers.authorization;
+    let user: IUser;
+    try {
+        user = identityClient.validateIdentityOnToken(token, { roles: ['admin'], permissions: ['read'] });
+        req.user = user;
+    } catch (e) {
+        console.error(e);
+        next(e);
+        return;
+    }
+    
+    next();
+});
+```

@@ -1,4 +1,4 @@
-interface IFronteggContext {
+export interface IFronteggContext {
   FRONTEGG_CLIENT_ID: string;
   FRONTEGG_API_KEY: string;
 }
