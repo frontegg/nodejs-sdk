@@ -153,7 +153,6 @@ const { IdentityClient } = require('@frontegg/client');
 Then, initialize the client
 ```javascript
 const identityClient = new IdentityClient({ FRONTEGG_CLIENT_ID: 'your-client-id', FRONTEGG_API_KEY: 'your-api-key' });
-identityClient.validateIdentityOnToken(token, { roles: ['admin'], permissions: ['read'] });
 ```
 
 And use this client to validate
