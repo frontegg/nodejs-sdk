@@ -4,7 +4,7 @@ export interface Audit {
   severity: AuditSeverity;
   ip?: string;
   email?: string;
-  actions?: string;
+  action?: string;
   description?: string;
   userAgent?: string;
   vendorId: string;
@@ -16,10 +16,7 @@ export interface Audit {
 
 export type AuditSeverity = 'Info' | 'Medium' | 'High' | 'Critical' | 'Error';
 
-export interface SendAuditParams {
-  tenantId: string;
-  severity: AuditSeverity;
-}
+export type SendAuditParams = Pick<Audit, 'tenantId' | 'severity'> & Record<string, unknown>;
 
 export type AuditSortField = keyof Audit;
 
