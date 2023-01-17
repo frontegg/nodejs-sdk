@@ -3,7 +3,7 @@ import { verify } from 'jsonwebtoken';
 import { FronteggAuthenticator } from '../../authenticator';
 import { config } from '../../config';
 import Logger from '../../components/logger';
-import {FronteggContext, IFronteggContext} from '../../components/frontegg-context';
+import { FronteggContext, IFronteggContext } from '../../components/frontegg-context';
 import { IUser, IWithAuthenticationOptions } from '../../middlewares';
 
 export class IdentityClient {
