@@ -1,3 +1,10 @@
+# [4.2.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/4.1.1...4.2.0-alpha.1) (2023-01-15)
+
+
+### Features
+
+* **clients:** add support for multiple identity clients ([2770f69](https://github.com/frontegg/nodejs-sdk/commit/2770f69e40e3a019237aabc622f3b211c77c91c7))
+
 ## [4.1.1](https://github.com/frontegg/nodejs-sdk/compare/4.1.0...4.1.1) (2022-12-29)
 
 

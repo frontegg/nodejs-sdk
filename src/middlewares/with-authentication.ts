@@ -61,7 +61,6 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
       user: { ...user, id: '' },
     };
 
-    const userType = user.type;
     switch (req.frontegg.user.type) {
       case tokenTypes.UserToken:
         // The subject of the token (OpenID token) is saved on the req.frontegg.user as well for easier readability

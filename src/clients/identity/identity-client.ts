@@ -3,13 +3,13 @@ import { verify } from 'jsonwebtoken';
 import { FronteggAuthenticator } from '../../authenticator';
 import { config } from '../../config';
 import Logger from '../../components/logger';
-import { FronteggContext } from '../../components/frontegg-context';
+import { FronteggContext, IFronteggContext } from '../../components/frontegg-context';
 import { IUser, IWithAuthenticationOptions } from '../../middlewares';
 
 export class IdentityClient {
   public static getInstance() {
     if (!IdentityClient.instance) {
-      IdentityClient.instance = new IdentityClient();
+      IdentityClient.instance = new IdentityClient(FronteggContext.getContext());
     }
 
     return IdentityClient.instance;
@@ -17,9 +17,11 @@ export class IdentityClient {
 
   private static instance: IdentityClient;
   private publicKey: string;
+  private readonly context: IFronteggContext;
 
-  private constructor() {
+  public constructor(context: IFronteggContext) {
     this.publicKey = '';
+    this.context = context;
   }
 
   public async getPublicKey() {
@@ -105,7 +107,7 @@ export class IdentityClient {
   private async fetchPublicKey() {
     const authenticator = new FronteggAuthenticator();
     Logger.info('going to authenticate');
-    const { FRONTEGG_CLIENT_ID, FRONTEGG_API_KEY } = FronteggContext.getContext();
+    const { FRONTEGG_CLIENT_ID, FRONTEGG_API_KEY } = this.context;
     await authenticator.init(
       FRONTEGG_CLIENT_ID || process.env.FRONTEGG_CLIENT_ID || '',
       FRONTEGG_API_KEY || process.env.FRONTEGG_API_KEY || '',
