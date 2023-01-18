@@ -1,7 +1,7 @@
 import { FronteggAuthenticator } from '../../authenticator';
 import Logger from '../../components/logger';
 import { FronteggContext } from '../../components/frontegg-context';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { config } from '../../config';
 import { IUser } from '../../middlewares';
 import { decode } from 'jsonwebtoken';
@@ -75,8 +75,8 @@ export class HostedLoginClient {
       };
     } catch (e) {
       Logger.error('failed to exchange token with Frontegg', e);
-      if (e.response) {
-        throw new Error(`[${e.response.status}] ${e.response.data?.errors?.join(', ')}`);
+      if ((e as AxiosError).response) {
+        throw new Error(`[${(e as AxiosError).response?.status}] ${(e as AxiosError<{errors:string[]}>).response?.data?.errors?.join(', ')}`);
       }
       throw new Error('failed to exchange code');
     }
