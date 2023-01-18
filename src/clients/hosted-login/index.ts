@@ -1,2 +1,2 @@
-export * from './hosted-login.client'
-export * from './types'
+export * from './hosted-login.client';
+export * from './types';

@@ -23,7 +23,11 @@ describe('Hosted login client tests', () => {
       const client = new HostedLoginClient(redirectURI);
       const state = 'my-state';
       const url: string = await client.requestAuthorize({ state });
-      expect(url).toEqual(`https://vendor.base.url/oauth/authorize?response_type=code&client_id=${FronteggContext.getContext().FRONTEGG_CLIENT_ID}&scope=openid%2Bemail%2Bprofile&redirect_uri=https%3A%2F%2Flocalhost%3A8080%2Ftest&state=${state}`);
+      expect(url).toEqual(
+        `https://vendor.base.url/oauth/authorize?response_type=code&client_id=${
+          FronteggContext.getContext().FRONTEGG_CLIENT_ID
+        }&scope=openid%2Bemail%2Bprofile&redirect_uri=https%3A%2F%2Flocalhost%3A8080%2Ftest&state=${state}`,
+      );
     } finally {
       axiosMock.reset();
     }
@@ -39,8 +43,9 @@ describe('Hosted login client tests', () => {
       tenantId: 'my-tenant-id',
       type: 'userToken',
     };
-    const codeExchangeRes: { access_token: string, refresh_token: string } = {
-      access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwZXJtaXNzaW9ucyI6WyJwZXJtaXNzaW9uMSJdLCJyb2xlcyI6WyJyb2xlMSJdLCJzdWIiOiJpZGVudGlmaWVyIiwidGVuYW50SWQiOiJteS10ZW5hbnQtaWQiLCJ0eXBlIjoidXNlclRva2VuIn0.gvkl8B3mXcka-s3gLI04l1UP3t8_q-05J4RYaHzoRKo',
+    const codeExchangeRes: { access_token: string; refresh_token: string } = {
+      access_token:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwZXJtaXNzaW9ucyI6WyJwZXJtaXNzaW9uMSJdLCJyb2xlcyI6WyJyb2xlMSJdLCJzdWIiOiJpZGVudGlmaWVyIiwidGVuYW50SWQiOiJteS10ZW5hbnQtaWQiLCJ0eXBlIjoidXNlclRva2VuIn0.gvkl8B3mXcka-s3gLI04l1UP3t8_q-05J4RYaHzoRKo',
       refresh_token: 'user-refresh-token',
     };
     try {
@@ -51,9 +56,9 @@ describe('Hosted login client tests', () => {
       const state = 'my-state';
       const code = 'my-code';
       const res: CodeExchangeResponse = await client.codeExchange({ state, code });
-      expect(res.accessToken).toEqual(codeExchangeRes.access_token)
-      expect(res.refreshToken).toEqual(codeExchangeRes.refresh_token)
-      expect(res.user).toEqual(userData)
+      expect(res.accessToken).toEqual(codeExchangeRes.access_token);
+      expect(res.refreshToken).toEqual(codeExchangeRes.refresh_token);
+      expect(res.user).toEqual(userData);
     } finally {
       axiosMock.reset();
     }

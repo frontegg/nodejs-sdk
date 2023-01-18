@@ -54,17 +54,21 @@ export class HostedLoginClient {
     const authenticator = await this.getFronteggAuthenticator();
     Logger.info('Going to exchange token with Frontegg');
     try {
-      const response: AxiosResponse<{ access_token: string, refresh_token: string }> = await axios.post(`${config.urls.oauthService}/token`, {
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: this.redirectURI,
-        state,
-      }, {
-        headers: {
-          'x-access-token': authenticator.accessToken,
-          Authorization: this.getAuthorizationHeader(),
+      const response: AxiosResponse<{ access_token: string; refresh_token: string }> = await axios.post(
+        `${config.urls.oauthService}/token`,
+        {
+          grant_type: 'authorization_code',
+          code,
+          redirect_uri: this.redirectURI,
+          state,
         },
-      });
+        {
+          headers: {
+            'x-access-token': authenticator.accessToken,
+            Authorization: this.getAuthorizationHeader(),
+          },
+        },
+      );
 
       Logger.info('Token was exchanged with Frontegg, decoding access token');
       const user: IUser = this.decodeAccessToken(response.data.access_token);
@@ -76,7 +80,11 @@ export class HostedLoginClient {
     } catch (e) {
       Logger.error('failed to exchange token with Frontegg', e);
       if ((e as AxiosError).response) {
-        throw new Error(`[${(e as AxiosError).response?.status}] ${(e as AxiosError<{errors:string[]}>).response?.data?.errors?.join(', ')}`);
+        throw new Error(
+          `[${(e as AxiosError).response?.status}] ${(
+            e as AxiosError<{ errors: string[] }>
+          ).response?.data?.errors?.join(', ')}`,
+        );
       }
       throw new Error('failed to exchange code');
     }
@@ -102,7 +110,7 @@ export class HostedLoginClient {
     return this.fetchBaseURL();
   }
 
-  private getFronteggCredentials(): { clientId: string, apiKey: string } {
+  private getFronteggCredentials(): { clientId: string; apiKey: string } {
     const { FRONTEGG_CLIENT_ID, FRONTEGG_API_KEY } = FronteggContext.getContext();
     return {
       clientId: FRONTEGG_CLIENT_ID || process.env.FRONTEGG_CLIENT_ID || '',
@@ -130,10 +138,7 @@ export class HostedLoginClient {
       const authenticator = new FronteggAuthenticator();
       const { apiKey, clientId } = this.getFronteggCredentials();
       Logger.info('going to authenticate with Frontegg');
-      await authenticator.init(
-        clientId,
-        apiKey,
-      );
+      await authenticator.init(clientId, apiKey);
       this._authenticator = authenticator;
     }
 
