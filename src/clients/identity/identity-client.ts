@@ -1,10 +1,14 @@
 import axios from 'axios';
-import { verify } from 'jsonwebtoken';
 import { FronteggAuthenticator } from '../../authenticator';
 import { config } from '../../config';
 import Logger from '../../components/logger';
-import { FronteggContext, IFronteggContext } from '../../components/frontegg-context';
-import { IUser, IWithAuthenticationOptions } from '../../middlewares';
+import { FronteggContext } from '../../components/frontegg-context';
+import { AuthHeaderType, IValidateTokenOptions, TEntity } from './types';
+import { accessTokenHeaderResolver, authorizationHeaderResolver, TokenResolver } from './token-resolvers';
+import { FailedToAuthenticateException } from './exceptions/failed-to-authenticate.exception';
+import { IFronteggContext } from '../../components/frontegg-context/types';
+
+const tokenResolvers = [authorizationHeaderResolver, accessTokenHeaderResolver]
 
 export class IdentityClient {
   public static getInstance() {
@@ -34,74 +38,37 @@ export class IdentityClient {
     return this.publicKey;
   }
 
-  public async validateIdentityOnToken(token: string, options?: IWithAuthenticationOptions): Promise<IUser> {
-    /* eslint-disable no-async-promise-executor */
-    return new Promise<IUser>(async (resolve, reject) => {
+  public async validateIdentityOnToken(
+    token: string,
+    options?: IValidateTokenOptions,
+    type: AuthHeaderType = AuthHeaderType.JWT
+  ): Promise<TEntity> {
+    if (type === AuthHeaderType.JWT) {
       try {
         token = token.replace('Bearer ', '');
       } catch (e) {
         Logger.error('Failed to extract token - ', token);
-        reject({ statusCode: 401, message: 'Failed to verify authentication' });
-        return;
+        throw new FailedToAuthenticateException();
       }
+    }
 
-      let publicKey: string;
-      try {
-        publicKey = await this.getPublicKey();
-      } catch (e) {
-        Logger.error('failed to get public key - ', e);
-        reject({ statusCode: 401, message: 'Failed to verify authentication' });
-        return;
-      }
+    let publicKey: string;
+    try {
+      publicKey = await this.getPublicKey();
+    } catch (e) {
+      Logger.error('failed to get public key - ', e);
+      throw new FailedToAuthenticateException();
+    }
 
-      verify(token, publicKey, { algorithms: ['RS256'] }, (err, decoded: any) => {
-        const user: IUser = decoded;
-        if (err) {
-          Logger.error('Failed to verify jwt - ', err);
-          reject({ statusCode: 401, message: 'Failed to verify authentication' });
-          return;
-        }
+    const resolver = tokenResolvers.find((resolver) => resolver.shouldHandle(type)) as TokenResolver<TEntity>
+    if (!resolver) {
+      Logger.error('Failed to find token resolver');
+      throw new FailedToAuthenticateException();
+    }
 
-        if (options) {
-          const { roles, permissions } = options;
+    const entity = await resolver.validateToken(token, publicKey, options)
 
-          if (roles && roles.length > 0) {
-            let haveAtLeastOneRole = false;
-            for (const requestedRole of roles) {
-              if (user.roles && user.roles.includes(requestedRole)) {
-                haveAtLeastOneRole = true;
-                break;
-              }
-            }
-
-            if (!haveAtLeastOneRole) {
-              Logger.info('Insufficient role');
-              reject({ statusCode: 403, message: 'Insufficient role' });
-              return;
-            }
-          }
-
-          if (permissions && permissions.length > 0) {
-            let haveAtLeastOnePermission = false;
-            for (const requestedPermission of permissions) {
-              if (user.permissions && user.permissions.includes(requestedPermission)) {
-                haveAtLeastOnePermission = true;
-                break;
-              }
-            }
-
-            if (!haveAtLeastOnePermission) {
-              Logger.info('Insufficient permission');
-              reject({ statusCode: 403, message: 'Insufficient permission' });
-              return;
-            }
-          }
-        }
-
-        // Store the decoded user on the request
-        resolve(user);
-      });
-    });
+    return entity;
   }
 
   private async fetchPublicKey() {

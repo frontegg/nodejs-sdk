@@ -1,54 +1,28 @@
 import { IdentityClient } from '../clients';
+import { StatusCodeError } from '../clients/identity/exceptions/status-code-error.exception';
 import Logger from '../components/logger';
 import { Request, Response } from 'express';
+import { AuthHeaderType, AuthHeader, IUser, TEntity, tokenTypes } from '../clients/identity/types';
 
 export interface IWithAuthenticationOptions {
   roles?: string[];
   permissions?: string[];
 }
 
-export enum tokenTypes {
-  UserApiToken = 'userApiToken',
-  TenantApiToken = 'tenantApiToken',
-  UserToken = 'userToken',
-}
-
-export type Role = string;
-export type Permission = string;
-export interface IUser {
-  id?: string;
-  sub: string;
-  tenantId: string;
-  roles: Role[];
-  permissions: Permission[];
-  metadata: Record<string, any>;
-  createdByUserId: string;
-  type: tokenTypes;
-  name?: string;
-  email?: string;
-  email_verified?: boolean;
-  invisible?: true;
-  tenantIds?: string[];
-  profilePictureUrl?: string;
-}
-
-export interface StatusCodeError {
-  statusCode: number;
-  message: string;
-}
-
 export function withAuthentication({ roles = [], permissions = [] }: IWithAuthenticationOptions = {}) {
   return async (req: Request, res: Response, next) => {
-    const authorizationHeader: string | undefined = req.header('authorization');
-    if (!authorizationHeader) {
+
+    const authHeader = getAuthHeader(req)
+
+    if (!authHeader) {
       return res.status(401).send('Unauthenticated');
     }
 
-    const token = authorizationHeader.replace('Bearer ', '');
+    const { token, type } = authHeader;
+    let user: TEntity;
 
-    let user: IUser;
     try {
-      user = await IdentityClient.getInstance().validateIdentityOnToken(token, { roles, permissions });
+      user = await IdentityClient.getInstance().validateIdentityOnToken(token, { roles, permissions }, type);
     } catch (e) {
       const { statusCode, message } = <StatusCodeError>e;
       Logger.error(message);
@@ -58,10 +32,10 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
 
     // Store the decoded user on the request
     req.frontegg = {
-      user: { ...user, id: '' },
+      user: { ...user, id: '' } as IUser,
     };
 
-    switch (req.frontegg.user.type) {
+    switch (user.type) {
       case tokenTypes.UserToken:
         // The subject of the token (OpenID token) is saved on the req.frontegg.user as well for easier readability
         req.frontegg.user.id = user.sub;
@@ -69,9 +43,25 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
       case tokenTypes.UserApiToken:
         req.frontegg.user.id = user.createdByUserId;
         break;
+      case tokenTypes.UserAccessToken:
+        req.frontegg.user.id = user.userId
     }
 
     // And move to the next handler
     next();
   };
+}
+
+function getAuthHeader(req: Request): AuthHeader | null {
+  let token: string | undefined = req.header('authorization');
+  if (token) {
+    return { token: token.replace('Bearer ', ''), type: AuthHeaderType.JWT }
+  }
+
+  token = req.header('x-api-key');
+  if (token) {
+    return { token, type: AuthHeaderType.AccessToken };
+  }
+
+  return null;
 }
