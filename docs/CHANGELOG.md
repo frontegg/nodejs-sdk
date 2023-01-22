@@ -1,3 +1,10 @@
+# [4.2.0-alpha.3](https://github.com/frontegg/nodejs-sdk/compare/4.2.0-alpha.2...4.2.0-alpha.3) (2023-01-22)
+
+
+### Features
+
+* **access-tokens:** support access tokens ([#133](https://github.com/frontegg/nodejs-sdk/issues/133)) ([7911b81](https://github.com/frontegg/nodejs-sdk/commit/7911b81ac165a4dc91dbf5ff93e5f86a5464a960))
+
 # [4.2.0-alpha.2](https://github.com/frontegg/nodejs-sdk/compare/4.2.0-alpha.1...4.2.0-alpha.2) (2023-01-22)
 
 
