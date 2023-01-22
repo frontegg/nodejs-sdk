@@ -1,3 +1,10 @@
+# [4.2.0-alpha.2](https://github.com/frontegg/nodejs-sdk/compare/4.2.0-alpha.1...4.2.0-alpha.2) (2023-01-22)
+
+
+### Features
+
+* **clients:** add hosted login client ([#134](https://github.com/frontegg/nodejs-sdk/issues/134)) ([9ebd32a](https://github.com/frontegg/nodejs-sdk/commit/9ebd32a81d78a3ff3a5979275439aa799dab428e))
+
 # [4.2.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/4.1.1...4.2.0-alpha.1) (2023-01-15)
 
 
