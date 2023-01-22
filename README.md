@@ -33,7 +33,7 @@
 ## Breaking Changes
 
 ### As of version 3.0.0 and 4.0.0, we will no longer provide proxy middlewares
-To see an example implementation, head over to our 
+To see an example implementation of a proxy, head over to our 
 <a href="https://github.com/frontegg-samples/nodejs-proxy-sample">sample proxy project</a>
 
 ---
