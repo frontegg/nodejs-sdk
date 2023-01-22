@@ -1,4 +1,4 @@
-import { IUser } from '../../../middlewares';
+import { IUser } from "../../identity/types";
 
 export interface CodeExchangeResponse {
   /**

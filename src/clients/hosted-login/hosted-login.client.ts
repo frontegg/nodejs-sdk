@@ -3,9 +3,9 @@ import Logger from '../../components/logger';
 import { FronteggContext } from '../../components/frontegg-context';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { config } from '../../config';
-import { IUser } from '../../middlewares';
 import { decode } from 'jsonwebtoken';
 import { CodeExchangeRequest, CodeExchangeResponse, RequestAuthorize } from './types';
+import { IUser } from '../identity/types';
 
 export class HostedLoginClient {
   private _baseURL: string | null = null;
