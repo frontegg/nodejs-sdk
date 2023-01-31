@@ -1,3 +1,12 @@
+# [4.2.0](https://github.com/frontegg/nodejs-sdk/compare/4.1.1...4.2.0) (2023-01-31)
+
+
+### Features
+
+* **access-tokens:** support access tokens ([#133](https://github.com/frontegg/nodejs-sdk/issues/133)) ([7911b81](https://github.com/frontegg/nodejs-sdk/commit/7911b81ac165a4dc91dbf5ff93e5f86a5464a960))
+* **clients:** add hosted login client ([#134](https://github.com/frontegg/nodejs-sdk/issues/134)) ([9ebd32a](https://github.com/frontegg/nodejs-sdk/commit/9ebd32a81d78a3ff3a5979275439aa799dab428e))
+* **clients:** add support for multiple identity clients ([2770f69](https://github.com/frontegg/nodejs-sdk/commit/2770f69e40e3a019237aabc622f3b211c77c91c7))
+
 # [4.2.0-alpha.3](https://github.com/frontegg/nodejs-sdk/compare/4.2.0-alpha.2...4.2.0-alpha.3) (2023-01-22)
 
 
