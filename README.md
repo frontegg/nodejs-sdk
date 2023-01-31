@@ -26,6 +26,7 @@
 ## Notice
 
 ### Version 3.0.0 is Deprecated. Please use versions 4.x.x
+
 ### If you are upgrading from version 2.x.x skip version 3.0.0 by installing the latest version
 
 ---
@@ -33,7 +34,8 @@
 ## Breaking Changes
 
 ### As of version 3.0.0 and 4.0.0, we will no longer provide proxy middlewares
-To see an example implementation, head over to our 
+
+To see an example implementation, head over to our
 <a href="https://github.com/frontegg-samples/nodejs-proxy-sample">sample proxy project</a>
 
 ---
@@ -47,35 +49,103 @@ npm install @frontegg/client
 ```
 
 ---
+
 ## Usage
 
 Frontegg offers multiple components for integration with the Frontegg's scaleable back end and front end libraries
 
 Initialize the frontegg context when initializing your app
+
 ```javascript
 const { FronteggContext } = require('@frontegg/client');
 
 FronteggContext.init({
-   FRONTEGG_CLIENT_ID: '<YOUR_CLIENT_ID>',
-   FRONTEGG_API_KEY: '<YOUR_API_KEY>',
+  FRONTEGG_CLIENT_ID: '<YOUR_CLIENT_ID>',
+  FRONTEGG_API_KEY: '<YOUR_API_KEY>',
 });
 ```
+
 ### Middleware
 
 Use Frontegg's "withAuthentication" auth guard to protect your routes.
 
 A simple usage example:
+
 ```javascript
 const { withAuthentication } = require('@frontegg/client');
 
 // This route can now only be accessed by authenticated users
 app.use('/protected', withAuthentication(), (req, res) => {
-    // Authenticated user data will be available on the req.frontegg object
-    callSomeAction(req.frontegg.user)
-    res.status(200);
+  // Authenticated user data will be available on the req.frontegg object
+  callSomeAction(req.frontegg.user);
+  res.status(200);
 });
 ```
+
 Head over to the <a href="https://docs.frontegg.com/docs/using-frontegg-sdk">Docs</a> to find more usage examples of the guard.
+
+### Access tokens
+
+When using M2M authentication, access tokens will be cached by the SDK.
+By default access tokens will be cached locally, however you can use two other kinds of cache:
+
+- ioredis
+- redis
+
+#### Use ioredis as your cache
+When initializing your context, pass an access tokens options object with your ioredis parameters
+
+```javascript
+const { FronteggContext } = require('@frontegg/client');
+
+const accessTokensOptions = {
+  cache: {
+    type: 'ioredis',
+    options: {
+      host: 'localhost',
+      port: 6379,
+      password: '',
+      db: 10,
+    },
+  },
+};
+
+FronteggContext.init(
+  {
+    FRONTEGG_CLIENT_ID: '<YOUR_CLIENT_ID>',
+    FRONTEGG_API_KEY: '<YOUR_API_KEY>',
+  },
+  {
+    accessTokensOptions,
+  },
+);
+```
+
+#### Use redis as your cache
+When initializing your context, pass an access tokens options object with your redis parameters
+
+```javascript
+const { FronteggContext } = require('@frontegg/client');
+
+const accessTokensOptions = {
+  cache: {
+    type: 'redis',
+    options: {
+      url: 'redis[s]://[[username][:password]@][host][:port][/db-number]',
+    },
+  },
+};
+
+FronteggContext.init(
+  {
+    FRONTEGG_CLIENT_ID: '<YOUR_CLIENT_ID>',
+    FRONTEGG_API_KEY: '<YOUR_API_KEY>',
+  },
+  {
+    accessTokensOptions,
+  },
+);
+```
 
 ### Clients
 
@@ -87,7 +157,7 @@ For example, Frontegg’s Managed Audit Logs feature allows a SaaS company to em
 
 ```javascript
 const { AuditsClient } = require('@frontegg/client');
-const audits = new AuditsClient()
+const audits = new AuditsClient();
 
 // initialize the module
 await audits.init('MY-CLIENT-ID', 'MY-AUDITS-KEY');
@@ -97,13 +167,13 @@ await audits.init('MY-CLIENT-ID', 'MY-AUDITS-KEY');
 
 ```javascript
 await audits.sendAudit({
-    tenantId: 'my-tenant-id',
-    time: Date(),
-    user: 'info@frontegg.com',
-    resource: 'Portal',
-    action: 'Login',
-    severity: 'Medium',
-    ip: '1.2.3.4'
+  tenantId: 'my-tenant-id',
+  time: Date(),
+  user: 'info@frontegg.com',
+  resource: 'Portal',
+  action: 'Login',
+  severity: 'Medium',
+  ip: '1.2.3.4',
 });
 ```
 
@@ -111,12 +181,12 @@ await audits.sendAudit({
 
 ```javascript
 const { data, total } = await audits.getAudits({
-    tenantId: 'my-tenant-id',
-    filter: 'any-text-filter',
-    sortBy: 'my-sort-field',
-    sortDirection: 'asc | desc',
-    offset: 0,  // Offset for starting the page
-    count: 50   // Number of desired items
+  tenantId: 'my-tenant-id',
+  filter: 'any-text-filter',
+  sortBy: 'my-sort-field',
+  sortDirection: 'asc | desc',
+  offset: 0, // Offset for starting the page
+  count: 50, // Number of desired items
 });
 ```
 
@@ -128,16 +198,55 @@ authenticator which maintains the backend to backend session
 
 ```javascript
 const authenticator = new FronteggAuthenticator();
-await authenticator.init('<YOUR_CLIENT_ID>', '<YOUR_API_KEY>')
+await authenticator.init('<YOUR_CLIENT_ID>', '<YOUR_API_KEY>');
 
 // You can optionally set the base url from the HttpClient
 const httpClient = new HttpClient(authenticator, { baseURL: 'https://api.frontegg.com' });
 
-await httpClient.post('identity/resources/auth/v1/user', {
+await httpClient.post(
+  'identity/resources/auth/v1/user',
+  {
     email: 'johndoe@acme.com',
-    password: 'my-super-duper-password'
-}, {
+    password: 'my-super-duper-password',
+  },
+  {
     // When providing vendor-host, it will replace(<...>) https://<api>.frontegg.com with vendor host
-   'frontegg-vendor-host': 'acme.frontegg'
+    'frontegg-vendor-host': 'acme.frontegg',
+  },
+);
+```
+
+### Validating JWT manually
+
+If required you can implement your own middleware which will validate the Frontegg JWT using the `IdentityClient`
+
+First, let's import the `IdentityClient`
+
+```javascript
+const { IdentityClient } = require('@frontegg/client');
+```
+
+Then, initialize the client
+
+```javascript
+const identityClient = new IdentityClient({ FRONTEGG_CLIENT_ID: 'your-client-id', FRONTEGG_API_KEY: 'your-api-key' });
+```
+
+And use this client to validate
+
+```javascript
+app.use('/protected', (req, res, next) => {
+  const token = req.headers.authorization;
+  let user: IUser;
+  try {
+    user = identityClient.validateIdentityOnToken(token, { roles: ['admin'], permissions: ['read'] });
+    req.user = user;
+  } catch (e) {
+    console.error(e);
+    next(e);
+    return;
+  }
+
+  next();
 });
 ```
