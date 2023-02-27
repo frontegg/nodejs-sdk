@@ -1,3 +1,10 @@
+## [4.2.1](https://github.com/frontegg/nodejs-sdk/compare/4.2.0...4.2.1) (2023-02-27)
+
+
+### Bug Fixes
+
+* **clients:** identity client types ([#137](https://github.com/frontegg/nodejs-sdk/issues/137)) ([03200bc](https://github.com/frontegg/nodejs-sdk/commit/03200bc465d507f9884067881a10eb01040380db))
+
 ## [4.2.1-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/4.2.0...4.2.1-alpha.1) (2023-02-27)
 
 
