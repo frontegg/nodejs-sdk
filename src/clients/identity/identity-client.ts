@@ -3,12 +3,21 @@ import { FronteggAuthenticator } from '../../authenticator';
 import { config } from '../../config';
 import Logger from '../../components/logger';
 import { FronteggContext } from '../../components/frontegg-context';
-import { AuthHeaderType, IValidateTokenOptions, TEntity } from './types';
+import {
+  AuthHeaderType,
+  ExtractCredentialsResult,
+  ITenantApiToken,
+  IUser,
+  IUserApiToken,
+  IValidateTokenOptions,
+  TEntity,
+} from './types';
 import { accessTokenHeaderResolver, authorizationHeaderResolver, TokenResolver } from './token-resolvers';
 import { FailedToAuthenticateException } from './exceptions/failed-to-authenticate.exception';
 import { IFronteggContext } from '../../components/frontegg-context/types';
+import { type } from 'os';
 
-const tokenResolvers = [authorizationHeaderResolver, accessTokenHeaderResolver]
+const tokenResolvers = [authorizationHeaderResolver, accessTokenHeaderResolver];
 
 export class IdentityClient {
   public static getInstance() {
@@ -38,11 +47,31 @@ export class IdentityClient {
     return this.publicKey;
   }
 
-  public async validateIdentityOnToken(
+  public async validateToken(
     token: string,
     options?: IValidateTokenOptions,
-    type: AuthHeaderType = AuthHeaderType.JWT
+    type: AuthHeaderType = AuthHeaderType.JWT,
   ): Promise<TEntity> {
+    const { token: formattedToken, publicKey } = await this.extractTokenCredentials(token, type);
+
+    const resolver = tokenResolvers.find((resolver) => resolver.shouldHandle(type)) as TokenResolver<TEntity>;
+    if (!resolver) {
+      Logger.error('Failed to find token resolver');
+      throw new FailedToAuthenticateException();
+    }
+
+    return await resolver.validateToken(formattedToken, publicKey, options);
+  }
+
+  public async validateIdentityOnToken(token: string, options?: IValidateTokenOptions): Promise<IUser> {
+    const { token: formattedToken, publicKey } = await this.extractTokenCredentials(token, AuthHeaderType.JWT);
+
+    const entity = await authorizationHeaderResolver.validateToken(formattedToken, publicKey, options);
+
+    return entity as IUser;
+  }
+
+  private async extractTokenCredentials(token: string, type: AuthHeaderType): Promise<ExtractCredentialsResult> {
     if (type === AuthHeaderType.JWT) {
       try {
         token = token.replace('Bearer ', '');
@@ -60,15 +89,7 @@ export class IdentityClient {
       throw new FailedToAuthenticateException();
     }
 
-    const resolver = tokenResolvers.find((resolver) => resolver.shouldHandle(type)) as TokenResolver<TEntity>
-    if (!resolver) {
-      Logger.error('Failed to find token resolver');
-      throw new FailedToAuthenticateException();
-    }
-
-    const entity = await resolver.validateToken(token, publicKey, options)
-
-    return entity;
+    return { publicKey, token };
   }
 
   private async fetchPublicKey() {

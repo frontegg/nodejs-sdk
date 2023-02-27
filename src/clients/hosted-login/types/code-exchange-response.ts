@@ -1,4 +1,4 @@
-import { IUser } from "../../identity/types";
+import { IUser } from '../../identity/types';
 
 export interface CodeExchangeResponse {
   /**
