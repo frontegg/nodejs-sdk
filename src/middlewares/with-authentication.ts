@@ -11,8 +11,7 @@ export interface IWithAuthenticationOptions {
 
 export function withAuthentication({ roles = [], permissions = [] }: IWithAuthenticationOptions = {}) {
   return async (req: Request, res: Response, next) => {
-
-    const authHeader = getAuthHeader(req)
+    const authHeader = getAuthHeader(req);
 
     if (!authHeader) {
       return res.status(401).send('Unauthenticated');
@@ -22,7 +21,7 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
     let user: TEntity;
 
     try {
-      user = await IdentityClient.getInstance().validateIdentityOnToken(token, { roles, permissions }, type);
+      user = await IdentityClient.getInstance().validateToken(token, { roles, permissions }, type);
     } catch (e) {
       const { statusCode, message } = <StatusCodeError>e;
       Logger.error(message);
@@ -44,7 +43,7 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
         req.frontegg.user.id = user.createdByUserId;
         break;
       case tokenTypes.UserAccessToken:
-        req.frontegg.user.id = user.userId
+        req.frontegg.user.id = user.userId;
     }
 
     // And move to the next handler
@@ -55,7 +54,7 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
 function getAuthHeader(req: Request): AuthHeader | null {
   let token: string | undefined = req.header('authorization');
   if (token) {
-    return { token: token.replace('Bearer ', ''), type: AuthHeaderType.JWT }
+    return { token: token.replace('Bearer ', ''), type: AuthHeaderType.JWT };
   }
 
   token = req.header('x-api-key');

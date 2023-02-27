@@ -6,5 +6,5 @@ export * from './access-token-services';
 export * from './access-token-resolver';
 export * from './token-resolver';
 
-export const authorizationHeaderResolver = new AuthorizationJWTResolver(); 
-export const accessTokenHeaderResolver = new AccessTokenResolver(); 
+export const authorizationHeaderResolver = new AuthorizationJWTResolver();
+export const accessTokenHeaderResolver = new AccessTokenResolver();
