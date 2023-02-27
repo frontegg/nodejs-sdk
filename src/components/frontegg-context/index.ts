@@ -1,6 +1,6 @@
-import { IIORedisCacheOptions, IRedisCacheOptions } from "../../cache/types";
-import { PackageUtils } from "../../utils/package-loader";
-import { IFronteggContext, IFronteggOptions, IAccessTokensOptions } from './types'
+import { IIORedisCacheOptions, IRedisCacheOptions } from '../../cache/types';
+import { PackageUtils } from '../../utils/package-loader';
+import { IFronteggContext, IFronteggOptions, IAccessTokensOptions } from './types';
 
 export class FronteggContext {
   public static getInstance(): FronteggContext {
@@ -13,7 +13,7 @@ export class FronteggContext {
 
   public static init(context: IFronteggContext, options?: IFronteggOptions) {
     FronteggContext.getInstance().context = context;
-    FronteggContext.getInstance().validateOptions(options)
+    FronteggContext.getInstance().validateOptions(options);
     FronteggContext.getInstance().options = options ?? {};
   }
 
@@ -27,14 +27,14 @@ export class FronteggContext {
   }
 
   public static getOptions(): IFronteggOptions {
-    return FronteggContext.getInstance().options || {}
+    return FronteggContext.getInstance().options || {};
   }
 
   private static instance: FronteggContext;
   private context: IFronteggContext | null = null;
   private options: IFronteggOptions = {};
 
-  private constructor() { }
+  private constructor() {}
 
   private validateOptions(options?: IFronteggOptions): void {
     if (options?.accessTokensOptions) {
@@ -48,7 +48,7 @@ export class FronteggContext {
     }
 
     if (accessTokensOptions.cache.type === 'ioredis') {
-      this.validateIORedisOptions(accessTokensOptions.cache.options)
+      this.validateIORedisOptions(accessTokensOptions.cache.options);
     } else if (accessTokensOptions.cache.type === 'redis') {
       this.validateRedisOptions(accessTokensOptions.cache.options);
     }
@@ -60,19 +60,19 @@ export class FronteggContext {
     const requiredProperties: (keyof IIORedisCacheOptions)[] = ['host', 'password', 'port', 'db'];
     requiredProperties.forEach((requiredProperty) => {
       if (redisOptions[requiredProperty] === undefined) {
-        throw new Error(`${requiredProperty} is missing from ioredis cache options`)
+        throw new Error(`${requiredProperty} is missing from ioredis cache options`);
       }
-    })
+    });
   }
-  
+
   private validateRedisOptions(redisOptions: IRedisCacheOptions): void {
     PackageUtils.loadPackage('redis');
 
     const requiredProperties: (keyof IRedisCacheOptions)[] = ['url'];
     requiredProperties.forEach((requiredProperty) => {
       if (redisOptions[requiredProperty] === undefined) {
-        throw new Error(`${requiredProperty} is missing from redis cache options`)
+        throw new Error(`${requiredProperty} is missing from redis cache options`);
       }
-    })
+    });
   }
 }

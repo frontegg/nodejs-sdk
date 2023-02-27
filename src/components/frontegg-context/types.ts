@@ -1,32 +1,32 @@
-import { IIORedisCacheOptions, IRedisCacheOptions } from "../../cache/types";
+import { IIORedisCacheOptions, IRedisCacheOptions } from '../../cache/types';
 
 export interface IFronteggContext {
-    FRONTEGG_CLIENT_ID: string;
-    FRONTEGG_API_KEY: string;
+  FRONTEGG_CLIENT_ID: string;
+  FRONTEGG_API_KEY: string;
 }
 
 export interface IFronteggOptions {
-    accessTokensOptions?: IAccessTokensOptions;
+  accessTokensOptions?: IAccessTokensOptions;
 }
 
 export interface IAccessTokensOptions {
-    cache: IAccessTokensLocalCache | IAccessTokensIORedisCache | IAccessTokensRedisCache;
+  cache: IAccessTokensLocalCache | IAccessTokensIORedisCache | IAccessTokensRedisCache;
 }
 
 export interface IAccessTokensCache {
-    type: 'ioredis' | 'local' | 'redis';
+  type: 'ioredis' | 'local' | 'redis';
 }
 
 export interface IAccessTokensLocalCache extends IAccessTokensCache {
-    type: 'local';
+  type: 'local';
 }
 
 export interface IAccessTokensIORedisCache extends IAccessTokensCache {
-    type: 'ioredis';
-    options: IIORedisCacheOptions;
+  type: 'ioredis';
+  options: IIORedisCacheOptions;
 }
 
 export interface IAccessTokensRedisCache extends IAccessTokensCache {
-    type: 'redis';
-    options: IRedisCacheOptions;
+  type: 'redis';
+  options: IRedisCacheOptions;
 }
