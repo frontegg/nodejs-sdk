@@ -51,11 +51,11 @@ export abstract class TokenResolver<T extends IEntity> {
             haveAtLeastOneRole = true;
             break;
           }
+        }
 
-          if (!haveAtLeastOneRole) {
-            Logger.info('Insufficient role');
-            throw new InsufficientRoleException();
-          }
+        if (!haveAtLeastOneRole) {
+          Logger.info('Insufficient role');
+          throw new InsufficientRoleException();
         }
       }
 
