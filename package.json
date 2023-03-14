@@ -1,7 +1,7 @@
 {
   "name": "@frontegg/client",
   "version": "2.0.16",
-  "description": "Frontegg Javascript Library for backend",
+  "description": "Frontegg Javascript Library for backend node servers",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
