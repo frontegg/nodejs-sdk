@@ -1,3 +1,10 @@
+## [4.2.2](https://github.com/frontegg/nodejs-sdk/compare/4.2.1...4.2.2) (2023-03-14)
+
+
+### Bug Fixes
+
+* **token-resolver:** fix auth guard insufficient roles check ([#140](https://github.com/frontegg/nodejs-sdk/issues/140)) ([57aa38a](https://github.com/frontegg/nodejs-sdk/commit/57aa38a98a9d86483b9b0bfab6e8e718cb51f236))
+
 ## [4.2.2-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/4.2.1...4.2.2-alpha.1) (2023-03-14)
 
 
