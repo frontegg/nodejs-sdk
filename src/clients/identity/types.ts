@@ -58,6 +58,7 @@ export interface IUser extends IEntityWithRoles {
   invisible?: true;
   tenantIds?: string[];
   profilePictureUrl?: string;
+  superUser?: true;
 }
 
 export interface IApiToken extends IEntityWithRoles {
