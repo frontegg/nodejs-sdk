@@ -1,3 +1,15 @@
+# [5.0.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/4.2.2...5.0.0-alpha.1) (2023-06-18)
+
+
+### Bug Fixes
+
+* **identity:** added superUser property to IUser ([#145](https://github.com/frontegg/nodejs-sdk/issues/145)) ([a73fc0e](https://github.com/frontegg/nodejs-sdk/commit/a73fc0ef6bcf9bda690a115b1d93fbe7968992e8))
+
+
+### BREAKING CHANGES
+
+* **identity:** dropping support for node 12
+
 ## [4.2.2](https://github.com/frontegg/nodejs-sdk/compare/4.2.1...4.2.2) (2023-03-14)
 
 

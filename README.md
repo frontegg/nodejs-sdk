@@ -33,7 +33,8 @@
 
 ## Breaking Changes
 
-### As of version 3.0.0 and 4.0.0, we will no longer provide proxy middlewares
+* ### As of version 3.0.0 and 4.0.0, we will no longer provide proxy middlewares
+* ### As of version 5.0.0, node 12 is no loner supported.
 
 To see an example implementation, head over to our
 <a href="https://github.com/frontegg-samples/nodejs-proxy-sample">sample proxy project</a>
@@ -45,6 +46,7 @@ To see an example implementation, head over to our
 Install the package using [npm](https://www.npmjs.com/)
 
 ```bash
+# node 14+
 npm install @frontegg/client
 ```
 
