@@ -53,7 +53,6 @@ export class IdentityClient {
     type: AuthHeaderType = AuthHeaderType.JWT,
   ): Promise<TEntity> {
     const { token: formattedToken, publicKey } = await this.extractTokenCredentials(token, type);
-
     const resolver = tokenResolvers.find((resolver) => resolver.shouldHandle(type)) as TokenResolver<TEntity>;
     if (!resolver) {
       Logger.error('Failed to find token resolver');
@@ -114,5 +113,25 @@ export class IdentityClient {
     Logger.info('going to extract public key from response');
     this.publicKey = publicKey;
     await authenticator.shutdown();
+  }
+
+  public async getApiSecurityPolicy(){
+    const authenticator = new FronteggAuthenticator();
+    Logger.info('going to authenticate');
+    const { FRONTEGG_CLIENT_ID, FRONTEGG_API_KEY } = this.context;
+    await authenticator.init(
+        FRONTEGG_CLIENT_ID || process.env.FRONTEGG_CLIENT_ID || '',
+        FRONTEGG_API_KEY || process.env.FRONTEGG_API_KEY || '',
+    );
+    Logger.info('going to get identity service configuration');
+    const response = await axios.get(`${config.urls.identityService}/resources/api-security/v1`, {
+      headers: {
+        'x-access-token': authenticator.accessToken,
+      },
+    });
+
+    await authenticator.shutdown();
+
+    return response.data;
   }
 }

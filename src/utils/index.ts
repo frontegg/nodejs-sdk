@@ -1,3 +1,5 @@
+import {Request} from "express";
+import {AuthHeader, AuthHeaderType} from "../clients/identity/types";
 import Logger from '../components/logger';
 
 interface RetryOptions {
@@ -28,3 +30,17 @@ export const retry = async (
 };
 
 const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+
+export function getAuthHeader(req: Request): AuthHeader | null {
+    let token: string | undefined = req.header('authorization');
+    if (token) {
+        return {token: token.replace('Bearer ', ''), type: AuthHeaderType.JWT};
+    }
+
+    token = req.header('x-api-key');
+    if (token) {
+        return {token, type: AuthHeaderType.AccessToken};
+    }
+
+    return null;
+}

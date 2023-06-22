@@ -1,8 +1,9 @@
-import { IdentityClient } from '../clients';
-import { StatusCodeError } from '../clients/identity/exceptions/status-code-error.exception';
+import {Request, Response} from 'express';
+import {IdentityClient} from '../clients';
+import {StatusCodeError} from '../clients/identity/exceptions/status-code-error.exception';
+import {IUser, TEntity, tokenTypes} from '../clients/identity/types';
 import Logger from '../components/logger';
-import { Request, Response } from 'express';
-import { AuthHeaderType, AuthHeader, IUser, TEntity, tokenTypes } from '../clients/identity/types';
+import {getAuthHeader} from "../utils";
 
 export interface IWithAuthenticationOptions {
   roles?: string[];
@@ -25,7 +26,7 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
     } catch (e) {
       const { statusCode, message } = <StatusCodeError>e;
       Logger.error(message);
-      res.status(statusCode).send(`Failed to verify authentication`);
+      res.status(statusCode).send(message ? message : `Failed to verify authentication`);
       return next(e);
     }
 
@@ -51,16 +52,3 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
   };
 }
 
-function getAuthHeader(req: Request): AuthHeader | null {
-  let token: string | undefined = req.header('authorization');
-  if (token) {
-    return { token: token.replace('Bearer ', ''), type: AuthHeaderType.JWT };
-  }
-
-  token = req.header('x-api-key');
-  if (token) {
-    return { token, type: AuthHeaderType.AccessToken };
-  }
-
-  return null;
-}

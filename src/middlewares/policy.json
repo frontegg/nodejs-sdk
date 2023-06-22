@@ -1,0 +1,67 @@
+[
+  {
+    "id": "d07df9bc-238e-4b39-a655-18219dbde566",
+    "vendorId": "vendorush2",
+    "resourceName": "/test",
+    "method": "GET",
+    "riskLevel": "medium",
+    "confidenceLevel": 70,
+    "permissions": [
+      {
+        "id": "f6891d28-5708-4ea9-9798-56fa65bc1b6e",
+        "key": "test.read",
+        "name": "842c569b-3e08-463b-ad46-bd9296efd843",
+        "description": "a42f40cf-8ef8-48ae-9321-7c2fe1f59117",
+        "createdAt": "2023-06-19T13:15:53.000Z",
+        "updatedAt": "2023-06-19T13:15:53.000Z",
+        "categoryId": "acbd8f38-b505-4a5a-8c1d-56aeb2bc2b93",
+        "fePermission": false
+      },
+      {
+        "id": "2a96ab25-08a4-436c-9afd-e980ae322921",
+        "key": "b29f5d90-189d-43b1-b962-1032b3917a28",
+        "name": "86b0bd8c-a3dd-4383-9092-1a0e746d4cb8",
+        "description": "a5695ccb-16f5-4a71-85a3-c7d99d6d3234",
+        "createdAt": "2023-06-19T13:15:53.000Z",
+        "updatedAt": "2023-06-19T13:15:53.000Z",
+        "categoryId": "99e2e17f-acce-4321-820a-a228cf418a01",
+        "fePermission": false
+      }
+    ],
+    "createdAt": "2023-06-19T13:15:53.000Z",
+    "updatedAt": "2023-06-19T13:15:53.000Z"
+  },
+  {
+    "id": "d07df9bc-238e-4b39-a655-18219dbde566",
+    "vendorId": "vendorush2",
+    "resourceName": "/test",
+    "method": "POST",
+    "riskLevel": "medium",
+    "confidenceLevel": 70,
+    "permissions": [
+      {
+        "id": "f6891d28-5708-4ea9-9798-56fa65bc1b6e",
+        "key": "test.write",
+        "name": "842c569b-3e08-463b-ad46-bd9296efd843",
+        "description": "a42f40cf-8ef8-48ae-9321-7c2fe1f59117",
+        "createdAt": "2023-06-19T13:15:53.000Z",
+        "updatedAt": "2023-06-19T13:15:53.000Z",
+        "categoryId": "acbd8f38-b505-4a5a-8c1d-56aeb2bc2b93",
+        "fePermission": false
+      },
+      {
+        "id": "2a96ab25-08a4-436c-9afd-e980ae322921",
+        "key": "b29f5d90-189d-43b1-b962-1032b3917a28",
+        "name": "86b0bd8c-a3dd-4383-9092-1a0e746d4cb8",
+        "description": "a5695ccb-16f5-4a71-85a3-c7d99d6d3234",
+        "createdAt": "2023-06-19T13:15:53.000Z",
+        "updatedAt": "2023-06-19T13:15:53.000Z",
+        "categoryId": "99e2e17f-acce-4321-820a-a228cf418a01",
+        "fePermission": false
+      }
+    ],
+    "createdAt": "2023-06-19T13:15:53.000Z",
+    "updatedAt": "2023-06-19T13:15:53.000Z"
+  }
+]
+
