@@ -14,5 +14,6 @@ export namespace config {
     public static identityService = process.env.FRONTEGG_IDENTITY_SERVICE_URL || `${baseUrl}/identity`;
     public static vendorsService = process.env.FRONTEGG_VENDORS_SERVICE_URL || `${baseUrl}/vendors`;
     public static oauthService = process.env.FRONTEGG_OAUTH_SERVICE_URL || `${baseUrl}/oauth`;
+    public static entitlementsService = process.env.FRONTEGG_ENTITLEMENTS_SERVICE_URL || `${baseUrl}/entitlements`;
   }
 }
