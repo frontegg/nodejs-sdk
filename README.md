@@ -192,6 +192,35 @@ const { data, total } = await audits.getAudits({
 });
 ```
 
+### Entitlements Client
+
+#### Initializing the client
+```javascript
+
+const { EntitlementsClient } = require('@frontegg/client');
+
+// initialize the FronteggContext
+FronteggContext.init(
+  {
+    FRONTEGG_CLIENT_ID: '<YOUR_CLIENT_ID>',
+    FRONTEGG_API_KEY: '<YOUR_API_KEY>',
+  },
+  {
+    accessTokensOptions,
+  },
+);
+
+// initialize entitlements client
+const client = await EntitlementsClient.init(/* */);
+await client.ready();
+```
+
+#### Closing the client
+To gracefully close the client:
+```javascript
+client.destroy();
+```
+
 ### Working with the REST API
 
 Frontegg provides a comprehensive REST API for your application.
