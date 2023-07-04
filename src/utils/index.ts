@@ -1,6 +1,6 @@
 import Logger from '../components/logger';
 
-interface RetryOptions {
+export interface RetryOptions {
   numberOfTries: number;
   secondsDelayRange: {
     min: number;

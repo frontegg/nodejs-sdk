@@ -2,21 +2,25 @@ import { IFronteggContext } from '../../components/frontegg-context/types';
 import { FronteggContext } from '../../components/frontegg-context';
 import { FronteggAuthenticator } from '../../authenticator';
 import {
+  EntitlementsClientOptions,
   EntitlementsDto,
   FeatureBundleDto,
   FeatureDto,
-  IsEntitledResult,
   VendorEntitlementsDto,
-  VendorEntitlementsSnapshotOffsetDto
+  VendorEntitlementsSnapshotOffsetDto,
 } from './types';
 import { config } from '../../config';
 import { HttpClient } from '../http';
-import Logger from "../../components/logger";
+import Logger from '../../components/logger';
+import { retry } from '../../utils';
+import * as EventEmitter from 'events';
+import { EntitlementsClientEvents } from './entitlements-client.events';
 
-export class EntitlementsClient {
-
+export class EntitlementsClient extends EventEmitter {
   // periodical refresh handler
-  private readonly refreshInterval: NodeJS.Timeout;
+  private refreshTimeout: NodeJS.Timeout;
+  private readyPromise: Promise<EntitlementsClient>;
+  private readonly options: EntitlementsClientOptions;
 
   // snapshot data
   private features: FeatureDto[] = [];
@@ -24,18 +28,35 @@ export class EntitlementsClient {
   private entitlements: EntitlementsDto[] = [];
   private offset: number = -1;
 
-  private constructor(
-    private readonly authenticator: FronteggAuthenticator,
-    private readonly httpClient: HttpClient,
-  ) {
-    this.refreshInterval = setInterval(async () => {
-      if (!await this.haveRecentSnapshot()) {
-        Logger.debug('[entitlements] Refreshing the outdated snapshot.', { currentOffset: this.offset });
+  private constructor(private readonly httpClient: HttpClient, options: Partial<EntitlementsClientOptions> = {}) {
+    super();
 
-        await this.loadVendorEntitlements()
-        Logger.debug('[entitlements] Snapshot refreshed.', { currentOffset: this.offset });
-      }
-    }, 30_000);
+    this.options = this.parseOptions(options);
+
+    this.readyPromise = new Promise((resolve) => {
+      this.once(EntitlementsClientEvents.INITIALIZED, () => resolve(this));
+    });
+
+    this.refreshTimeout = setTimeout(
+      () =>
+        this.refreshSnapshot().then(() => {
+          this.emit(EntitlementsClientEvents.INITIALIZED);
+        }),
+      this.options.initializationDelayMs,
+    );
+  }
+
+  private parseOptions(givenOptions: Partial<EntitlementsClientOptions>): EntitlementsClientOptions {
+    return {
+      retry: { numberOfTries: 3, secondsDelayRange: { min: 0.5, max: 5 } },
+      initializationDelayMs: 0,
+      refreshTimeoutMs: 30_000,
+      ...givenOptions,
+    };
+  }
+
+  public ready(): Promise<EntitlementsClient> {
+    return this.readyPromise;
   }
 
   private async loadVendorEntitlements(): Promise<void> {
@@ -49,11 +70,31 @@ export class EntitlementsClient {
     this.offset = entitlementsData.data.snapshotOffset;
   }
 
+  private async refreshSnapshot(): Promise<void> {
+    await retry(async () => {
+      if (!(await this.haveRecentSnapshot())) {
+        Logger.debug('[entitlements] Refreshing the outdated snapshot.', { currentOffset: this.offset });
+
+        await this.loadVendorEntitlements();
+        Logger.debug('[entitlements] Snapshot refreshed.', { currentOffset: this.offset });
+      }
+    }, this.options.retry);
+
+    this.refreshTimeout = setTimeout(() => this.refreshSnapshot(), this.options.refreshTimeoutMs);
+    this.emit(EntitlementsClientEvents.SNAPSHOT_UPDATED, this.offset);
+  }
+
   private async haveRecentSnapshot(): Promise<boolean> {
-    const serverOffsetDto = await this.httpClient.get<VendorEntitlementsSnapshotOffsetDto>('/api/vendor-entitlements-snapshot-offset');
+    const serverOffsetDto = await this.httpClient.get<VendorEntitlementsSnapshotOffsetDto>(
+      '/api/vendor-entitlements-snapshot-offset',
+    );
     const isRecent = serverOffsetDto.data.snapshotOffset === this.offset;
 
-    Logger.debug('[entitlements] Offsets compared.', { isRecent, serverOffset: serverOffsetDto.data.snapshotOffset, localOffset: this.offset });
+    Logger.debug('[entitlements] Offsets compared.', {
+      isRecent,
+      serverOffset: serverOffsetDto.data.snapshotOffset,
+      localOffset: this.offset,
+    });
 
     return isRecent;
   }
@@ -64,14 +105,10 @@ export class EntitlementsClient {
 
     const httpClient = new HttpClient(authenticator, { baseURL: config.urls.entitlementsService });
 
-    const client = new EntitlementsClient(authenticator, httpClient);
-    await client.loadVendorEntitlements();
-
-    return client;
+    return new EntitlementsClient(httpClient);
   }
 
   destroy(): void {
-    clearInterval(this.refreshInterval);
+    clearTimeout(this.refreshTimeout);
   }
-
 }

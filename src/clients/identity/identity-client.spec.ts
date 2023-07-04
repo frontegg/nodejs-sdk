@@ -99,11 +99,7 @@ describe('Identity client', () => {
       //@ts-ignore
       jest.spyOn(accessTokenHeaderResolver, 'getActiveAccessTokenIds').mockImplementation(() => [claims.sub]);
 
-      const res = await IdentityClient.getInstance().validateToken(
-        'fake-token',
-        {},
-        AuthHeaderType.AccessToken,
-      );
+      const res = await IdentityClient.getInstance().validateToken('fake-token', {}, AuthHeaderType.AccessToken);
       expect(res).toEqual(claims);
     },
   );
@@ -143,11 +139,7 @@ describe('Identity client', () => {
     //@ts-ignore
     jest.spyOn(authorizationHeaderResolver, 'verifyAsync').mockImplementation(() => fakeUser);
     try {
-      await IdentityClient.getInstance().validateToken(
-        'fake-token',
-        { roles: ['ReadOnly'] },
-        AuthHeaderType.JWT,
-      );
+      await IdentityClient.getInstance().validateToken('fake-token', { roles: ['ReadOnly'] }, AuthHeaderType.JWT);
     } catch (e: any) {
       expect(e.statusCode).toEqual(403);
       expect(e.message).toEqual('Insufficient role');
