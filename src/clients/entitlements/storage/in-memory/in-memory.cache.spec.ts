@@ -11,7 +11,7 @@ describe(InMemoryEntitlementsCache.name, () => {
         data: {
           entitlements: [],
           features: [['f-1', 'foo', []]],
-          featureBundles: [['b-1', 'foo-bundle', ['f-1']]],
+          featureBundles: [['b-1', ['f-1']]],
         },
       });
     });
@@ -28,7 +28,7 @@ describe(InMemoryEntitlementsCache.name, () => {
         snapshotOffset: 2,
         data: {
           features: [['f-1', 'foo', []]],
-          featureBundles: [['b-1', 'foo-bundle', ['f-1']]],
+          featureBundles: [['b-1', ['f-1']]],
           entitlements: [['b-1', 't-1', 'u-1']],
         },
       });
@@ -46,7 +46,7 @@ describe(InMemoryEntitlementsCache.name, () => {
         snapshotOffset: 3,
         data: {
           features: [['f-1', 'foo', []]],
-          featureBundles: [['b-1', 'foo-bundle', ['f-1']]],
+          featureBundles: [['b-1', ['f-1']]],
           entitlements: [['b-1', 't-1']],
         },
       });
@@ -69,7 +69,7 @@ describe(InMemoryEntitlementsCache.name, () => {
         snapshotOffset: 4,
         data: {
           features: [['f-1', 'foo', []]],
-          featureBundles: [['b-1', 'foo-bundle', ['f-1']]],
+          featureBundles: [['b-1', ['f-1']]],
           entitlements: [
             ['b-1', 't-1', 'u-1', '2022-06-01T12:00:00+00:00'], // TS: 1654084800000
             ['b-1', 't-1', 'u-1', '2022-07-01T12:00:00+00:00'], // TS: 1656676800000
@@ -97,7 +97,7 @@ describe(InMemoryEntitlementsCache.name, () => {
         snapshotOffset: 4,
         data: {
           features: [['f-1', 'foo', []]],
-          featureBundles: [['b-1', 'foo-bundle', ['f-1']]],
+          featureBundles: [['b-1', ['f-1']]],
           entitlements: [
             ['b-1', 't-1', 'u-1', '2022-06-01T12:00:00+00:00'], // TS: 1654084800000
             ['b-1', 't-1', 'u-1'],

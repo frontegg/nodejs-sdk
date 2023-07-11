@@ -93,7 +93,7 @@ export class InMemoryEntitlementsCache implements EntitlementsCache {
 
     // initialize bundles map
     bundles.forEach((bundle) => {
-      const [id, , featureIds] = bundle;
+      const [id, featureIds] = bundle;
       bundlesMap.set(id, {
         id,
         user_entitlements: new Map(),

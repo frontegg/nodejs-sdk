@@ -20,8 +20,7 @@ export type FeatureId = string;
 export type FeatureTuple = [FeatureId, FeatureKey, Permission[]];
 
 export type FeatureBundleId = string;
-export type FeatureBundleKey = string;
-export type FeatureBundleTuple = [FeatureBundleId, FeatureBundleKey, FeatureId[]];
+export type FeatureBundleTuple = [FeatureBundleId, FeatureId[]];
 
 export type ExpirationDate = string | null;
 export type EntitlementTuple = [FeatureBundleId, TenantId, UserId?, ExpirationDate?];

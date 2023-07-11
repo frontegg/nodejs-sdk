@@ -65,7 +65,7 @@ export class EntitlementsClient extends EventEmitter {
   }
 
   private async loadVendorEntitlements(): Promise<void> {
-    const entitlementsData = await this.httpClient.get<VendorEntitlementsDto>('/api/vendor-entitlements');
+    const entitlementsData = await this.httpClient.get<VendorEntitlementsDto>('/api/v1/vendor-entitlements');
 
     const vendorEntitlementsDto = entitlementsData.data;
     const newOffset = entitlementsData.data.snapshotOffset;
@@ -97,7 +97,7 @@ export class EntitlementsClient extends EventEmitter {
 
   private async haveRecentSnapshot(): Promise<boolean> {
     const serverOffsetDto = await this.httpClient.get<VendorEntitlementsSnapshotOffsetDto>(
-      '/api/vendor-entitlements-snapshot-offset',
+      '/api/v1/vendor-entitlements-snapshot-offset',
     );
     const isRecent = serverOffsetDto.data.snapshotOffset === this.offset;
 
