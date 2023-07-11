@@ -1,31 +1,28 @@
 import { IFronteggContext } from '../../components/frontegg-context/types';
 import { FronteggContext } from '../../components/frontegg-context';
 import { FronteggAuthenticator } from '../../authenticator';
-import {
-  EntitlementsClientOptions,
-  EntitlementsDto,
-  FeatureBundleDto,
-  FeatureDto,
-  VendorEntitlementsDto,
-  VendorEntitlementsSnapshotOffsetDto,
-} from './types';
+import { EntitlementsClientOptions, VendorEntitlementsDto, VendorEntitlementsSnapshotOffsetDto } from './types';
 import { config } from '../../config';
 import { HttpClient } from '../http';
 import Logger from '../../components/logger';
 import { retry } from '../../utils';
 import * as EventEmitter from 'events';
 import { EntitlementsClientEvents } from './entitlements-client.events';
+import { EntitlementsCache } from './storage/types';
+import { InMemoryEntitlementsCache } from './storage/in-memory/in-memory.cache';
+import { IEntity, TEntityWithRoles } from '../identity/types';
+import { EntitlementsUserScoped } from './entitlements.user-scoped';
 
 export class EntitlementsClient extends EventEmitter {
   // periodical refresh handler
   private refreshTimeout: NodeJS.Timeout;
-  private readyPromise: Promise<EntitlementsClient>;
+  private readonly readyPromise: Promise<EntitlementsClient>;
   private readonly options: EntitlementsClientOptions;
 
+  // cache instance
+  private cache?: EntitlementsCache;
+
   // snapshot data
-  private features: FeatureDto[] = [];
-  private bundles: FeatureBundleDto[] = [];
-  private entitlements: EntitlementsDto[] = [];
   private offset: number = -1;
 
   private constructor(private readonly httpClient: HttpClient, options: Partial<EntitlementsClientOptions> = {}) {
@@ -59,15 +56,29 @@ export class EntitlementsClient extends EventEmitter {
     return this.readyPromise;
   }
 
+  forUser<T extends IEntity>(entity: TEntityWithRoles<T>): EntitlementsUserScoped<T> {
+    if (!this.cache) {
+      throw new Error('EntitlementsClient is not initialized yet.');
+    }
+
+    return new EntitlementsUserScoped<T>(entity, this.cache);
+  }
+
   private async loadVendorEntitlements(): Promise<void> {
     const entitlementsData = await this.httpClient.get<VendorEntitlementsDto>('/api/vendor-entitlements');
 
-    // TODO: this is a very simplified way of storing the data
-    this.features = entitlementsData.data.data.features;
-    this.bundles = entitlementsData.data.data.featureBundles;
-    this.entitlements = entitlementsData.data.data.entitlements;
+    const vendorEntitlementsDto = entitlementsData.data;
+    const newOffset = entitlementsData.data.snapshotOffset;
 
+    const newCache = await InMemoryEntitlementsCache.initialize(vendorEntitlementsDto, newOffset.toString());
+    const oldCache = this.cache;
+
+    this.cache = newCache;
     this.offset = entitlementsData.data.snapshotOffset;
+
+    // clean
+    await oldCache?.clear();
+    await oldCache?.shutdown();
   }
 
   private async refreshSnapshot(): Promise<void> {
@@ -99,13 +110,16 @@ export class EntitlementsClient extends EventEmitter {
     return isRecent;
   }
 
-  static async init(context: IFronteggContext = FronteggContext.getContext()): Promise<EntitlementsClient> {
+  static async init(
+    context: IFronteggContext = FronteggContext.getContext(),
+    options: Partial<EntitlementsClientOptions> = {},
+  ): Promise<EntitlementsClient> {
     const authenticator = new FronteggAuthenticator();
     await authenticator.init(context.FRONTEGG_CLIENT_ID, context.FRONTEGG_API_KEY);
 
     const httpClient = new HttpClient(authenticator, { baseURL: config.urls.entitlementsService });
 
-    return new EntitlementsClient(httpClient);
+    return new EntitlementsClient(httpClient, options);
   }
 
   destroy(): void {

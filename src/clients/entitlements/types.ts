@@ -1,8 +1,14 @@
 import { RetryOptions } from '../../utils';
 
+export enum EntitlementReasons {
+  MISSING_FEATURE = 'missing-feature',
+  MISSING_PERMISSION = 'missing-permission',
+  BUNDLE_EXPIRED = 'bundle-expired',
+}
+
 export interface IsEntitledResult {
   result: boolean;
-  reason?: string;
+  reason?: EntitlementReasons;
 }
 
 export interface FeatureDto {
@@ -42,3 +48,7 @@ export interface EntitlementsClientOptions {
   refreshTimeoutMs: number;
   retry: RetryOptions;
 }
+
+export type FeatureKey = string;
+export type TenantId = string;
+export type UserId = string;

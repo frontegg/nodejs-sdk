@@ -6,6 +6,7 @@ export interface IFronteggContext {
 }
 
 export interface IFronteggOptions {
+  cache?: IAccessTokensLocalCache | IAccessTokensIORedisCache | IAccessTokensRedisCache;
   accessTokensOptions?: IAccessTokensOptions;
 }
 
