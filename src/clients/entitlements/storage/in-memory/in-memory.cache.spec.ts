@@ -1,5 +1,4 @@
 import { InMemoryEntitlementsCache } from './in-memory.cache';
-import { VendorEntitlementsDto } from '../../types';
 import { NO_EXPIRE } from '../types';
 
 describe(InMemoryEntitlementsCache.name, () => {
@@ -11,15 +10,15 @@ describe(InMemoryEntitlementsCache.name, () => {
         snapshotOffset: 1,
         data: {
           entitlements: [],
-          features: [{ id: 'f-1', featureKey: 'foo', permissions: [] }],
-          featureBundles: [{ id: 'b-1', featureIds: ['f-1'], featureBundleKey: 'foo-bundle' }],
+          features: [['f-1', 'foo', []]],
+          featureBundles: [['b-1', 'foo-bundle', ['f-1']]],
         },
       });
     });
 
     it('when I ask for user "u-1" entitlement to feature "foo", then it returns no entitlement (undefined).', async () => {
       // when & then
-      await expect(cut.getFeatureEntitlement('foo', 't-1', 'u-1')).resolves.toBeUndefined();
+      await expect(cut.getEntitlementExpirationTime('foo', 't-1', 'u-1')).resolves.toBeUndefined();
     });
   });
 
@@ -28,16 +27,16 @@ describe(InMemoryEntitlementsCache.name, () => {
       cut = InMemoryEntitlementsCache.initialize({
         snapshotOffset: 2,
         data: {
-          features: [{ id: 'f-1', featureKey: 'foo', permissions: [] }],
-          featureBundles: [{ id: 'b-1', featureIds: ['f-1'], featureBundleKey: 'foo-bundle' }],
-          entitlements: [{ featureBundleId: 'b-1', tenantId: 't-1', userId: 'u-1' }],
+          features: [['f-1', 'foo', []]],
+          featureBundles: [['b-1', 'foo-bundle', ['f-1']]],
+          entitlements: [['b-1', 't-1', 'u-1']],
         },
       });
     });
 
     it('when I ask for user "u-1" entitlement to feature "foo", then it returns entitlement with no time limitation.', async () => {
       // when & then
-      await expect(cut.getFeatureEntitlement('foo', 't-1', 'u-1')).resolves.toEqual(NO_EXPIRE);
+      await expect(cut.getEntitlementExpirationTime('foo', 't-1', 'u-1')).resolves.toEqual(NO_EXPIRE);
     });
   });
 
@@ -46,21 +45,21 @@ describe(InMemoryEntitlementsCache.name, () => {
       cut = InMemoryEntitlementsCache.initialize({
         snapshotOffset: 3,
         data: {
-          features: [{ id: 'f-1', featureKey: 'foo', permissions: [] }],
-          featureBundles: [{ id: 'b-1', featureIds: ['f-1'], featureBundleKey: 'foo-bundle' }],
-          entitlements: [{ featureBundleId: 'b-1', tenantId: 't-1' }],
+          features: [['f-1', 'foo', []]],
+          featureBundles: [['b-1', 'foo-bundle', ['f-1']]],
+          entitlements: [['b-1', 't-1']],
         },
       });
     });
 
     it('when I ask for tenant "t-1" entitlement to feature "foo", then it returns entitlement with no time limitation.', async () => {
       // when & then
-      await expect(cut.getFeatureEntitlement('foo', 't-1')).resolves.toEqual(NO_EXPIRE);
+      await expect(cut.getEntitlementExpirationTime('foo', 't-1')).resolves.toEqual(NO_EXPIRE);
     });
 
     it('when I ask for user "u-1" entitlement to feature "foo", then it returns no entitlement (undefined).', async () => {
       // when & then
-      await expect(cut.getFeatureEntitlement('foo', 't-1', 'u-1')).resolves.toBeUndefined();
+      await expect(cut.getEntitlementExpirationTime('foo', 't-1', 'u-1')).resolves.toBeUndefined();
     });
   });
 
@@ -69,13 +68,13 @@ describe(InMemoryEntitlementsCache.name, () => {
       cut = InMemoryEntitlementsCache.initialize({
         snapshotOffset: 4,
         data: {
-          features: [{ id: 'f-1', featureKey: 'foo', permissions: [] }],
-          featureBundles: [{ id: 'b-1', featureIds: ['f-1'], featureBundleKey: 'foo-bundle' }],
+          features: [['f-1', 'foo', []]],
+          featureBundles: [['b-1', 'foo-bundle', ['f-1']]],
           entitlements: [
-            { featureBundleId: 'b-1', tenantId: 't-1', userId: 'u-1', expirationDate: '2022-06-01T12:00:00+00:00' }, // TS: 1654084800000
-            { featureBundleId: 'b-1', tenantId: 't-1', userId: 'u-1', expirationDate: '2022-07-01T12:00:00+00:00' }, // TS: 1656676800000
-            { featureBundleId: 'b-1', tenantId: 't-2', expirationDate: '2022-02-01T12:00:00+00:00' }, // TS: 1643716800000
-            { featureBundleId: 'b-1', tenantId: 't-2', expirationDate: '2022-03-01T12:00:00+00:00' }, // TS: 1646136000000
+            ['b-1', 't-1', 'u-1', '2022-06-01T12:00:00+00:00'], // TS: 1654084800000
+            ['b-1', 't-1', 'u-1', '2022-07-01T12:00:00+00:00'], // TS: 1656676800000
+            ['b-1', 't-2', undefined, '2022-02-01T12:00:00+00:00'], // TS: 1643716800000
+            ['b-1', 't-2', undefined, '2022-03-01T12:00:00+00:00'], // TS: 1646136000000
           ],
         },
       });
@@ -83,12 +82,12 @@ describe(InMemoryEntitlementsCache.name, () => {
 
     it('when I ask for user "u-1" entitlement to feature "foo", then it returns entitlement with latest expiration time.', async () => {
       // when & then
-      await expect(cut.getFeatureEntitlement('foo', 't-1', 'u-1')).resolves.toEqual(1656676800000);
+      await expect(cut.getEntitlementExpirationTime('foo', 't-1', 'u-1')).resolves.toEqual(1656676800000);
     });
 
     it('when I ask for tenant "t-2" entitlement to feature "foo", then it returns entitlement with latest expiration time.', async () => {
       // when & then
-      await expect(cut.getFeatureEntitlement('foo', 't-2')).resolves.toEqual(1646136000000);
+      await expect(cut.getEntitlementExpirationTime('foo', 't-2')).resolves.toEqual(1646136000000);
     });
   });
 
@@ -97,13 +96,13 @@ describe(InMemoryEntitlementsCache.name, () => {
       cut = InMemoryEntitlementsCache.initialize({
         snapshotOffset: 4,
         data: {
-          features: [{ id: 'f-1', featureKey: 'foo', permissions: [] }],
-          featureBundles: [{ id: 'b-1', featureIds: ['f-1'], featureBundleKey: 'foo-bundle' }],
+          features: [['f-1', 'foo', []]],
+          featureBundles: [['b-1', 'foo-bundle', ['f-1']]],
           entitlements: [
-            { featureBundleId: 'b-1', tenantId: 't-1', userId: 'u-1', expirationDate: '2022-06-01T12:00:00+00:00' }, // TS: 1654084800000
-            { featureBundleId: 'b-1', tenantId: 't-1', userId: 'u-1' },
-            { featureBundleId: 'b-1', tenantId: 't-2', expirationDate: '2022-02-01T12:00:00+00:00' }, // TS: 1643716800000
-            { featureBundleId: 'b-1', tenantId: 't-2' },
+            ['b-1', 't-1', 'u-1', '2022-06-01T12:00:00+00:00'], // TS: 1654084800000
+            ['b-1', 't-1', 'u-1'],
+            ['b-1', 't-2', undefined, '2022-02-01T12:00:00+00:00'], // TS: 1643716800000
+            ['b-1', 't-2'],
           ],
         },
       });
@@ -111,12 +110,12 @@ describe(InMemoryEntitlementsCache.name, () => {
 
     it('when I ask for user "u-1" entitlement to feature "foo", then it returns entitlement without expiration time.', async () => {
       // when & then
-      await expect(cut.getFeatureEntitlement('foo', 't-1', 'u-1')).resolves.toEqual(NO_EXPIRE);
+      await expect(cut.getEntitlementExpirationTime('foo', 't-1', 'u-1')).resolves.toEqual(NO_EXPIRE);
     });
 
     it('when I ask for tenant "t-2" entitlement to feature "foo", then it returns entitlement without expiration time.', async () => {
       // when & then
-      await expect(cut.getFeatureEntitlement('foo', 't-2')).resolves.toEqual(NO_EXPIRE);
+      await expect(cut.getEntitlementExpirationTime('foo', 't-2')).resolves.toEqual(NO_EXPIRE);
     });
   });
 });

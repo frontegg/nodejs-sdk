@@ -1,8 +1,8 @@
 import { EntitlementsCache, ExpirationTime, NO_EXPIRE } from '../types';
 import {
-  EntitlementsDto,
-  FeatureBundleDto,
-  FeatureDto,
+  EntitlementTuple,
+  FeatureBundleTuple,
+  FeatureTuple,
   FeatureKey,
   TenantId,
   UserId,
@@ -29,7 +29,7 @@ export class InMemoryEntitlementsCache implements EntitlementsCache {
     });
   }
 
-  async getFeatureEntitlement(
+  async getEntitlementExpirationTime(
     featKey: FeatureKey,
     tenantId: TenantId,
     userId?: UserId,
@@ -74,30 +74,32 @@ export class InMemoryEntitlementsCache implements EntitlementsCache {
   }
 
   private buildSource(
-    bundles: FeatureBundleDto[],
-    features: FeatureDto[],
-    entitlements: EntitlementsDto[],
+    bundles: FeatureBundleTuple[],
+    features: FeatureTuple[],
+    entitlements: EntitlementTuple[],
   ): BundlesSource {
     const bundlesMap: BundlesSource = new Map();
 
     // helper features map
     const featuresMap: Map<string, FeatureSource> = new Map();
     features.forEach((feat) => {
-      featuresMap.set(feat.id, {
-        id: feat.id,
-        key: feat.featureKey,
-        permissions: new Set(feat.permissions || []),
+      const [id, key, permissions] = feat;
+      featuresMap.set(id, {
+        id,
+        key,
+        permissions: new Set(permissions || []),
       });
     });
 
     // initialize bundles map
     bundles.forEach((bundle) => {
-      bundlesMap.set(bundle.id, {
-        id: bundle.id,
+      const [id, , featureIds] = bundle;
+      bundlesMap.set(id, {
+        id,
         user_entitlements: new Map(),
         tenant_entitlements: new Map(),
         features: new Map(
-          bundle.featureIds.reduce<Array<[string, FeatureSource]>>((prev, fId) => {
+          featureIds.reduce<Array<[string, FeatureSource]>>((prev, fId) => {
             const featSource = featuresMap.get(fId);
 
             if (!featSource) {
@@ -114,8 +116,8 @@ export class InMemoryEntitlementsCache implements EntitlementsCache {
 
     // fill bundles with entitlements
     entitlements.forEach((entitlement) => {
-      const { userId, tenantId, expirationDate } = entitlement;
-      const bundle = bundlesMap.get(entitlement.featureBundleId);
+      const [featureBundleId, tenantId, userId, expirationDate] = entitlement;
+      const bundle = bundlesMap.get(featureBundleId);
 
       if (bundle) {
         if (userId) {
@@ -206,8 +208,8 @@ export class InMemoryEntitlementsCache implements EntitlementsCache {
     return map.get(mapKey)!;
   }
 
-  private parseExpirationTime(time?: string): ExpirationTime {
-    if (time !== undefined) {
+  private parseExpirationTime(time?: string | null): ExpirationTime {
+    if (time !== undefined && time !== null) {
       return new Date(time).getTime();
     }
 

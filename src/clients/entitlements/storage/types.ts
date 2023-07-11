@@ -7,7 +7,11 @@ export interface EntitlementsCache {
   /**
    * Get the entitlement expiry time for given feature, tenant & user combination.
    */
-  getFeatureEntitlement(featKey: FeatureKey, tenantId: string, userId?: string): Promise<number | undefined>;
+  getEntitlementExpirationTime(
+    featKey: FeatureKey,
+    tenantId: string,
+    userId?: string,
+  ): Promise<ExpirationTime | undefined>;
 
   /**
    * Get all features with linked permission.

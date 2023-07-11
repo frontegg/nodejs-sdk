@@ -38,10 +38,10 @@ describe(EntitlementsUserScoped.name, () => {
 
       describe('and unlimited entitlement to feature "bar" is given to the user', () => {
         beforeEach(() => {
-          cacheMock.getFeatureEntitlement
+          cacheMock.getEntitlementExpirationTime
             .calledWith('bar', 'the-tenant-id', 'the-user-id')
             .mockResolvedValue(NO_EXPIRE);
-          cacheMock.getFeatureEntitlement.calledWith('bar', 'the-tenant-id', undefined).mockResolvedValue(undefined);
+          cacheMock.getEntitlementExpirationTime.calledWith('bar', 'the-tenant-id', undefined).mockResolvedValue(undefined);
         });
 
         it('when .isEntitledTo({ featureKey: "bar"}) is called, then the access is granted.', async () => {
@@ -61,10 +61,10 @@ describe(EntitlementsUserScoped.name, () => {
         const expiryTime = 1688937961000;
 
         beforeEach(() => {
-          cacheMock.getFeatureEntitlement
+          cacheMock.getEntitlementExpirationTime
             .calledWith('bar', 'the-tenant-id', 'the-user-id')
             .mockResolvedValue(expiryTime);
-          cacheMock.getFeatureEntitlement.calledWith('bar', 'the-tenant-id', undefined).mockResolvedValue(undefined);
+          cacheMock.getEntitlementExpirationTime.calledWith('bar', 'the-tenant-id', undefined).mockResolvedValue(undefined);
         });
 
         afterEach(() => {

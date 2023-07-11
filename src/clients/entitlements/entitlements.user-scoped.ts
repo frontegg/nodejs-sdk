@@ -1,7 +1,7 @@
 import { EntitlementReasons, IsEntitledResult } from './types';
 import { IEntity, TEntityWithRoles, tokenTypes } from '../identity/types';
-import { EntitlementsCache } from './storage/types';
-import { NO_EXPIRE, pickExpTimestamp } from './storage/exp-time.utils';
+import { EntitlementsCache, NO_EXPIRE } from './storage/types';
+import { pickExpTimestamp } from './storage/exp-time.utils';
 
 export type IsEntitledToPermissionInput = { permissionKey: string };
 export type IsEntitledToFeatureInput = { featureKey: string };
@@ -22,9 +22,9 @@ export class EntitlementsUserScoped<T extends IEntity> {
   }
 
   async isEntitledToFeature(featureKey: string): Promise<IsEntitledResult> {
-    const tenantEntitlementExpTime = await this.cache.getFeatureEntitlement(featureKey, this.tenantId);
+    const tenantEntitlementExpTime = await this.cache.getEntitlementExpirationTime(featureKey, this.tenantId);
     const userEntitlementExpTime = this.userId
-      ? await this.cache.getFeatureEntitlement(featureKey, this.tenantId, this.userId)
+      ? await this.cache.getEntitlementExpirationTime(featureKey, this.tenantId, this.userId)
       : undefined;
 
     const expTimes = [tenantEntitlementExpTime, userEntitlementExpTime].filter((v) => v !== undefined) as number[];
