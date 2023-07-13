@@ -1,7 +1,7 @@
 import { LocalCacheManager } from './local-cache.manager';
 
 describe('Local cache manager', () => {
-  const localCacheManager = new LocalCacheManager<{ data: string }>();
+  const localCacheManager = new LocalCacheManager();
   const cacheKey = 'key';
   const cacheValue = { data: 'value' };
 

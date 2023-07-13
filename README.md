@@ -59,6 +59,48 @@ FronteggContext.init({
 });
 ```
 
+### Redis cache
+Some parts of SDK can facilitate the Redis cache for the sake of performance. To set up the cache, pass additional options
+to `FronteggContext.init(..)` call.  
+If no cache is configured, then data is cached locally, in NodeJS process memory.
+
+#### Redis cache with `ioredis` library
+```javascript
+const { FronteggContext } = require('@frontegg/client');
+
+FronteggContext.init({
+  FRONTEGG_CLIENT_ID: '<YOUR_CLIENT_ID>',
+  FRONTEGG_API_KEY: '<YOUR_API_KEY>',
+}, {
+  cache: {
+    type: 'ioredis',
+    options: {
+      host: 'localhost',
+      port: 6379,
+      password: '',
+      db: 10,
+    }
+  }
+});
+```
+
+#### Redis cache with `redis` library
+```javascript
+const { FronteggContext } = require('@frontegg/client');
+
+FronteggContext.init({
+  FRONTEGG_CLIENT_ID: '<YOUR_CLIENT_ID>',
+  FRONTEGG_API_KEY: '<YOUR_API_KEY>',
+}, {
+  cache: {
+    type: 'redis',
+    options: {
+      url: 'redis[s]://[[username][:password]@][host][:port][/db-number]',
+    }
+  }
+});
+```
+
 ### Middleware
 
 Use Frontegg's "withAuthentication" auth guard to protect your routes.
@@ -87,6 +129,9 @@ By default access tokens will be cached locally, however you can use two other k
 - redis
 
 #### Use ioredis as your cache
+> **Deprecation Warning!**  
+> This section is deprecated. See <a href="#redis-cache">Redis cache</a> section for cache configuration. 
+
 When initializing your context, pass an access tokens options object with your ioredis parameters
 
 ```javascript
@@ -116,6 +161,9 @@ FronteggContext.init(
 ```
 
 #### Use redis as your cache
+> **Deprecation Warning!**  
+> This section is deprecated. See <a href="#redis-cache">Redis cache</a> section for cache configuration.
+
 When initializing your context, pass an access tokens options object with your redis parameters
 
 ```javascript
@@ -154,7 +202,7 @@ const { AuditsClient } = require('@frontegg/client');
 const audits = new AuditsClient();
 
 // initialize the module
-await audits.init('MY-CLIENT-ID', 'MY-AUDITS-KEY');
+await audits.init('<YOUR_CLIENT_ID>', '<YOUR_API_KEY>');
 ```
 
 #### Sending audits
@@ -295,7 +343,7 @@ const { IdentityClient } = require('@frontegg/client');
 Then, initialize the client
 
 ```javascript
-const identityClient = new IdentityClient({ FRONTEGG_CLIENT_ID: 'your-client-id', FRONTEGG_API_KEY: 'your-api-key' });
+const identityClient = new IdentityClient({ FRONTEGG_CLIENT_ID: '<YOUR_CLIENT_ID>', FRONTEGG_API_KEY: '<YOUR_API_KEY>' });
 ```
 
 And use this client to validate

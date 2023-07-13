@@ -10,7 +10,6 @@ import {
 import { FailedToAuthenticateException } from '../exceptions';
 import { TokenResolver } from './token-resolver';
 import { IAccessTokenService } from './access-token-services/access-token.service.interface';
-import { LocalCacheManager, IORedisCacheManager, RedisCacheManager } from '../../../cache';
 import {
   CacheTenantAccessTokenService,
   CacheUserAccessTokenService,
@@ -20,6 +19,7 @@ import {
 import { FronteggAuthenticator } from '../../../authenticator';
 import { HttpClient } from '../../http';
 import { FronteggContext } from '../../../components/frontegg-context';
+import { FronteggCache } from '../../../components/cache';
 
 export class AccessTokenResolver extends TokenResolver<IAccessToken> {
   private authenticator: FronteggAuthenticator = new FronteggAuthenticator();
@@ -98,47 +98,9 @@ export class AccessTokenResolver extends TokenResolver<IAccessToken> {
       return;
     }
 
-    const accessTokensOptions = FronteggContext.getOptions().accessTokensOptions;
-
-    if (accessTokensOptions?.cache?.type === 'ioredis') {
-      this.accessTokenServices = [
-        new CacheTenantAccessTokenService(
-          new IORedisCacheManager<IEntityWithRoles>(accessTokensOptions.cache.options),
-          new IORedisCacheManager<string[]>(accessTokensOptions.cache.options),
-          new TenantAccessTokenService(this.httpClient),
-        ),
-        new CacheUserAccessTokenService(
-          new IORedisCacheManager<IEntityWithRoles>(accessTokensOptions.cache.options),
-          new IORedisCacheManager<string[]>(accessTokensOptions.cache.options),
-          new UserAccessTokenService(this.httpClient),
-        ),
-      ];
-    } else if (accessTokensOptions?.cache?.type === 'redis') {
-      this.accessTokenServices = [
-        new CacheTenantAccessTokenService(
-          new RedisCacheManager<IEntityWithRoles>(accessTokensOptions.cache.options),
-          new RedisCacheManager<string[]>(accessTokensOptions.cache.options),
-          new TenantAccessTokenService(this.httpClient),
-        ),
-        new CacheUserAccessTokenService(
-          new RedisCacheManager<IEntityWithRoles>(accessTokensOptions.cache.options),
-          new RedisCacheManager<string[]>(accessTokensOptions.cache.options),
-          new UserAccessTokenService(this.httpClient),
-        ),
-      ];
-    } else {
-      this.accessTokenServices = [
-        new CacheTenantAccessTokenService(
-          new LocalCacheManager<IEntityWithRoles>(),
-          new LocalCacheManager<string[]>(),
-          new TenantAccessTokenService(this.httpClient),
-        ),
-        new CacheUserAccessTokenService(
-          new LocalCacheManager<IEntityWithRoles>(),
-          new LocalCacheManager<string[]>(),
-          new UserAccessTokenService(this.httpClient),
-        ),
-      ];
-    }
+    this.accessTokenServices = [
+      new CacheTenantAccessTokenService(FronteggCache.getInstance(), new TenantAccessTokenService(this.httpClient)),
+      new CacheUserAccessTokenService(FronteggCache.getInstance(), new UserAccessTokenService(this.httpClient)),
+    ];
   }
 }

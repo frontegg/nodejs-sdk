@@ -1,6 +1,6 @@
 import { IORedisCacheManager } from './ioredis-cache.manager';
 
-jest.mock('../utils/package-loader', () => ({
+jest.mock('../../../utils/package-loader', () => ({
   PackageUtils: {
     loadPackage: (name: string) => {
       switch (name) {

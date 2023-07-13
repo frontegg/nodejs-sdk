@@ -1,4 +1,4 @@
-import { IIORedisCacheOptions, IRedisCacheOptions } from '../../cache/types';
+import { IIORedisOptions, IRedisOptions } from '../cache/managers';
 
 export interface IFronteggContext {
   FRONTEGG_CLIENT_ID: string;
@@ -6,28 +6,30 @@ export interface IFronteggContext {
 }
 
 export interface IFronteggOptions {
-  cache?: IAccessTokensLocalCache | IAccessTokensIORedisCache | IAccessTokensRedisCache;
+  cache: IFronteggCacheOptions;
   accessTokensOptions?: IAccessTokensOptions;
 }
 
 export interface IAccessTokensOptions {
-  cache: IAccessTokensLocalCache | IAccessTokensIORedisCache | IAccessTokensRedisCache;
+  cache: IFronteggCacheOptions;
 }
 
-export interface IAccessTokensCache {
+export interface IAccessTokensCacheOptions {
   type: 'ioredis' | 'local' | 'redis';
 }
 
-export interface IAccessTokensLocalCache extends IAccessTokensCache {
+export interface ILocalCacheOptions extends IAccessTokensCacheOptions {
   type: 'local';
 }
 
-export interface IAccessTokensIORedisCache extends IAccessTokensCache {
+export interface IIORedisCacheOptions extends IAccessTokensCacheOptions {
   type: 'ioredis';
-  options: IIORedisCacheOptions;
+  options: IIORedisOptions;
 }
 
-export interface IAccessTokensRedisCache extends IAccessTokensCache {
+export interface IRedisCacheOptions extends IAccessTokensCacheOptions, IRedisOptions {
   type: 'redis';
-  options: IRedisCacheOptions;
+  options: IRedisOptions;
 }
+
+export type IFronteggCacheOptions = ILocalCacheOptions | IIORedisCacheOptions | IRedisCacheOptions;

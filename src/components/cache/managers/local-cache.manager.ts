@@ -1,10 +1,10 @@
 import { ICacheManager, SetOptions } from './cache.manager.interface';
 import * as NodeCache from 'node-cache';
 
-export class LocalCacheManager<T> implements ICacheManager<T> {
+export class LocalCacheManager implements ICacheManager {
   private nodeCache: NodeCache = new NodeCache();
 
-  public async set(key: string, data: T, options?: SetOptions): Promise<void> {
+  public async set<T>(key: string, data: T, options?: SetOptions): Promise<void> {
     if (options?.expiresInSeconds) {
       this.nodeCache.set(key, data, options.expiresInSeconds);
     } else {
@@ -12,7 +12,7 @@ export class LocalCacheManager<T> implements ICacheManager<T> {
     }
   }
 
-  public async get(key: string): Promise<T | null> {
+  public async get<T>(key: string): Promise<T | null> {
     return this.nodeCache.get(key) || null;
   }
 

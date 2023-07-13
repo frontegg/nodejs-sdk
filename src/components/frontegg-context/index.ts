@@ -1,6 +1,13 @@
-import { IIORedisCacheOptions, IRedisCacheOptions } from '../../cache/types';
 import { PackageUtils } from '../../utils/package-loader';
-import { IFronteggContext, IFronteggOptions, IAccessTokensOptions } from './types';
+import { IFronteggContext, IFronteggOptions, IAccessTokensOptions, IFronteggCacheOptions } from './types';
+import { IIORedisOptions, IRedisOptions } from '../cache/managers';
+import { FronteggWarningCodes, warning } from '../../utils/warning';
+
+const DEFAULT_OPTIONS: IFronteggOptions = {
+  cache: {
+    type: 'local',
+  },
+};
 
 export class FronteggContext {
   public static getInstance(): FronteggContext {
@@ -11,10 +18,12 @@ export class FronteggContext {
     return FronteggContext.instance;
   }
 
-  public static init(context: IFronteggContext, options?: IFronteggOptions) {
-    FronteggContext.getInstance().context = context;
+  public static init(context: IFronteggContext, givenOptions?: Partial<IFronteggOptions>) {
+    const options = FronteggContext.prepareOptions(givenOptions);
     FronteggContext.getInstance().validateOptions(options);
-    FronteggContext.getInstance().options = options ?? {};
+    FronteggContext.getInstance().options = options;
+
+    FronteggContext.getInstance().context = context;
   }
 
   public static getContext(): IFronteggContext {
@@ -27,37 +36,47 @@ export class FronteggContext {
   }
 
   public static getOptions(): IFronteggOptions {
-    return FronteggContext.getInstance().options || {};
+    return FronteggContext.getInstance().options;
   }
 
   private static instance: FronteggContext;
   private context: IFronteggContext | null = null;
-  private options: IFronteggOptions = {};
+  private options: IFronteggOptions;
 
-  private constructor() {}
+  private constructor() {
+    this.options = DEFAULT_OPTIONS;
+  }
 
-  private validateOptions(options?: IFronteggOptions): void {
-    if (options?.accessTokensOptions) {
+  private validateOptions(options: Partial<IFronteggOptions>): void {
+    if (options.cache) {
+      this.validateCacheOptions(options.cache);
+    }
+
+    if (options.accessTokensOptions) {
       this.validateAccessTokensOptions(options.accessTokensOptions);
     }
   }
 
   private validateAccessTokensOptions(accessTokensOptions: IAccessTokensOptions): void {
-    if (!accessTokensOptions.cache) {
-      throw new Error(`'cache' is missing from access tokens options`);
+    if (accessTokensOptions.cache) {
+      warning.emit(FronteggWarningCodes.CONFIG_KEY_MOVED_DEPRECATION, '$.accessTokenOptions.cache', '$.cache');
     }
 
-    if (accessTokensOptions.cache.type === 'ioredis') {
-      this.validateIORedisOptions(accessTokensOptions.cache.options);
-    } else if (accessTokensOptions.cache.type === 'redis') {
-      this.validateRedisOptions(accessTokensOptions.cache.options);
+    this.validateCacheOptions(accessTokensOptions.cache);
+  }
+
+  private validateCacheOptions(cache: IFronteggCacheOptions): void {
+    if (cache.type === 'ioredis') {
+      this.validateIORedisOptions(cache.options);
+    } else if (cache.type === 'redis') {
+      this.validateRedisOptions(cache.options);
     }
   }
 
-  private validateIORedisOptions(redisOptions: IIORedisCacheOptions): void {
+  private validateIORedisOptions(redisOptions: IIORedisOptions): void {
     PackageUtils.loadPackage('ioredis');
 
-    const requiredProperties: (keyof IIORedisCacheOptions)[] = ['host', 'port'];
+    const requiredProperties: (keyof IIORedisOptions)[] = ['host', 'port'];
     requiredProperties.forEach((requiredProperty) => {
       if (redisOptions[requiredProperty] === undefined) {
         throw new Error(`${requiredProperty} is missing from ioredis cache options`);
@@ -65,14 +84,21 @@ export class FronteggContext {
     });
   }
 
-  private validateRedisOptions(redisOptions: IRedisCacheOptions): void {
+  private validateRedisOptions(redisOptions: IRedisOptions): void {
     PackageUtils.loadPackage('redis');
 
-    const requiredProperties: (keyof IRedisCacheOptions)[] = ['url'];
+    const requiredProperties: (keyof IRedisOptions)[] = ['url'];
     requiredProperties.forEach((requiredProperty) => {
       if (redisOptions[requiredProperty] === undefined) {
         throw new Error(`${requiredProperty} is missing from redis cache options`);
       }
     });
+  }
+
+  private static prepareOptions(options?: Partial<IFronteggOptions>): IFronteggOptions {
+    return {
+      ...DEFAULT_OPTIONS,
+      ...(options || {}),
+    };
   }
 }
