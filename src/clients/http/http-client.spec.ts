@@ -10,7 +10,6 @@ describe('http.client', () => {
   let httpClient: HttpClient;
   let mock: MockAdapter;
 
-  const baseURL = 'https://api.fake-frontegg.com';
   const fakeToken = 'Bearer abc123456789';
 
   beforeAll(async () => {
@@ -21,7 +20,7 @@ describe('http.client', () => {
     Reflect.set(authenticator, 'accessToken', fakeToken);
 
     httpClient = new HttpClient(authenticator, {
-      baseURL,
+      baseURL: 'https://api.fake-frontegg.com',
     });
   });
 
@@ -57,7 +56,6 @@ describe('http.client', () => {
       'frontegg-tenant-id': '12345',
     });
 
-    expect(res.config.url).toEqual(`${baseURL}${url}`);
     expect(res.data).toEqual(mockGetRes);
   });
 
@@ -74,7 +72,6 @@ describe('http.client', () => {
     };
 
     const url = '/identity/resources/users/v2/me';
-    const alteredBaseURL = baseURL.replace('api', 'app-qwerty');
 
     mock
       .onPost(url, expect.objectContaining(data), {
@@ -88,7 +85,7 @@ describe('http.client', () => {
     });
 
     expect(res.data).toEqual(mockPostRes);
-    expect(res.config.url).toEqual(`${alteredBaseURL}${url}`);
+    expect(res.config.baseURL).toEqual('https://app-qwerty.fake-frontegg.com');
   });
 
   it('should put', async () => {
@@ -114,22 +111,22 @@ describe('http.client', () => {
     const res = await httpClient.put(url, data);
 
     expect(res.data).toEqual(mockPutRes);
-    expect(res.config.url).toEqual(`${baseURL}${url}`);
+    expect(res.config.baseURL).toEqual('https://api.fake-frontegg.com');
   });
 
   it('should delete', async () => {
-    const url = '/identity/resources/users/v1/12345';
+    const path = '/identity/resources/users/v1/12345';
 
     mock
-      .onDelete(url, undefined, {
+      .onDelete(path, undefined, {
         asymmetricMatch: (headers) => headers['x-access-token'] === fakeToken,
       })
       .reply(200);
 
-    const res = await httpClient.delete(url);
+    const res = await httpClient.delete(path);
 
     expect(res.data).toBe(undefined);
-    expect(res.config.url).toEqual(`${baseURL}${url}`);
+    expect(res.config.baseURL).toEqual('https://api.fake-frontegg.com');
   });
 
   it('should delete with body', async () => {
@@ -141,7 +138,7 @@ describe('http.client', () => {
     const res = await httpClient.delete(url, {}, data);
 
     expect(res.data).toStrictEqual(data);
-    expect(res.config.url).toEqual(`${baseURL}${url}`);
+    expect(res.config.baseURL).toEqual('https://api.fake-frontegg.com');
   });
 
   it('should patch', async () => {
@@ -174,6 +171,6 @@ describe('http.client', () => {
     });
 
     expect(res.data).toEqual(mockPatchRes);
-    expect(res.config.url).toEqual(`${baseURL}${url}`);
+    expect(res.config.baseURL).toEqual('https://api.fake-frontegg.com');
   });
 });
