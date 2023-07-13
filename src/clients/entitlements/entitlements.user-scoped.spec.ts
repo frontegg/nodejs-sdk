@@ -9,7 +9,10 @@ import { EntitlementsCache, NO_EXPIRE } from './storage/types';
 import { EntitlementReasons } from './types';
 import SpyInstance = jest.SpyInstance;
 
-const userApiTokenBase: Pick<IUserApiToken, 'type' | 'createdByUserId' | 'email' | 'userMetadata' | 'metadata' | 'id' | 'roles' | 'sub'> = {
+const userApiTokenBase: Pick<
+  IUserApiToken,
+  'type' | 'createdByUserId' | 'email' | 'userMetadata' | 'metadata' | 'id' | 'roles' | 'sub'
+> = {
   type: tokenTypes.UserApiToken,
   createdByUserId: 'irrelevant',
   email: 'irrelevant',
@@ -50,7 +53,9 @@ describe(EntitlementsUserScoped.name, () => {
           cacheMock.getEntitlementExpirationTime
             .calledWith('bar', 'the-tenant-id', 'the-user-id')
             .mockResolvedValue(NO_EXPIRE);
-          cacheMock.getEntitlementExpirationTime.calledWith('bar', 'the-tenant-id', undefined).mockResolvedValue(undefined);
+          cacheMock.getEntitlementExpirationTime
+            .calledWith('bar', 'the-tenant-id', undefined)
+            .mockResolvedValue(undefined);
         });
 
         it('when .isEntitledTo({ featureKey: "bar"}) is called, then the access is granted.', async () => {
@@ -73,7 +78,9 @@ describe(EntitlementsUserScoped.name, () => {
           cacheMock.getEntitlementExpirationTime
             .calledWith('bar', 'the-tenant-id', 'the-user-id')
             .mockResolvedValue(expiryTime);
-          cacheMock.getEntitlementExpirationTime.calledWith('bar', 'the-tenant-id', undefined).mockResolvedValue(undefined);
+          cacheMock.getEntitlementExpirationTime
+            .calledWith('bar', 'the-tenant-id', undefined)
+            .mockResolvedValue(undefined);
         });
 
         afterEach(() => {

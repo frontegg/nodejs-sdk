@@ -1,10 +1,5 @@
 import { EntitlementReasons, IsEntitledResult } from './types';
-import {
-  IEntityWithRoles,
-  Permission,
-  TEntity,
-  TUserEntity,
-} from '../identity/types';
+import { IEntityWithRoles, Permission, TEntity, TUserEntity } from '../identity/types';
 import { EntitlementsCache, NO_EXPIRE } from './storage/types';
 import { pickExpTimestamp } from './storage/exp-time.utils';
 

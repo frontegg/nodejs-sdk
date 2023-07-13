@@ -149,13 +149,13 @@ export class InMemoryEntitlementsCache implements EntitlementsCache {
       user_entitlements: new Map(),
       tenant_entitlements: new Map(),
       features: new Map(
-        [ ...unbundledFeaturesIds.values() ].map(fId => {
+        [...unbundledFeaturesIds.values()].map((fId) => {
           const featSource = featuresMap.get(fId)!;
 
           return [featSource.key, featSource];
-        })
-      )
-    })
+        }),
+      ),
+    });
 
     return bundlesMap;
   }

@@ -2,14 +2,7 @@ import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import { config } from '../../config';
 import { IdentityClient } from './identity-client';
-import {
-  AuthHeaderType,
-  ITenantAccessToken,
-  IUser,
-  IUserAccessToken,
-  TEntityWithRoles,
-  tokenTypes,
-} from './types';
+import { AuthHeaderType, ITenantAccessToken, IUser, IUserAccessToken, TEntityWithRoles, tokenTypes } from './types';
 import { accessTokenHeaderResolver, authorizationHeaderResolver } from './token-resolvers';
 
 jest.setTimeout(60000);

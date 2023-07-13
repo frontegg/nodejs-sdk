@@ -27,20 +27,11 @@ export type TEntityWithRoles<T extends IEntity> = T & IEntityWithRoles;
 export type IUserAccessTokenWithRoles = TEntityWithRoles<IUserAccessToken>;
 export type ITenantAccessTokenWithRoles = TEntityWithRoles<ITenantAccessToken>;
 
-export type TUserEntity =
-  | IUser
-  | IUserApiToken
-  | IUserAccessToken
-  | IUserAccessTokenWithRoles;
+export type TUserEntity = IUser | IUserApiToken | IUserAccessToken | IUserAccessTokenWithRoles;
 
-export type TTenantEntity =
-  | ITenantApiToken
-  | ITenantAccessToken
-  | ITenantAccessTokenWithRoles;
+export type TTenantEntity = ITenantApiToken | ITenantAccessToken | ITenantAccessTokenWithRoles;
 
-export type TEntity =
-  | TUserEntity
-  | TTenantEntity;
+export type TEntity = TUserEntity | TTenantEntity;
 
 export interface IEntity {
   id?: string;
