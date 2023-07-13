@@ -3,32 +3,41 @@ import {
   IsEntitledToFeatureInput,
   IsEntitledToPermissionInput,
 } from './entitlements.user-scoped';
-import { IEntity, TEntityWithRoles, tokenTypes } from '../identity/types';
+import { IUserApiToken, tokenTypes } from '../identity/types';
 import { mock, mockReset } from 'jest-mock-extended';
 import { EntitlementsCache, NO_EXPIRE } from './storage/types';
 import { EntitlementReasons } from './types';
 import SpyInstance = jest.SpyInstance;
 
+const userApiTokenBase: Pick<IUserApiToken, 'type' | 'createdByUserId' | 'email' | 'userMetadata' | 'metadata' | 'id' | 'roles' | 'sub'> = {
+  type: tokenTypes.UserApiToken,
+  createdByUserId: 'irrelevant',
+  email: 'irrelevant',
+  userMetadata: {},
+  metadata: {},
+  id: 'irrelevant',
+  roles: ['irrelevant'],
+  sub: 'irrelevant',
+};
+
 describe(EntitlementsUserScoped.name, () => {
   const cacheMock = mock<EntitlementsCache>();
-  let cut: EntitlementsUserScoped<IEntity>;
+  let cut: EntitlementsUserScoped;
 
   afterEach(() => {
     mockReset(cacheMock);
   });
 
   describe('given the authenticated user with permission "foo" granted', () => {
-    const entity: TEntityWithRoles<IEntity> = {
-      type: tokenTypes.UserApiToken,
+    const entity: IUserApiToken = {
+      ...userApiTokenBase,
       permissions: ['foo'],
-      roles: ['irrelevant'],
-      id: 'the-user-id',
+      userId: 'the-user-id',
       tenantId: 'the-tenant-id',
-      sub: 'irrelevant',
     };
 
     beforeEach(() => {
-      cut = new EntitlementsUserScoped<IEntity>(entity, cacheMock);
+      cut = new EntitlementsUserScoped(entity, cacheMock);
     });
 
     describe('and feature "bar" is linked to permission "foo"', () => {
@@ -123,7 +132,7 @@ describe(EntitlementsUserScoped.name, () => {
     let isEntitledToFeatureSpy: SpyInstance;
 
     beforeEach(() => {
-      cut = new EntitlementsUserScoped<IEntity>(
+      cut = new EntitlementsUserScoped(
         {
           id: 'irrelevant',
           tenantId: 'irrelevant',

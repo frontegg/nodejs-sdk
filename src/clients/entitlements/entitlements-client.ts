@@ -6,14 +6,14 @@ import { config } from '../../config';
 import { HttpClient } from '../http';
 import Logger from '../../components/logger';
 import { retry } from '../../utils';
-import * as EventEmitter from 'events';
+import * as events from 'events';
 import { EntitlementsClientEvents } from './entitlements-client.events';
 import { EntitlementsCache } from './storage/types';
 import { InMemoryEntitlementsCache } from './storage/in-memory/in-memory.cache';
-import { IEntity, TEntityWithRoles } from '../identity/types';
+import { TEntity } from '../identity/types';
 import { EntitlementsUserScoped } from './entitlements.user-scoped';
 
-export class EntitlementsClient extends EventEmitter {
+export class EntitlementsClient extends events.EventEmitter {
   // periodical refresh handler
   private refreshTimeout: NodeJS.Timeout;
   private readonly readyPromise: Promise<EntitlementsClient>;
@@ -56,7 +56,7 @@ export class EntitlementsClient extends EventEmitter {
     return this.readyPromise;
   }
 
-  forUser<T extends IEntity>(entity: TEntityWithRoles<T>): EntitlementsUserScoped<T> {
+  forUser<T extends TEntity>(entity: T): EntitlementsUserScoped<T> {
     if (!this.cache) {
       throw new Error('EntitlementsClient is not initialized yet.');
     }
@@ -79,6 +79,9 @@ export class EntitlementsClient extends EventEmitter {
     // clean
     await oldCache?.clear();
     await oldCache?.shutdown();
+
+    // emit
+    this.emit(EntitlementsClientEvents.SNAPSHOT_UPDATED, entitlementsData.data.snapshotOffset);
   }
 
   private async refreshSnapshot(): Promise<void> {
@@ -92,7 +95,6 @@ export class EntitlementsClient extends EventEmitter {
     }, this.options.retry);
 
     this.refreshTimeout = setTimeout(() => this.refreshSnapshot(), this.options.refreshTimeoutMs);
-    this.emit(EntitlementsClientEvents.SNAPSHOT_UPDATED, this.offset);
   }
 
   private async haveRecentSnapshot(): Promise<boolean> {

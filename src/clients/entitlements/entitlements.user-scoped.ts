@@ -1,23 +1,34 @@
 import { EntitlementReasons, IsEntitledResult } from './types';
-import { IEntity, TEntityWithRoles, tokenTypes } from '../identity/types';
+import {
+  IEntityWithRoles,
+  Permission,
+  TEntity,
+  TUserEntity,
+} from '../identity/types';
 import { EntitlementsCache, NO_EXPIRE } from './storage/types';
 import { pickExpTimestamp } from './storage/exp-time.utils';
 
 export type IsEntitledToPermissionInput = { permissionKey: string };
 export type IsEntitledToFeatureInput = { featureKey: string };
 
-export class EntitlementsUserScoped<T extends IEntity> {
+export class EntitlementsUserScoped<T extends TEntity = TEntity> {
   private readonly tenantId: string;
   private readonly userId?: string;
+  private readonly permissions: Permission[];
 
-  constructor(private readonly entity: TEntityWithRoles<T>, private readonly cache: EntitlementsCache) {
+  constructor(private readonly entity: T, private readonly cache: EntitlementsCache) {
     this.tenantId = entity.tenantId;
 
-    switch (entity.type) {
-      case tokenTypes.UserAccessToken:
-      case tokenTypes.UserApiToken:
-      case tokenTypes.UserToken:
-        this.userId = entity.id;
+    const entityWithUserId = entity as TUserEntity;
+    if (entityWithUserId.userId) {
+      this.userId = entityWithUserId.userId;
+    }
+
+    const entityWithPossiblePermissions = entity as IEntityWithRoles;
+    if (Array.isArray(entityWithPossiblePermissions.permissions)) {
+      this.permissions = entityWithPossiblePermissions.permissions;
+    } else {
+      this.permissions = [];
     }
   }
 
@@ -49,7 +60,7 @@ export class EntitlementsUserScoped<T extends IEntity> {
   }
 
   async isEntitledToPermission(permissionKey: string): Promise<IsEntitledResult> {
-    if (this.entity.permissions.indexOf(permissionKey) < 0) {
+    if (this.permissions === undefined || this.permissions.indexOf(permissionKey) < 0) {
       return {
         result: false,
         reason: EntitlementReasons.MISSING_PERMISSION,
