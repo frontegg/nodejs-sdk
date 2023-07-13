@@ -5,14 +5,20 @@ import { HttpClient } from '../http';
 import { mock, mockClear } from 'jest-mock-extended';
 import { VendorEntitlementsDto, VendorEntitlementsSnapshotOffsetDto } from './types';
 import { AxiosResponse } from 'axios';
-import { useFakeTimers } from 'sinon';
 import * as Sinon from 'sinon';
+import { useFakeTimers } from 'sinon';
+import { IUserAccessTokenWithRoles, tokenTypes } from '../identity/types';
+import { EntitlementsUserScoped } from './entitlements.user-scoped';
+import { InMemoryEntitlementsCache } from './storage/in-memory/in-memory.cache';
+
+const { EntitlementsUserScoped: EntitlementsUserScopedActual } = jest.requireActual('./entitlements.user-scoped');
 
 const authenticatorMock = mock<FronteggAuthenticator>();
 const httpMock = mock<HttpClient>();
 
 jest.mock('../../authenticator');
 jest.mock('../http');
+jest.mock('./entitlements.user-scoped');
 
 describe(EntitlementsClient.name, () => {
   let entitlementsClient: EntitlementsClient;
@@ -26,7 +32,7 @@ describe(EntitlementsClient.name, () => {
     jest.mocked(HttpClient).mockReturnValue(httpMock);
 
     // given: default (empty) HTTP responses
-    httpMock.get.calledWith('/api/vendor-entitlements').mockResolvedValue({
+    httpMock.get.calledWith('/api/v1/vendor-entitlements').mockResolvedValue({
       data: {
         data: {
           entitlements: [],
@@ -36,7 +42,7 @@ describe(EntitlementsClient.name, () => {
         snapshotOffset: 1234,
       },
     } as unknown as AxiosResponse<VendorEntitlementsDto>);
-    httpMock.get.calledWith('/api/vendor-entitlements-snapshot-offset').mockResolvedValue({
+    httpMock.get.calledWith('/api/v1/vendor-entitlements-snapshot-offset').mockResolvedValue({
       data: {
         snapshotOffset: 1234,
       },
@@ -97,7 +103,7 @@ describe(EntitlementsClient.name, () => {
 
       it('then latest vendor entitlements snapshot has been downloaded from the server.', () => {
         // then
-        expect(httpMock.get).toHaveBeenCalledWith('/api/vendor-entitlements');
+        expect(httpMock.get).toHaveBeenCalledWith('/api/v1/vendor-entitlements');
       });
     });
 
@@ -106,12 +112,12 @@ describe(EntitlementsClient.name, () => {
         entitlementsClient = await entitlementsClientInitialization;
         await entitlementsClient.ready();
 
-        httpMock.get.calledWith('/api/vendor-entitlements-snapshot-offset').mockResolvedValue({
+        httpMock.get.calledWith('/api/v1/vendor-entitlements-snapshot-offset').mockResolvedValue({
           data: {
             snapshotOffset: 2345,
           },
         } as unknown as AxiosResponse<VendorEntitlementsSnapshotOffsetDto>);
-        httpMock.get.calledWith('/api/vendor-entitlements').mockResolvedValue({
+        httpMock.get.calledWith('/api/v1/vendor-entitlements').mockResolvedValue({
           data: {
             data: {
               entitlements: [],
@@ -130,8 +136,8 @@ describe(EntitlementsClient.name, () => {
         await timers.tickAsync(30_000);
 
         // then
-        expect(httpMock.get).toHaveBeenCalledWith('/api/vendor-entitlements-snapshot-offset');
-        expect(httpMock.get).toHaveBeenCalledWith('/api/vendor-entitlements');
+        expect(httpMock.get).toHaveBeenCalledWith('/api/v1/vendor-entitlements-snapshot-offset');
+        expect(httpMock.get).toHaveBeenCalledWith('/api/v1/vendor-entitlements');
 
         // and
         expect(httpMock.get).toHaveBeenCalledTimes(2);
@@ -150,14 +156,61 @@ describe(EntitlementsClient.name, () => {
         await timers.tickAsync(30_000);
 
         // then
-        expect(httpMock.get).toHaveBeenCalledWith('/api/vendor-entitlements-snapshot-offset');
+        expect(httpMock.get).toHaveBeenCalledWith('/api/v1/vendor-entitlements-snapshot-offset');
 
         // and
-        expect(httpMock.get).not.toHaveBeenCalledWith('/api/vendor-entitlements');
+        expect(httpMock.get).not.toHaveBeenCalledWith('/api/v1/vendor-entitlements');
 
         // and
         expect(httpMock.get).toHaveBeenCalledTimes(1);
       });
+    });
+
+    afterEach(() => {
+      timers.restore();
+    });
+  });
+
+  describe('when EntitlementClient.forUser(entity) is called', () => {
+    const entity: IUserAccessTokenWithRoles = {
+      id: 'irrelevant',
+      userId: 'irrelevant',
+      tenantId: 'irrelevant',
+      roles: [],
+      permissions: [],
+      sub: 'irrelevant',
+      type: tokenTypes.UserAccessToken,
+    };
+
+    let timers: Sinon.SinonFakeTimers;
+    beforeEach(async () => {
+      timers = useFakeTimers();
+
+      entitlementsClient = await EntitlementsClient.init(undefined, { initializationDelayMs: 1000 });
+    });
+
+    it('before the cache initialization, then it throws an Error.', () => {
+      expect(() => entitlementsClient.forUser(entity)).toThrowError();
+    });
+
+    it('after the cache initialization, then it returns EntitlementsUserScoped instance with the cache from EntitlementsClient.', async () => {
+      // given
+      jest.mocked(EntitlementsUserScoped).mockImplementation((entity, cache) => {
+        return new EntitlementsUserScopedActual(entity, cache);
+      });
+
+      // given
+      await timers.runToLastAsync();
+      await entitlementsClient.ready();
+
+      // when
+      const scoped = entitlementsClient.forUser(entity);
+
+      // then
+      expect(scoped).toBeInstanceOf(EntitlementsUserScopedActual);
+
+      // and
+      expect(EntitlementsUserScoped).toHaveBeenCalledWith(entity, expect.any(InMemoryEntitlementsCache));
     });
 
     afterEach(() => {

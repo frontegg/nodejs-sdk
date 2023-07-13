@@ -4,7 +4,6 @@ import { config } from '../../config';
 import { IdentityClient } from './identity-client';
 import {
   AuthHeaderType,
-  IEntityWithRoles,
   ITenantAccessToken,
   IUser,
   IUserAccessToken,
@@ -60,7 +59,7 @@ const fakeVendorToken = 'fake-vendor-token';
 jest.useFakeTimers();
 
 describe('Identity client', () => {
-  let axiosMock: MockAdapter;
+  let axiosMock;
 
   beforeEach(() => {
     axiosMock = new MockAdapter(axios);

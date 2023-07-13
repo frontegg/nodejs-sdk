@@ -1,34 +1,35 @@
 import { RetryOptions } from '../../utils';
+import { Permission } from '../identity/types';
+
+export enum EntitlementReasons {
+  MISSING_FEATURE = 'missing-feature',
+  MISSING_PERMISSION = 'missing-permission',
+  BUNDLE_EXPIRED = 'bundle-expired',
+}
 
 export interface IsEntitledResult {
   result: boolean;
-  reason?: string;
+  reason?: EntitlementReasons;
 }
 
-export interface FeatureDto {
-  id: string;
-  featureKey: string;
-  permissions?: string[];
-}
+export type FeatureKey = string;
+export type TenantId = string;
+export type UserId = string;
 
-export interface FeatureBundleDto {
-  id: string;
-  featureBundleKey: string;
-  featureIds: string[];
-}
+export type FeatureId = string;
+export type FeatureTuple = [FeatureId, FeatureKey, Permission[]];
 
-export interface EntitlementsDto {
-  featureBundleId: string;
-  tenantId: string;
-  userId?: string; // If userId exist it means the entitlement is for specific user
-  expirationDate?: string;
-}
+export type FeatureBundleId = string;
+export type FeatureBundleTuple = [FeatureBundleId, FeatureId[]];
+
+export type ExpirationDate = string | null;
+export type EntitlementTuple = [FeatureBundleId, TenantId, UserId?, ExpirationDate?];
 
 export interface VendorEntitlementsDto {
   data: {
-    features: FeatureDto[];
-    featureBundles: FeatureBundleDto[];
-    entitlements: EntitlementsDto[];
+    features: FeatureTuple[];
+    featureBundles: FeatureBundleTuple[];
+    entitlements: EntitlementTuple[];
   };
   snapshotOffset: number;
 }
