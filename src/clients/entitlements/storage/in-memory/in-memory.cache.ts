@@ -7,6 +7,7 @@ import {
   TenantId,
   UserId,
   VendorEntitlementsDto,
+  FeatureId,
 } from '../../types';
 import {
   ENTITLEMENTS_MAP_KEY,
@@ -16,7 +17,7 @@ import {
 } from './in-memory.cache-key.utils';
 import NodeCache = require('node-cache');
 import { pickExpTimestamp } from '../exp-time.utils';
-import { BundlesSource, EntitlementsMap, FeatureSource, PermissionsMap } from './types';
+import { BundlesSource, EntitlementsMap, FeatureSource, PermissionsMap, UNBUNDLED_SRC_ID } from './types';
 import { Permission } from '../../../identity/types';
 
 export class InMemoryEntitlementsCache implements EntitlementsCache {
@@ -79,8 +80,9 @@ export class InMemoryEntitlementsCache implements EntitlementsCache {
     entitlements: EntitlementTuple[],
   ): BundlesSource {
     const bundlesMap: BundlesSource = new Map();
+    const unbundledFeaturesIds: Set<FeatureId> = new Set();
 
-    // helper features map
+    // helper features maps
     const featuresMap: Map<string, FeatureSource> = new Map();
     features.forEach((feat) => {
       const [id, key, permissions] = feat;
@@ -89,6 +91,7 @@ export class InMemoryEntitlementsCache implements EntitlementsCache {
         key,
         permissions: new Set(permissions || []),
       });
+      unbundledFeaturesIds.add(id);
     });
 
     // initialize bundles map
@@ -106,6 +109,9 @@ export class InMemoryEntitlementsCache implements EntitlementsCache {
               // TODO: issue warning here!
             } else {
               prev.push([featSource.key, featSource]);
+
+              // mark feature as bundled
+              unbundledFeaturesIds.delete(fId);
             }
 
             return prev;
@@ -136,6 +142,20 @@ export class InMemoryEntitlementsCache implements EntitlementsCache {
         // TODO: issue warning here!
       }
     });
+
+    // make "dummy" bundle for unbundled features
+    bundlesMap.set(UNBUNDLED_SRC_ID, {
+      id: UNBUNDLED_SRC_ID,
+      user_entitlements: new Map(),
+      tenant_entitlements: new Map(),
+      features: new Map(
+        [ ...unbundledFeaturesIds.values() ].map(fId => {
+          const featSource = featuresMap.get(fId)!;
+
+          return [featSource.key, featSource];
+        })
+      )
+    })
 
     return bundlesMap;
   }

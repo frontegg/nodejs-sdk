@@ -2,6 +2,7 @@ import { Permission } from '../../../identity/types';
 import { FeatureKey, TenantId, UserId } from '../../types';
 import { ExpirationTime } from '../types';
 
+export const UNBUNDLED_SRC_ID = '__unbundled__';
 export type FeatureEntitlementKey = string; // tenant & user & feature key
 export type EntitlementsMap = Map<FeatureEntitlementKey, ExpirationTime>;
 export type PermissionsMap = Map<Permission, Set<FeatureKey>>;

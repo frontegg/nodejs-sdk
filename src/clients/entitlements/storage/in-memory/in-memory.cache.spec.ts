@@ -118,4 +118,28 @@ describe(InMemoryEntitlementsCache.name, () => {
       await expect(cut.getEntitlementExpirationTime('foo', 't-2')).resolves.toEqual(NO_EXPIRE);
     });
   });
+
+  describe('given input data with unbundled feature "foo" (with permission "bar.baz")', () => {
+    beforeEach(() => {
+      cut = InMemoryEntitlementsCache.initialize({
+        snapshotOffset: 5,
+        data: {
+          features: [['f-1', 'foo', ['bar.baz']]],
+          featureBundles: [],
+          entitlements: [],
+        },
+      });
+    });
+
+    it('when I ask for linked features of permission "bar.baz", then feature "foo" is returned.', async () => {
+      // when
+      const result = await cut.getLinkedFeatures('bar.baz');
+
+      // then
+      expect(result).toBeInstanceOf(Set);
+
+      // and
+      expect(result.has('foo')).toBeTruthy();
+    });
+  });
 });
