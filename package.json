@@ -24,7 +24,6 @@
   "dependencies": {
     "@slack/web-api": "^6.7.2",
     "axios": "^0.27.2",
-    "debug": "^4.3.4",
     "jsonwebtoken": "^9.0.0",
     "node-cache": "^5.1.2",
     "process-warning": "^2.2.0",
@@ -46,7 +45,6 @@
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
     "@types/axios-mock-adapter": "^1.10.0",
-    "@types/debug": "^4.1.8",
     "@types/express": "^4.17.14",
     "@types/jest": "^29.2.0",
     "@types/jsonwebtoken": "^9.0.0",
