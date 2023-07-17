@@ -1,3 +1,10 @@
+# [5.1.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.0.0...5.1.0-alpha.1) (2023-07-17)
+
+
+### Features
+
+* **entitlements:** add support for entitlements ([ce857c9](https://github.com/frontegg/nodejs-sdk/commit/ce857c96c1359e5e6aa39c6a7986b1704ca44b50))
+
 # [5.0.0](https://github.com/frontegg/nodejs-sdk/compare/4.2.2...5.0.0) (2023-06-21)
 
 
