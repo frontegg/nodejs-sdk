@@ -31,7 +31,7 @@ const fakeAccessToken: IUserAccessToken = {
 jest.useFakeTimers();
 
 describe('withAuthentication middleware', () => {
-  let axiosMock: MockAdapter;
+  let axiosMock;
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let nextFunction = jest.fn();

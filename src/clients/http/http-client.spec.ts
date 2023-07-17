@@ -8,7 +8,7 @@ jest.mock('../../authenticator');
 describe('http.client', () => {
   const authenticator = new FronteggAuthenticator();
   let httpClient: HttpClient;
-  let mock: MockAdapter;
+  let mock;
 
   const fakeToken = 'Bearer abc123456789';
 
