@@ -1,18 +1,18 @@
 import { ICacheManager, IORedisCacheManager, LocalCacheManager, RedisCacheManager } from './managers';
 import { FronteggContext } from '../frontegg-context';
 
-let cacheInstance: ICacheManager;
+let cacheInstance: ICacheManager<unknown>;
 
 export class FronteggCache {
-  static getInstance(): ICacheManager {
+  static getInstance<T>(): ICacheManager<T> {
     if (!cacheInstance) {
-      cacheInstance = FronteggCache.initialize();
+      cacheInstance = FronteggCache.initialize<T>();
     }
 
-    return cacheInstance;
+    return cacheInstance as ICacheManager<T>;
   }
 
-  private static initialize(): ICacheManager {
+  private static initialize<T>(): ICacheManager<T> {
     const options = FronteggContext.getOptions();
     const cache = options.accessTokensOptions?.cache || options.cache;
 

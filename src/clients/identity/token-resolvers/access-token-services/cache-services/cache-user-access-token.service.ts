@@ -1,11 +1,11 @@
 import { ICacheManager } from '../../../../../components/cache/managers/cache.manager.interface';
-import { IUserAccessToken, tokenTypes } from '../../../types';
+import { IEmptyAccessToken, IEntityWithRoles, IUserAccessToken, tokenTypes } from '../../../types';
 import { AccessTokenService } from '../services/access-token.service';
 import { CacheAccessTokenService } from './cache-access-token.service';
 
 export class CacheUserAccessTokenService extends CacheAccessTokenService<IUserAccessToken> {
   constructor(
-    public readonly cacheManager: ICacheManager,
+    public readonly cacheManager: ICacheManager<IEntityWithRoles | IEmptyAccessToken | string[]>,
     public readonly userAccessTokenService: AccessTokenService<IUserAccessToken>,
   ) {
     super(cacheManager, userAccessTokenService, tokenTypes.UserAccessToken);

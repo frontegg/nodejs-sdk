@@ -1,7 +1,7 @@
 import { ICacheManager, SetOptions } from './cache.manager.interface';
 import * as NodeCache from 'node-cache';
 
-export class LocalCacheManager implements ICacheManager {
+export class LocalCacheManager<T> implements ICacheManager<T> {
   private nodeCache: NodeCache = new NodeCache();
 
   public async set<T>(key: string, data: T, options?: SetOptions): Promise<void> {

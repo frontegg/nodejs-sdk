@@ -6,7 +6,7 @@ export interface IRedisOptions {
   url: string;
 }
 
-export class RedisCacheManager implements ICacheManager {
+export class RedisCacheManager<T> implements ICacheManager<T> {
   private redisManager: any;
 
   constructor(options: IRedisOptions) {

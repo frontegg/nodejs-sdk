@@ -5,14 +5,14 @@ import { FailedToAuthenticateException } from '../../../exceptions';
 
 export abstract class CacheAccessTokenService<T extends IAccessToken> implements IAccessTokenService<T> {
   constructor(
-    public readonly cacheManager: ICacheManager,
+    public readonly cacheManager: ICacheManager<IEntityWithRoles | IEmptyAccessToken | string[]>,
     public readonly accessTokenService: IAccessTokenService<T>,
     public readonly type: tokenTypes.UserAccessToken | tokenTypes.TenantAccessToken,
   ) {}
 
   public async getEntity(entity: T): Promise<IEntityWithRoles> {
     const cacheKey = `${this.getCachePrefix()}_${entity.sub}`;
-    const cachedData = await this.cacheManager.get<IEntityWithRoles | IEmptyAccessToken>(cacheKey);
+    const cachedData = await this.cacheManager.get(cacheKey) as (IEntityWithRoles | undefined);
 
     if (cachedData) {
       if (this.isEmptyAccessToken(cachedData)) {
@@ -24,12 +24,12 @@ export abstract class CacheAccessTokenService<T extends IAccessToken> implements
 
     try {
       const data = await this.accessTokenService.getEntity(entity);
-      await this.cacheManager.set<IEntityWithRoles | IEmptyAccessToken>(cacheKey, data, { expiresInSeconds: 10 });
+      await this.cacheManager.set(cacheKey, data, { expiresInSeconds: 10 });
 
       return data;
     } catch (e) {
       if (e instanceof FailedToAuthenticateException) {
-        await this.cacheManager.set<IEntityWithRoles | IEmptyAccessToken>(
+        await this.cacheManager.set(
           cacheKey,
           { empty: true },
           { expiresInSeconds: 10 },
@@ -42,20 +42,20 @@ export abstract class CacheAccessTokenService<T extends IAccessToken> implements
 
   public async getActiveAccessTokenIds(): Promise<string[]> {
     const cacheKey = `${this.getCachePrefix()}_ids`;
-    const cachedData = await this.cacheManager.get<string[]>(cacheKey);
+    const cachedData = await this.cacheManager.get(cacheKey);
 
     if (cachedData) {
-      return cachedData;
+      return cachedData as string[];
     }
 
     try {
       const data = await this.accessTokenService.getActiveAccessTokenIds();
-      this.cacheManager.set<string[]>(cacheKey, data, { expiresInSeconds: 10 });
+      this.cacheManager.set(cacheKey, data, { expiresInSeconds: 10 });
 
       return data;
     } catch (e) {
       if (e instanceof FailedToAuthenticateException) {
-        await this.cacheManager.set<string[]>(cacheKey, [], { expiresInSeconds: 10 });
+        await this.cacheManager.set(cacheKey, [], { expiresInSeconds: 10 });
       }
 
       throw e;

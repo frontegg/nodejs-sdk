@@ -8,7 +8,7 @@ export interface IIORedisOptions {
   db: number;
 }
 
-export class IORedisCacheManager implements ICacheManager {
+export class IORedisCacheManager<T> implements ICacheManager<T> {
   private redisManager: any;
 
   constructor(options: IIORedisOptions) {
