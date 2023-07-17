@@ -1,5 +1,6 @@
-import { ICacheManager, IORedisCacheManager, LocalCacheManager, RedisCacheManager } from './managers';
 import { FronteggContext } from '../frontegg-context';
+import { ICacheManager } from './managers';
+import { IORedisCacheManager, LocalCacheManager, RedisCacheManager } from './managers';
 
 let cacheInstance: ICacheManager<unknown>;
 

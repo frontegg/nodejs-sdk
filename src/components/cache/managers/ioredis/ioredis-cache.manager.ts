@@ -1,7 +1,11 @@
-import { ICacheManager, SetOptions } from './cache.manager.interface';
-import { PackageUtils } from '../../../utils/package-loader';
-import { PrefixedManager } from './prefixed-manager.abstract';
 import type { Redis } from 'ioredis';
+import { PackageUtils } from '../../../../utils/package-loader';
+import { PrefixedManager } from '../prefixed-manager.abstract';
+import { ICacheManager, ICacheManagerCollection, ICacheManagerMap, SetOptions } from '../cache.manager.interface';
+import { IORedisCacheMap } from './ioredis-cache.map';
+import { IORedisCacheCollection } from './ioredis-cache.collection';
+import { ICacheValueSerializer } from '../../serializers/types';
+import { JsonSerializer } from '../../serializers/json.serializer';
 
 export interface IIORedisOptions {
   host: string;
@@ -11,8 +15,12 @@ export interface IIORedisOptions {
 }
 
 export class IORedisCacheManager<T> extends PrefixedManager implements ICacheManager<T> {
+  private readonly serializer: ICacheValueSerializer;
+
   private constructor(private readonly redisManager: Redis, prefix = '') {
     super(prefix);
+
+    this.serializer = new JsonSerializer();
   }
 
   static async create<T>(options?: IIORedisOptions, prefix = ''): Promise<IORedisCacheManager<T>> {
@@ -21,7 +29,7 @@ export class IORedisCacheManager<T> extends PrefixedManager implements ICacheMan
     return new IORedisCacheManager<T>(new RedisCtor(options), prefix);
   }
 
-  public async set<T>(key: string, data: T, options?: SetOptions): Promise<void> {
+  public async set<V extends T>(key: string, data: V, options?: SetOptions): Promise<void> {
     if (options?.expiresInSeconds) {
       this.redisManager.set(this.withPrefix(key), JSON.stringify(data), 'EX', options.expiresInSeconds);
     } else {
@@ -29,7 +37,7 @@ export class IORedisCacheManager<T> extends PrefixedManager implements ICacheMan
     }
   }
 
-  public async get<T>(key: string): Promise<T | null> {
+  public async get<V extends T>(key: string): Promise<V | null> {
     const stringifiedData = await this.redisManager.get(this.withPrefix(key));
     return stringifiedData ? JSON.parse(stringifiedData) : null;
   }
@@ -42,5 +50,13 @@ export class IORedisCacheManager<T> extends PrefixedManager implements ICacheMan
 
   forScope<S>(prefix?: string): ICacheManager<S> {
     return new IORedisCacheManager(this.redisManager, prefix ?? this.prefix);
+  }
+
+  hashmap(key: string): ICacheManagerMap {
+    return new IORedisCacheMap(this.withPrefix(key), this.redisManager, this.serializer);
+  }
+
+  collection(key: string): ICacheManagerCollection {
+    return new IORedisCacheCollection(this.withPrefix(key), this.redisManager, this.serializer);
   }
 }
