@@ -1,9 +1,14 @@
 import { LocalCacheManager } from './local-cache.manager';
 
 describe('Local cache manager', () => {
-  const localCacheManager = new LocalCacheManager();
+  let localCacheManager: LocalCacheManager<any>;
+
   const cacheKey = 'key';
   const cacheValue = { data: 'value' };
+
+  beforeEach(async () => {
+    localCacheManager = await LocalCacheManager.create();
+  });
 
   it('should set, get and delete from local cache manager', async () => {
     await localCacheManager.set(cacheKey, cacheValue);

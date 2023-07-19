@@ -1,7 +1,6 @@
 import { PackageUtils } from '../../utils/package-loader';
-import { IFronteggContext, IFronteggOptions, IAccessTokensOptions, IFronteggCacheOptions } from './types';
+import { IFronteggContext, IFronteggOptions, IFronteggCacheOptions } from './types';
 import { IIORedisOptions, IRedisOptions } from '../cache/managers';
-import { FronteggWarningCodes, warning } from '../../utils/warning';
 
 const DEFAULT_OPTIONS: IFronteggOptions = {
   cache: {
@@ -51,18 +50,6 @@ export class FronteggContext {
     if (options.cache) {
       this.validateCacheOptions(options.cache);
     }
-
-    if (options.accessTokensOptions) {
-      this.validateAccessTokensOptions(options.accessTokensOptions);
-    }
-  }
-
-  private validateAccessTokensOptions(accessTokensOptions: IAccessTokensOptions): void {
-    if (accessTokensOptions.cache) {
-      warning.emit(FronteggWarningCodes.CONFIG_KEY_MOVED_DEPRECATION, '$.accessTokenOptions.cache', '$.cache');
-    }
-
-    this.validateCacheOptions(accessTokensOptions.cache);
   }
 
   private validateCacheOptions(cache: IFronteggCacheOptions): void {

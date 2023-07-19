@@ -7,27 +7,22 @@ export interface IFronteggContext {
 
 export interface IFronteggOptions {
   cache: IFronteggCacheOptions;
-  accessTokensOptions?: IAccessTokensOptions;
 }
 
-export interface IAccessTokensOptions {
-  cache: IFronteggCacheOptions;
-}
-
-export interface IAccessTokensCacheOptions {
+export interface IBaseCacheOptions {
   type: 'ioredis' | 'local' | 'redis';
 }
 
-export interface ILocalCacheOptions extends IAccessTokensCacheOptions {
+export interface ILocalCacheOptions extends IBaseCacheOptions {
   type: 'local';
 }
 
-export interface IIORedisCacheOptions extends IAccessTokensCacheOptions {
+export interface IIORedisCacheOptions extends IBaseCacheOptions {
   type: 'ioredis';
   options: IIORedisOptions;
 }
 
-export interface IRedisCacheOptions extends IAccessTokensCacheOptions, IRedisOptions {
+export interface IRedisCacheOptions extends IBaseCacheOptions, IRedisOptions {
   type: 'redis';
   options: IRedisOptions;
 }

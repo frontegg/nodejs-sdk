@@ -65,7 +65,7 @@ export class AccessTokenResolver extends TokenResolver<IAccessToken> {
       FRONTEGG_API_KEY || process.env.FRONTEGG_API_KEY || '',
     );
 
-    this.initAccessTokenServices();
+    await this.initAccessTokenServices();
   }
 
   protected getEntity(entity: IAccessToken): Promise<IEntityWithRoles> {
@@ -93,14 +93,16 @@ export class AccessTokenResolver extends TokenResolver<IAccessToken> {
     return service;
   }
 
-  private initAccessTokenServices(): void {
+  private async initAccessTokenServices(): Promise<void> {
     if (this.accessTokenServices.length) {
       return;
     }
 
+    const cache = await FronteggCache.getInstance();
+
     this.accessTokenServices = [
-      new CacheTenantAccessTokenService(FronteggCache.getInstance(), new TenantAccessTokenService(this.httpClient)),
-      new CacheUserAccessTokenService(FronteggCache.getInstance(), new UserAccessTokenService(this.httpClient)),
+      new CacheTenantAccessTokenService(cache, new TenantAccessTokenService(this.httpClient)),
+      new CacheUserAccessTokenService(cache, new UserAccessTokenService(this.httpClient)),
     ];
   }
 }

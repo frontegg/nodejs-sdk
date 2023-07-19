@@ -3,7 +3,15 @@ export interface SetOptions {
 }
 
 export interface ICacheManager<T> {
-  set(key: string, data: T, options?: SetOptions): Promise<void>;
-  get(key: string): Promise<T | null>;
+  set<V extends T>(key: string, data: V, options?: SetOptions): Promise<void>;
+  get<V extends T>(key: string): Promise<V | null>;
   del(key: string[]): Promise<unknown>;
+
+  /**
+   * This method should return the instance of ICacheManager with the same cache connector below, but scoped set/get methods
+   * to different type of values (defined by generic type S).
+   *
+   * If prefix is not given, the prefix of current instance should be used.
+   */
+  forScope<S>(prefix?: string): ICacheManager<S>;
 }

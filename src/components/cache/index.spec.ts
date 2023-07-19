@@ -21,7 +21,7 @@ describe('FronteggContext', () => {
     const { [name]: Manager } = require('./managers');
 
     const cacheManagerMock = {};
-    jest.mocked(Manager).mockReturnValue(cacheManagerMock);
+    jest.mocked(Manager.create).mockResolvedValue(cacheManagerMock);
 
     return cacheManagerMock;
   }
@@ -99,12 +99,12 @@ describe('FronteggContext', () => {
       );
     });
 
-    it(`when cache is initialized, then the ${expectedCacheName} is returned.`, () => {
+    it(`when cache is initialized, then the ${expectedCacheName} is returned.`, async () => {
       // given
       const { FronteggCache } = require('./index');
 
       // when
-      const cache = FronteggCache.getInstance();
+      const cache = await FronteggCache.getInstance();
 
       // then
       expect(cache).toBe(expectedCache);
@@ -112,7 +112,7 @@ describe('FronteggContext', () => {
   });
 
   describe('given cache defined in deprecated `$.accessTokensOptions.cache`', () => {
-    it('when cache is initialized, then Node warning is issued.', () => {
+    it('when cache is initialized, then Node warning is issued.', async () => {
       // given
       const { FronteggContext } = require('../frontegg-context');
       FronteggContext.init(
@@ -130,7 +130,7 @@ describe('FronteggContext', () => {
       );
 
       // when
-      require('./index').FronteggCache.getInstance();
+      await require('./index').FronteggCache.getInstance();
 
       // then
       expect(
