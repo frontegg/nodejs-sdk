@@ -213,8 +213,11 @@ The client can be used to determine if authorized user or tenant is entitled to 
 First, we need to validate its token, using the `IdentityClient`:
 ```javascript
 // validate token and decode its properties
-const userOrTenantEntity = await identityClient.validateToken(token);
+const userOrTenantEntity = await identityClient.validateToken(token, { withRolesAndPermissions: true });
 ```
+> Note, that some JWT tokens might not contain permissions stored in their payloads. Permissions are essential for
+> entitlement decision-making, so remember to add option flag: `withRolesAndPermissions: true`. 
+
 (see <a href="#validating-jwt-manually">Validating JWT manually</a> section for more details).
  
 When the user/tenant entity is resolved, you can start querying the entitlements engine:

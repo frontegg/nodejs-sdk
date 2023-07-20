@@ -3,7 +3,7 @@ import {
   IsEntitledToFeatureInput,
   IsEntitledToPermissionInput,
 } from './entitlements.user-scoped';
-import { IUserApiToken, tokenTypes } from '../identity/types';
+import { IUser, IUserAccessToken, IUserApiToken, TEntityWithRoles, tokenTypes } from '../identity/types';
 import { mock, mockReset } from 'jest-mock-extended';
 import { EntitlementsCache, NO_EXPIRE } from './storage/types';
 import { EntitlementReasons } from './types';
@@ -23,6 +23,20 @@ const userApiTokenBase: Pick<
   sub: 'irrelevant',
 };
 
+const userAccessTokenBase: Pick<IUserAccessToken, 'type' | 'id' | 'sub'> = {
+  type: tokenTypes.UserAccessToken,
+  id: 'irrelevant',
+  sub: 'irrelevant'
+}
+
+const userTokenBase: Pick<IUser, 'type' | 'id' | 'userId' | 'roles' | 'metadata'> = {
+  type: tokenTypes.UserToken,
+  id: 'irrelevant',
+  userId: 'irrelevant',
+  roles: ['irrelevant'],
+  metadata: {}
+}
+
 describe(EntitlementsUserScoped.name, () => {
   const cacheMock = mock<EntitlementsCache>();
   let cut: EntitlementsUserScoped;
@@ -31,14 +45,35 @@ describe(EntitlementsUserScoped.name, () => {
     mockReset(cacheMock);
   });
 
-  describe('given the authenticated user with permission "foo" granted', () => {
-    const entity: IUserApiToken = {
-      ...userApiTokenBase,
-      permissions: ['foo'],
-      userId: 'the-user-id',
-      tenantId: 'the-tenant-id',
-    };
-
+  describe.each([
+    { tokenType: tokenTypes.UserApiToken,
+      entity: {
+        ...userApiTokenBase,
+        permissions: ['foo'],
+        userId: 'the-user-id',
+        tenantId: 'the-tenant-id',
+      } as IUserApiToken
+    },
+    {
+      tokenType: tokenTypes.UserAccessToken,
+      entity: {
+        ...userAccessTokenBase,
+        userId: 'the-user-id',
+        tenantId: 'the-tenant-id',
+        roles: [],
+        permissions: ['foo']
+      } as TEntityWithRoles<IUserAccessToken>
+    },
+    {
+      tokenType: tokenTypes.UserToken,
+      entity: {
+        ...userTokenBase,
+        permissions: [ 'foo' ],
+        sub: 'the-user-id',
+        tenantId: 'the-tenant-id'
+      } as IUser
+    }
+  ])('given the authenticated user using $tokenType with permission "foo" granted', ({ entity }) => {
     beforeEach(() => {
       cut = new EntitlementsUserScoped(entity, cacheMock);
     });
