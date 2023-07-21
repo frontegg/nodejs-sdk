@@ -1,3 +1,10 @@
+# [5.1.0-alpha.2](https://github.com/frontegg/nodejs-sdk/compare/5.1.0-alpha.1...5.1.0-alpha.2) (2023-07-21)
+
+
+### Bug Fixes
+
+* **entitlements:** fixed the way of fetching user ID ([6df03ac](https://github.com/frontegg/nodejs-sdk/commit/6df03ac156434b4eab1e76126a8766f36360fd03))
+
 # [5.1.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.0.0...5.1.0-alpha.1) (2023-07-17)
 
 
