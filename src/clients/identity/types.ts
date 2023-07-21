@@ -11,6 +11,7 @@ export interface AuthHeader {
 export interface IValidateTokenOptions {
   roles?: string[];
   permissions?: string[];
+  withRolesAndPermissions?: boolean;
 }
 
 export enum tokenTypes {

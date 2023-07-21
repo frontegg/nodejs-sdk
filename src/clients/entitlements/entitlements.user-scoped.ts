@@ -1,5 +1,5 @@
 import { EntitlementReasons, IsEntitledResult } from './types';
-import { IEntityWithRoles, Permission, TEntity, TUserEntity } from '../identity/types';
+import { IEntityWithRoles, Permission, TEntity, tokenTypes, TUserEntity } from '../identity/types';
 import { EntitlementsCache, NO_EXPIRE } from './storage/types';
 import { pickExpTimestamp } from './storage/exp-time.utils';
 
@@ -15,15 +15,23 @@ export class EntitlementsUserScoped<T extends TEntity = TEntity> {
     this.tenantId = entity.tenantId;
 
     const entityWithUserId = entity as TUserEntity;
-    if (entityWithUserId.userId) {
-      this.userId = entityWithUserId.userId;
-    }
+    this.userId = this.findUserId(entityWithUserId);
 
     const entityWithPossiblePermissions = entity as IEntityWithRoles;
     if (Array.isArray(entityWithPossiblePermissions.permissions)) {
       this.permissions = entityWithPossiblePermissions.permissions;
     } else {
       this.permissions = [];
+    }
+  }
+
+  private findUserId(entity: TUserEntity): string | undefined {
+    switch (entity.type) {
+      case tokenTypes.UserToken:
+        return entity.sub;
+      case tokenTypes.UserApiToken:
+      case tokenTypes.UserAccessToken:
+        return  entity.userId;
     }
   }
 
