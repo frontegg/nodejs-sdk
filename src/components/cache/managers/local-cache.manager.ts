@@ -3,11 +3,11 @@ import * as NodeCache from 'node-cache';
 import { PrefixedManager } from './prefixed-manager.abstract';
 
 export class LocalCacheManager<T> extends PrefixedManager implements ICacheManager<T> {
-  private constructor(private readonly nodeCache: NodeCache, prefix: string = '') {
+  private constructor(private readonly nodeCache: NodeCache, prefix = '') {
     super(prefix);
   }
 
-  static async create<Scope>(prefix: string = ''): Promise<LocalCacheManager<Scope>> {
+  static async create<Scope>(prefix = ''): Promise<LocalCacheManager<Scope>> {
     return new LocalCacheManager<Scope>(new NodeCache(), prefix);
   }
 

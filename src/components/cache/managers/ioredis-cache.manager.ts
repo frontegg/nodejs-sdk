@@ -11,11 +11,11 @@ export interface IIORedisOptions {
 }
 
 export class IORedisCacheManager<T> extends PrefixedManager implements ICacheManager<T> {
-  private constructor(private readonly redisManager: Redis, prefix: string = '') {
+  private constructor(private readonly redisManager: Redis, prefix = '') {
     super(prefix);
   }
 
-  static async create<T>(options?: IIORedisOptions, prefix: string = ''): Promise<IORedisCacheManager<T>> {
+  static async create<T>(options?: IIORedisOptions, prefix = ''): Promise<IORedisCacheManager<T>> {
     const RedisCtor = PackageUtils.loadPackage<any>('ioredis');
 
     return new IORedisCacheManager<T>(

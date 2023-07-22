@@ -14,7 +14,7 @@ export class RedisCacheManager<T> extends PrefixedManager implements ICacheManag
 
   private constructor(
     private readonly redisManager: Redis.RedisClientType,
-    prefix: string = ''
+    prefix = ''
   ) {
     super(prefix);
 
@@ -22,7 +22,7 @@ export class RedisCacheManager<T> extends PrefixedManager implements ICacheManag
     this.isReadyPromise.catch((e) => Logger.error('Failed to connect to redis', e));
   }
 
-  static create<Scope>(options: IRedisOptions, prefix: string = ''): Promise<RedisCacheManager<Scope>> {
+  static create<Scope>(options: IRedisOptions, prefix = ''): Promise<RedisCacheManager<Scope>> {
     const { createClient } = PackageUtils.loadPackage('redis') as typeof Redis;
 
     return new RedisCacheManager<Scope>(
