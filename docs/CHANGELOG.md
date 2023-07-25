@@ -1,3 +1,10 @@
+# [5.1.0-alpha.3](https://github.com/frontegg/nodejs-sdk/compare/5.1.0-alpha.2...5.1.0-alpha.3) (2023-07-25)
+
+
+### Bug Fixes
+
+* **entitlements:** rename reason to justification ([a437b84](https://github.com/frontegg/nodejs-sdk/commit/a437b84213ebffbe17590f898cb0d6908869121a))
+
 # [5.1.0-alpha.2](https://github.com/frontegg/nodejs-sdk/compare/5.1.0-alpha.1...5.1.0-alpha.2) (2023-07-21)
 
 
