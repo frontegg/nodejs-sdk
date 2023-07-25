@@ -1,7 +1,7 @@
 import { RetryOptions } from '../../utils';
 import { Permission } from '../identity/types';
 
-export enum EntitlementReasons {
+export enum EntitlementJustifications {
   MISSING_FEATURE = 'missing-feature',
   MISSING_PERMISSION = 'missing-permission',
   BUNDLE_EXPIRED = 'bundle-expired',
@@ -9,7 +9,7 @@ export enum EntitlementReasons {
 
 export interface IsEntitledResult {
   result: boolean;
-  reason?: EntitlementReasons;
+  justification?: EntitlementJustifications;
 }
 
 export type FeatureKey = string;

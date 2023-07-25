@@ -1,4 +1,4 @@
-import { EntitlementReasons, IsEntitledResult } from './types';
+import { EntitlementJustifications, IsEntitledResult } from './types';
 import { IEntityWithRoles, Permission, TEntity, tokenTypes, TUserEntity } from '../identity/types';
 import { EntitlementsCache, NO_EXPIRE } from './storage/types';
 import { pickExpTimestamp } from './storage/exp-time.utils';
@@ -48,7 +48,7 @@ export class EntitlementsUserScoped<T extends TEntity = TEntity> {
     if (expTime === undefined) {
       return {
         result: false,
-        reason: EntitlementReasons.MISSING_FEATURE,
+        justification: EntitlementJustifications.MISSING_FEATURE,
       };
     } else if (expTime === NO_EXPIRE || expTime > new Date().getTime()) {
       return {
@@ -57,7 +57,7 @@ export class EntitlementsUserScoped<T extends TEntity = TEntity> {
     } else {
       return {
         result: false,
-        reason: EntitlementReasons.BUNDLE_EXPIRED,
+        justification: EntitlementJustifications.BUNDLE_EXPIRED,
       };
     }
   }
@@ -66,7 +66,7 @@ export class EntitlementsUserScoped<T extends TEntity = TEntity> {
     if (this.permissions === undefined || this.permissions.indexOf(permissionKey) < 0) {
       return {
         result: false,
-        reason: EntitlementReasons.MISSING_PERMISSION,
+        justification: EntitlementJustifications.MISSING_PERMISSION,
       };
     }
 
@@ -84,14 +84,14 @@ export class EntitlementsUserScoped<T extends TEntity = TEntity> {
         return {
           result: true,
         };
-      } else if (isEntitledToFeatureResult.reason === EntitlementReasons.BUNDLE_EXPIRED) {
+      } else if (isEntitledToFeatureResult.justification === EntitlementJustifications.BUNDLE_EXPIRED) {
         hasExpired = true;
       }
     }
 
     return {
       result: false,
-      reason: hasExpired ? EntitlementReasons.BUNDLE_EXPIRED : EntitlementReasons.MISSING_FEATURE,
+      justification: hasExpired ? EntitlementJustifications.BUNDLE_EXPIRED : EntitlementJustifications.MISSING_FEATURE,
     };
   }
 
