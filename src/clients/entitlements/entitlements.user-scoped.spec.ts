@@ -6,7 +6,7 @@ import {
 import { IUser, IUserAccessToken, IUserApiToken, TEntityWithRoles, tokenTypes } from '../identity/types';
 import { mock, mockReset } from 'jest-mock-extended';
 import { EntitlementsCache, NO_EXPIRE } from './storage/types';
-import { EntitlementReasons } from './types';
+import { EntitlementJustifications } from './types';
 import SpyInstance = jest.SpyInstance;
 
 const userApiTokenBase: Pick<
@@ -136,14 +136,14 @@ describe(EntitlementsUserScoped.name, () => {
             });
           });
 
-          it('after the expiry time, then access is rejected and reason is BUNDLE_EXPIRED.', async () => {
+          it('after the expiry time, then access is rejected and justification is BUNDLE_EXPIRED.', async () => {
             // given
             jest.useFakeTimers({ now: expiryTime + 1000 });
 
             // when & then
             await expect(cut.isEntitledTo(input as IsEntitledToFeatureInput)).resolves.toEqual({
               result: false,
-              reason: EntitlementReasons.BUNDLE_EXPIRED,
+              justification: EntitlementJustifications.BUNDLE_EXPIRED,
             });
           });
         });
@@ -160,10 +160,10 @@ describe(EntitlementsUserScoped.name, () => {
         await expect(cut.isEntitledTo({ permissionKey: 'foo' })).resolves.toEqual({ result: true });
       });
 
-      it('when isEntitledTo({ permission: "bar" }) is called, then access is rejected with reason MISSING_PERMISSION.', async () => {
+      it('when isEntitledTo({ permission: "bar" }) is called, then access is rejected with justification MISSING_PERMISSION.', async () => {
         await expect(cut.isEntitledTo({ permissionKey: 'bar' })).resolves.toEqual({
           result: false,
-          reason: EntitlementReasons.MISSING_PERMISSION,
+          justification: EntitlementJustifications.MISSING_PERMISSION,
         });
       });
     });

@@ -245,10 +245,10 @@ The result of those queries has the following structure:
 ```typescript
 type IsEntitledResult = {
   result: boolean,
-  reason?: string
+  justficiation?: string
 }
 ```
-When `result: true`, then `reason` is not given.
+When `result: true`, then `justficiation` is not given.
 
 #### Closing the client
 To gracefully close the client:
