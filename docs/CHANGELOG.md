@@ -1,3 +1,10 @@
+## [5.1.1-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.1.0...5.1.1-alpha.1) (2023-07-30)
+
+
+### Bug Fixes
+
+* **redis:** change required fields for redis configuration ([c3056c0](https://github.com/frontegg/nodejs-sdk/commit/c3056c080d6ad9ca31b0142bb39985bcb6a830a9))
+
 # [5.1.0](https://github.com/frontegg/nodejs-sdk/compare/5.0.0...5.1.0) (2023-07-30)
 
 
