@@ -1,3 +1,16 @@
+# [5.1.0](https://github.com/frontegg/nodejs-sdk/compare/5.0.0...5.1.0) (2023-07-30)
+
+
+### Bug Fixes
+
+* **entitlements:** fixed the way of fetching user ID ([6df03ac](https://github.com/frontegg/nodejs-sdk/commit/6df03ac156434b4eab1e76126a8766f36360fd03))
+* **entitlements:** rename reason to justification ([a437b84](https://github.com/frontegg/nodejs-sdk/commit/a437b84213ebffbe17590f898cb0d6908869121a))
+
+
+### Features
+
+* **entitlements:** add support for entitlements ([ce857c9](https://github.com/frontegg/nodejs-sdk/commit/ce857c96c1359e5e6aa39c6a7986b1704ca44b50))
+
 # [5.1.0-alpha.3](https://github.com/frontegg/nodejs-sdk/compare/5.1.0-alpha.2...5.1.0-alpha.3) (2023-07-25)
 
 
