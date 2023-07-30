@@ -1,7 +1,7 @@
 import * as NodeCache from 'node-cache';
 import { ICacheManagerMap } from '../cache.manager.interface';
 
-export class LocalCacheMap implements ICacheManagerMap {
+export class LocalCacheMap<T> implements ICacheManagerMap<T> {
   constructor(
     private readonly key: string,
     private readonly cache: NodeCache

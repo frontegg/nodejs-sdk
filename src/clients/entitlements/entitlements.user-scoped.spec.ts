@@ -5,7 +5,7 @@ import {
 } from './entitlements.user-scoped';
 import { IUser, IUserAccessToken, IUserApiToken, TEntityWithRoles, tokenTypes } from '../identity/types';
 import { mock, mockReset } from 'jest-mock-extended';
-import { EntitlementsCache, NO_EXPIRE } from './storage/types';
+import { IEntitlementsCache, NO_EXPIRE } from './storage/types';
 import { EntitlementJustifications } from './types';
 import SpyInstance = jest.SpyInstance;
 
@@ -38,7 +38,7 @@ const userTokenBase: Pick<IUser, 'type' | 'id' | 'userId' | 'roles' | 'metadata'
 };
 
 describe(EntitlementsUserScoped.name, () => {
-  const cacheMock = mock<EntitlementsCache>();
+  const cacheMock = mock<IEntitlementsCache>();
   let cut: EntitlementsUserScoped;
 
   afterEach(() => {

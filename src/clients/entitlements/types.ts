@@ -39,6 +39,7 @@ export interface VendorEntitlementsSnapshotOffsetDto {
 }
 
 export interface EntitlementsClientOptions {
+  instanceId: string;
   initializationDelayMs: number;
   refreshTimeoutMs: number;
   retry: RetryOptions;

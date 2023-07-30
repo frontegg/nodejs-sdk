@@ -8,10 +8,11 @@ import Logger from '../../components/logger';
 import { retry } from '../../utils';
 import * as events from 'events';
 import { EntitlementsClientEvents } from './entitlements-client.events';
-import { EntitlementsCache } from './storage/types';
-import { InMemoryEntitlementsCache } from './storage/in-memory/in-memory.cache';
 import { TEntity } from '../identity/types';
 import { EntitlementsUserScoped } from './entitlements.user-scoped';
+import { CacheRevisionManager } from './storage/cache.revision-manager';
+import { LocalCacheManager } from '../../cache';
+import { hostname } from 'os';
 
 export class EntitlementsClient extends events.EventEmitter {
   // periodical refresh handler
@@ -19,19 +20,25 @@ export class EntitlementsClient extends events.EventEmitter {
   private readonly readyPromise: Promise<EntitlementsClient>;
   private readonly options: EntitlementsClientOptions;
 
-  // cache instance
-  private cache?: EntitlementsCache;
-
-  // snapshot data
-  private offset: number = -1;
+  // cache handler
+  private cacheManager: CacheRevisionManager;
 
   private constructor(private readonly httpClient: HttpClient, options: Partial<EntitlementsClientOptions> = {}) {
     super();
 
     this.options = this.parseOptions(options);
+    this.cacheManager = new CacheRevisionManager(
+      this.options.instanceId,
+      // TODO: use FronteggCache.getInstance(); when it's merged
+      new LocalCacheManager()
+    );
 
     this.readyPromise = new Promise((resolve) => {
       this.once(EntitlementsClientEvents.INITIALIZED, () => resolve(this));
+    });
+
+    this.on(EntitlementsClientEvents.SNAPSHOT_UPDATED, (offset) => {
+      Logger.debug('[entitlements] Snapshot refreshed.', { offset });
     });
 
     this.refreshTimeout = setTimeout(
@@ -45,7 +52,8 @@ export class EntitlementsClient extends events.EventEmitter {
 
   private parseOptions(givenOptions: Partial<EntitlementsClientOptions>): EntitlementsClientOptions {
     return {
-      retry: { numberOfTries: 3, secondsDelayRange: { min: 0.5, max: 5 } },
+      instanceId: hostname(),
+      retry: { numberOfTries: 3, delayRangeMs: { min: 500, max: 5_000 } },
       initializationDelayMs: 0,
       refreshTimeoutMs: 30_000,
       ...givenOptions,
@@ -57,40 +65,34 @@ export class EntitlementsClient extends events.EventEmitter {
   }
 
   forUser<T extends TEntity>(entity: T): EntitlementsUserScoped<T> {
-    if (!this.cache) {
+    const cache = this.cacheManager.getCache();
+    if (!cache) {
       throw new Error('EntitlementsClient is not initialized yet.');
     }
 
-    return new EntitlementsUserScoped<T>(entity, this.cache);
+    return new EntitlementsUserScoped<T>(entity, cache);
   }
 
   private async loadVendorEntitlements(): Promise<void> {
     const entitlementsData = await this.httpClient.get<VendorEntitlementsDto>('/api/v1/vendor-entitlements');
-
     const vendorEntitlementsDto = entitlementsData.data;
-    const newOffset = entitlementsData.data.snapshotOffset;
 
-    const newCache = await InMemoryEntitlementsCache.initialize(vendorEntitlementsDto, newOffset.toString());
-    const oldCache = this.cache;
+    const { isUpdated, rev } = await this.cacheManager.loadSnapshot(vendorEntitlementsDto);
 
-    this.cache = newCache;
-    this.offset = entitlementsData.data.snapshotOffset;
-
-    // clean
-    await oldCache?.clear();
-    await oldCache?.shutdown();
-
-    // emit
-    this.emit(EntitlementsClientEvents.SNAPSHOT_UPDATED, entitlementsData.data.snapshotOffset);
+    if (isUpdated) {
+      // emit
+      this.emit(EntitlementsClientEvents.SNAPSHOT_UPDATED, rev);
+    }
   }
 
   private async refreshSnapshot(): Promise<void> {
+    await this.cacheManager.waitUntilUpdated();
+
     await retry(async () => {
       if (!(await this.haveRecentSnapshot())) {
-        Logger.debug('[entitlements] Refreshing the outdated snapshot.', { currentOffset: this.offset });
+        Logger.debug('[entitlements] Refreshing the outdated snapshot.');
 
         await this.loadVendorEntitlements();
-        Logger.debug('[entitlements] Snapshot refreshed.', { currentOffset: this.offset });
       }
     }, this.options.retry);
 
@@ -101,15 +103,7 @@ export class EntitlementsClient extends events.EventEmitter {
     const serverOffsetDto = await this.httpClient.get<VendorEntitlementsSnapshotOffsetDto>(
       '/api/v1/vendor-entitlements-snapshot-offset',
     );
-    const isRecent = serverOffsetDto.data.snapshotOffset === this.offset;
-
-    Logger.debug('[entitlements] Offsets compared.', {
-      isRecent,
-      serverOffset: serverOffsetDto.data.snapshotOffset,
-      localOffset: this.offset,
-    });
-
-    return isRecent;
+    return await this.cacheManager.hasRecentSnapshot(serverOffsetDto.data);
   }
 
   static async init(

@@ -25,9 +25,9 @@ export class FronteggAuthenticator {
 
     return retry(() => this.authenticate(), {
       numberOfTries,
-      secondsDelayRange: {
-        min: 0.5,
-        max: 5,
+      delayRangeMs: {
+        min: 500,
+        max: 5000,
       },
     });
   }

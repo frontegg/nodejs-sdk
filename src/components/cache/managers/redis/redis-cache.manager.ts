@@ -7,13 +7,19 @@ import { ICacheValueSerializer } from '../../serializers/types';
 import { JsonSerializer } from '../../serializers/json.serializer';
 import { PrefixedManager } from '../prefixed-manager.abstract';
 import type * as Redis from "redis";
-import { ICacheManager, ICacheManagerCollection, ICacheManagerMap, SetOptions } from '../cache.manager.interface';
+import {
+  CacheValue,
+  ICacheManager,
+  ICacheManagerCollection,
+  ICacheManagerMap,
+  SetOptions,
+} from '../cache.manager.interface';
 
 export interface IRedisOptions {
   url: string;
 }
 
-export class RedisCacheManager<T> extends PrefixedManager implements ICacheManager<T> {
+export class RedisCacheManager<T extends CacheValue> extends PrefixedManager implements ICacheManager<T> {
   private readonly serializer: ICacheValueSerializer;
 
   private readonly isReadyPromise: Promise<void>;
@@ -27,7 +33,7 @@ export class RedisCacheManager<T> extends PrefixedManager implements ICacheManag
     this.isReadyPromise.catch((e) => Logger.error('Failed to connect to redis', e));
   }
 
-  static create<Scope>(options: IRedisOptions, prefix = ''): Promise<RedisCacheManager<Scope>> {
+  static create<Scope extends CacheValue>(options: IRedisOptions, prefix = ''): Promise<RedisCacheManager<Scope>> {
     const { createClient } = PackageUtils.loadPackage('redis') as typeof Redis;
 
     return new RedisCacheManager<Scope>(createClient(options), prefix).ready();
@@ -37,15 +43,15 @@ export class RedisCacheManager<T> extends PrefixedManager implements ICacheManag
     return this.isReadyPromise.then(() => this);
   }
 
-  forScope<Scope>(prefix?: string): ICacheManager<Scope> {
+  forScope<Scope extends CacheValue>(prefix?: string): ICacheManager<Scope> {
     return new RedisCacheManager<Scope>(this.redisManager, prefix ?? this.prefix);
   }
 
-  hashmap(key: string): ICacheManagerMap {
+  map(key: string): ICacheManagerMap<T> {
     return new RedisCacheMap(this.withPrefix(key), this.redisManager, this.serializer);
   }
 
-  collection(key: string): ICacheManagerCollection {
+  collection(key: string): ICacheManagerCollection<T> {
     return new RedisCacheCollection(this.withPrefix(key), this.redisManager, this.serializer);
   }
 
@@ -68,5 +74,9 @@ export class RedisCacheManager<T> extends PrefixedManager implements ICacheManag
     if (key.length) {
       await this.redisManager.del(key.map(this.withPrefix.bind(this)));
     }
+  }
+
+  close(): Promise<void> {
+    return this.redisManager.disconnect();
   }
 }

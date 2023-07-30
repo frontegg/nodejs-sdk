@@ -4,13 +4,15 @@ import { LocalCacheCollection } from './local-cache.collection';
 import { PrefixedManager } from '../prefixed-manager.abstract';
 import { ICacheManager, ICacheManagerCollection, ICacheManagerMap, SetOptions } from '../cache.manager.interface';
 
-export class LocalCacheManager<T> extends PrefixedManager implements ICacheManager<T> {
+export class LocalCacheManager<T = any> extends PrefixedManager implements ICacheManager<T> {
   private constructor(private readonly nodeCache: NodeCache, prefix = '') {
     super(prefix);
   }
 
   static async create<Scope>(prefix = ''): Promise<LocalCacheManager<Scope>> {
-    return new LocalCacheManager<Scope>(new NodeCache(), prefix);
+    return new LocalCacheManager<Scope>(new NodeCache({
+      useClones: false
+    }), prefix);
   }
 
   public async set<T>(key: string, data: T, options?: SetOptions): Promise<void> {
@@ -31,15 +33,19 @@ export class LocalCacheManager<T> extends PrefixedManager implements ICacheManag
     }
   }
 
-  hashmap(key: string): ICacheManagerMap {
+  map(key: string): ICacheManagerMap<T> {
     return new LocalCacheMap(this.withPrefix(key), this.nodeCache);
   }
 
-  collection(key: string): ICacheManagerCollection {
+  collection(key: string): ICacheManagerCollection<T> {
     return new LocalCacheCollection(this.withPrefix(key), this.nodeCache);
   }
 
   forScope<Scope>(prefix?: string): ICacheManager<Scope> {
     return new LocalCacheManager<Scope>(this.nodeCache, prefix ?? this.prefix);
+  }
+
+  async close(): Promise<void> {
+    this.nodeCache.close()
   }
 }

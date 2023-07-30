@@ -2,12 +2,30 @@ export interface SetOptions {
   expiresInSeconds: number;
 }
 
-export interface ICacheManager<T> {
+type Primitive =
+  | bigint
+  | boolean
+  | null
+  | number
+  | string
+  | undefined
+  | object;
+
+type JSONValue = Primitive | JSONObject | JSONArray;
+export interface JSONObject {
+  [k: string]: JSONValue;
+}
+type JSONArray = JSONValue[];
+
+export type CacheValue = JSONValue;
+
+export interface ICacheManager<T = CacheValue> {
   set<V extends T>(key: string, data: V, options?: SetOptions): Promise<void>;
   get<V extends T>(key: string): Promise<V | null>;
   del(key: string[]): Promise<unknown>;
-  hashmap(key: string): ICacheManagerMap;
-  collection(key: string): ICacheManagerCollection;
+  map(key: string): ICacheManagerMap<T>;
+  collection(key: string): ICacheManagerCollection<T>;
+  close(): Promise<void>;
 
   /**
    * This method should return the instance of ICacheManager with the same cache connector below, but scoped set/get
@@ -18,14 +36,14 @@ export interface ICacheManager<T> {
   forScope<S>(prefix?: string): ICacheManager<S>;
 }
 
-export interface ICacheManagerMap {
-  set<T>(field: string, data: T): Promise<void>;
-  get<T>(field: string): Promise<T | null>;
+export interface ICacheManagerMap<Base> {
+  set<T extends Base>(field: string, data: T): Promise<void>;
+  get<T extends Base>(field: string): Promise<T | null>;
   del(field: string): Promise<void>;
 }
 
-export interface ICacheManagerCollection {
-  set<T>(value: T): Promise<void>;
-  has<T>(value: T): Promise<boolean>;
-  getAll<T>(): Promise<T[]>;
+export interface ICacheManagerCollection<Base> {
+  set<T extends Base>(value: T): Promise<void>;
+  has<T extends Base>(value: T): Promise<boolean>;
+  getAll<T extends Base>(): Promise<Set<T>>;
 }

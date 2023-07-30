@@ -1,6 +1,6 @@
 import { EntitlementJustifications, IsEntitledResult } from './types';
 import { IEntityWithRoles, Permission, TEntity, tokenTypes, TUserEntity } from '../identity/types';
-import { EntitlementsCache, NO_EXPIRE } from './storage/types';
+import { IEntitlementsCache, NO_EXPIRE } from './storage/types';
 import { pickExpTimestamp } from './storage/exp-time.utils';
 
 export type IsEntitledToPermissionInput = { permissionKey: string };
@@ -11,7 +11,7 @@ export class EntitlementsUserScoped<T extends TEntity = TEntity> {
   private readonly userId?: string;
   private readonly permissions: Permission[];
 
-  constructor(private readonly entity: T, private readonly cache: EntitlementsCache) {
+  constructor(private readonly entity: T, private readonly cache: IEntitlementsCache) {
     this.tenantId = entity.tenantId;
 
     const entityWithUserId = entity as TUserEntity;

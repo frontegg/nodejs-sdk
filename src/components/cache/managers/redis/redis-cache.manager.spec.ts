@@ -1,6 +1,6 @@
 import 'jest-extended';
-import { IORedisCacheManager } from './ioredis-cache.manager';
 import IORedis from 'ioredis';
+import { RedisCacheManager } from './redis-cache.manager';
 import { CacheValue } from '../cache.manager.interface';
 
 // TODO:  define all tests of Redis-based ICacheManager implementations in single file, only change the implementation
@@ -10,9 +10,9 @@ function delay(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-describe(IORedisCacheManager.name, () => {
+describe(RedisCacheManager.name, () => {
 
-  let cut: IORedisCacheManager<CacheValue>;
+  let cut: RedisCacheManager<CacheValue>;
   let redisTestConnection: IORedis;
 
   beforeAll(async () => {
@@ -22,7 +22,7 @@ describe(IORedisCacheManager.name, () => {
     // initial clean-up of used key
     await redisTestConnection.del('key');
 
-    cut = await IORedisCacheManager.create({ host: 'localhost', port: 36279 })
+    cut = await RedisCacheManager.create({ url: 'redis://localhost:36279' });
   });
 
   afterEach(async () => {
@@ -47,7 +47,10 @@ describe(IORedisCacheManager.name, () => {
       beforeEach(() => cut.set('key', 'value', { expiresInSeconds: 1 }));
 
       it('when expiration time has not passed yet, then it is kept in Redis.', async () => {
-        // when & then
+        // when
+        await delay(100);
+
+        // then
         await expect(redisTestConnection.exists('key')).resolves.toBeGreaterThan(0);
       });
 

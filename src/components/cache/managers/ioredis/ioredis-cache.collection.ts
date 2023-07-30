@@ -1,8 +1,8 @@
 import IORedis from 'ioredis';
 import { ICacheValueSerializer } from '../../serializers/types';
-import { ICacheManagerCollection } from '../cache.manager.interface';
+import { CacheValue, ICacheManagerCollection } from '../cache.manager.interface';
 
-export class IORedisCacheCollection implements ICacheManagerCollection {
+export class IORedisCacheCollection implements ICacheManagerCollection<CacheValue> {
   constructor(
     private readonly key: string,
     private readonly redis: IORedis,
@@ -10,15 +10,17 @@ export class IORedisCacheCollection implements ICacheManagerCollection {
   ) {
   }
 
-  async set<T>(value: T): Promise<void> {
+  async set<T extends CacheValue>(value: T): Promise<void> {
     await this.redis.sadd(this.key, this.serializer.serialize(value));
   }
 
-  async has<T>(value: T): Promise<boolean> {
+  async has<T extends CacheValue>(value: T): Promise<boolean> {
     return await this.redis.sismember(this.key, this.serializer.serialize(value)) > 0;
   }
 
-  async getAll<T>(): Promise<T[]> {
-    return (await this.redis.smembers(this.key)).map(v => this.serializer.deserialize(v));
+  async getAll<T extends CacheValue>(): Promise<Set<T>> {
+    const members = (await this.redis.smembers(this.key)).map(v => this.serializer.deserialize<T>(v));
+
+    return new Set(members);
   }
 }

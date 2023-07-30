@@ -1,7 +1,7 @@
 import * as NodeCache from 'node-cache';
 import { ICacheManagerCollection } from '../cache.manager.interface';
 
-export class LocalCacheCollection implements ICacheManagerCollection {
+export class LocalCacheCollection<T> implements ICacheManagerCollection<T> {
   constructor(
     private readonly key: string,
     private readonly cache: NodeCache
@@ -24,7 +24,7 @@ export class LocalCacheCollection implements ICacheManagerCollection {
     this.ensureSetInCache().add(value);
   }
 
-  async getAll<T>(): Promise<T[]> {
-    return [...this.ensureSetInCache<T>().values()];
+  async getAll<T>(): Promise<Set<T>> {
+    return this.ensureSetInCache<T>();
   }
 }
