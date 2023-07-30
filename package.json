@@ -26,7 +26,6 @@
     "axios": "^0.27.2",
     "jsonwebtoken": "^9.0.0",
     "node-cache": "^5.1.2",
-    "process-warning": "^2.2.0",
     "winston": "^3.8.2"
   },
   "peerDependencies": {
