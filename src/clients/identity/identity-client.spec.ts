@@ -2,15 +2,7 @@ import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import { config } from '../../config';
 import { IdentityClient } from './identity-client';
-import {
-  AuthHeaderType,
-  IEntityWithRoles,
-  ITenantAccessToken,
-  IUser,
-  IUserAccessToken,
-  TEntityWithRoles,
-  tokenTypes,
-} from './types';
+import { AuthHeaderType, ITenantAccessToken, IUser, IUserAccessToken, TEntityWithRoles, tokenTypes } from './types';
 import { accessTokenHeaderResolver, authorizationHeaderResolver } from './token-resolvers';
 
 jest.setTimeout(60000);
@@ -60,7 +52,7 @@ const fakeVendorToken = 'fake-vendor-token';
 jest.useFakeTimers();
 
 describe('Identity client', () => {
-  let axiosMock: MockAdapter;
+  let axiosMock;
 
   beforeEach(() => {
     axiosMock = new MockAdapter(axios);
@@ -99,11 +91,7 @@ describe('Identity client', () => {
       //@ts-ignore
       jest.spyOn(accessTokenHeaderResolver, 'getActiveAccessTokenIds').mockImplementation(() => [claims.sub]);
 
-      const res = await IdentityClient.getInstance().validateToken(
-        'fake-token',
-        {},
-        AuthHeaderType.AccessToken,
-      );
+      const res = await IdentityClient.getInstance().validateToken('fake-token', {}, AuthHeaderType.AccessToken);
       expect(res).toEqual(claims);
     },
   );
@@ -143,11 +131,7 @@ describe('Identity client', () => {
     //@ts-ignore
     jest.spyOn(authorizationHeaderResolver, 'verifyAsync').mockImplementation(() => fakeUser);
     try {
-      await IdentityClient.getInstance().validateToken(
-        'fake-token',
-        { roles: ['ReadOnly'] },
-        AuthHeaderType.JWT,
-      );
+      await IdentityClient.getInstance().validateToken('fake-token', { roles: ['ReadOnly'] }, AuthHeaderType.JWT);
     } catch (e: any) {
       expect(e.statusCode).toEqual(403);
       expect(e.message).toEqual('Insufficient role');

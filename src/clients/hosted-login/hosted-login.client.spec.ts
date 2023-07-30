@@ -13,7 +13,7 @@ FronteggContext.init({
 jest.mock('../../authenticator');
 describe('Hosted login client tests', () => {
   it('should create authorize endpoint', async () => {
-    const axiosMock: MockAdapter = new MockAdapter(axios);
+    const axiosMock = new MockAdapter(axios);
     const token = 'fake-token';
     const baseURL = 'https://vendor.base.url';
     try {
@@ -34,7 +34,7 @@ describe('Hosted login client tests', () => {
   });
 
   it('should exchange code for token', async () => {
-    const axiosMock: MockAdapter = new MockAdapter(axios);
+    const axiosMock = new MockAdapter(axios);
     const token = 'fake-token';
     const userData = {
       permissions: ['permission1'],

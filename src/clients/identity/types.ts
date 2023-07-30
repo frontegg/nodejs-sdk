@@ -11,6 +11,7 @@ export interface AuthHeader {
 export interface IValidateTokenOptions {
   roles?: string[];
   permissions?: string[];
+  withRolesAndPermissions?: boolean;
 }
 
 export enum tokenTypes {
@@ -27,14 +28,11 @@ export type TEntityWithRoles<T extends IEntity> = T & IEntityWithRoles;
 export type IUserAccessTokenWithRoles = TEntityWithRoles<IUserAccessToken>;
 export type ITenantAccessTokenWithRoles = TEntityWithRoles<ITenantAccessToken>;
 
-export type TEntity =
-  | IUser
-  | IUserApiToken
-  | ITenantApiToken
-  | IUserAccessToken
-  | IUserAccessTokenWithRoles
-  | ITenantAccessToken
-  | ITenantAccessTokenWithRoles;
+export type TUserEntity = IUser | IUserApiToken | IUserAccessToken | IUserAccessTokenWithRoles;
+
+export type TTenantEntity = ITenantApiToken | ITenantAccessToken | ITenantAccessTokenWithRoles;
+
+export type TEntity = TUserEntity | TTenantEntity;
 
 export interface IEntity {
   id?: string;

@@ -50,7 +50,12 @@ export class AccessTokenResolver extends TokenResolver<IAccessToken> {
       }
     }
 
-    return { ...(entityWithRoles || {}), ...entity };
+    return {
+      ...(entityWithRoles || (
+        options?.withRolesAndPermissions ? await this.getEntity(entity) : {}
+      )),
+      ...entity
+    };
   }
 
   public async init(): Promise<void> {
