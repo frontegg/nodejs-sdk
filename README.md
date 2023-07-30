@@ -123,71 +123,12 @@ Head over to the <a href="https://docs.frontegg.com/docs/using-frontegg-sdk">Doc
 ### Access tokens
 
 When using M2M authentication, access tokens will be cached by the SDK.
-By default access tokens will be cached locally, however you can use two other kinds of cache:
+By default, access tokens will be cached locally, however you can use two other kinds of cache:
 
 - ioredis
 - redis
 
-#### Use ioredis as your cache
-> **Deprecation Warning!**  
-> This section is deprecated. See <a href="#redis-cache">Redis cache</a> section for cache configuration. 
-
-When initializing your context, pass an access tokens options object with your ioredis parameters
-
-```javascript
-const { FronteggContext } = require('@frontegg/client');
-
-const accessTokensOptions = {
-  cache: {
-    type: 'ioredis',
-    options: {
-      host: 'localhost',
-      port: 6379,
-      password: '',
-      db: 10,
-    },
-  },
-};
-
-FronteggContext.init(
-  {
-    FRONTEGG_CLIENT_ID: '<YOUR_CLIENT_ID>',
-    FRONTEGG_API_KEY: '<YOUR_API_KEY>',
-  },
-  {
-    accessTokensOptions,
-  },
-);
-```
-
-#### Use redis as your cache
-> **Deprecation Warning!**  
-> This section is deprecated. See <a href="#redis-cache">Redis cache</a> section for cache configuration.
-
-When initializing your context, pass an access tokens options object with your redis parameters
-
-```javascript
-const { FronteggContext } = require('@frontegg/client');
-
-const accessTokensOptions = {
-  cache: {
-    type: 'redis',
-    options: {
-      url: 'redis[s]://[[username][:password]@][host][:port][/db-number]',
-    },
-  },
-};
-
-FronteggContext.init(
-  {
-    FRONTEGG_CLIENT_ID: '<YOUR_CLIENT_ID>',
-    FRONTEGG_API_KEY: '<YOUR_API_KEY>',
-  },
-  {
-    accessTokensOptions,
-  },
-);
-```
+For details on cache configuration, refer to <a href="#redis-cache">Redis cache</a> section.
 
 ### Clients
 
