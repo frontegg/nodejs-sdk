@@ -23,14 +23,6 @@
     <li><a href="#usage">Usage</a></li>
 </ul>
 
-## Notice
-
-### Version 3.0.0 is Deprecated. Please use versions 4.x.x
-
-### If you are upgrading from version 2.x.x skip version 3.0.0 by installing the latest version
-
----
-
 ## Breaking Changes
 
 * ### As of version 3.0.0 and 4.0.0, we will no longer provide proxy middlewares
@@ -192,6 +184,78 @@ const { data, total } = await audits.getAudits({
 });
 ```
 
+### Entitlements Client
+
+#### Initializing the client
+```javascript
+
+const { EntitlementsClient } = require('@frontegg/client');
+
+// initialize the FronteggContext
+FronteggContext.init(
+  {
+    FRONTEGG_CLIENT_ID: '<YOUR_CLIENT_ID>',
+    FRONTEGG_API_KEY: '<YOUR_API_KEY>',
+  },
+  {
+    accessTokensOptions,
+  },
+);
+
+// initialize entitlements client
+const client = await EntitlementsClient.init(/* */);
+await client.ready();
+```
+
+#### Using the client
+The client can be used to determine if authorized user or tenant is entitled to particular feature or permission.
+
+First, we need to validate its token, using the `IdentityClient`:
+```javascript
+// validate token and decode its properties
+const userOrTenantEntity = await identityClient.validateToken(token, { withRolesAndPermissions: true });
+```
+> Note, that some JWT tokens might not contain permissions stored in their payloads. Permissions are essential for
+> entitlement decision-making, so remember to add option flag: `withRolesAndPermissions: true`. 
+
+(see <a href="#validating-jwt-manually">Validating JWT manually</a> section for more details).
+ 
+When the user/tenant entity is resolved, you can start querying the entitlements engine:
+```javascript
+const userEntitlementsClient = client.forUser(userOrTenantEntity);
+
+let result;
+
+// asking for feature entitlement
+result = await userEntitlementsClient.isEntitledToFeature('foo');
+// or
+result = await userEntitlementsClient.isEntitledTo({
+  featureKey: 'foo'
+});
+
+// asking for permission entitlement
+result = await userEntitlementsClient.isEntitledToPermission('foo.read');
+// or
+result = await userEntitlementsClient.isEntitledTo({
+  permissionKey: 'foo'
+});
+```
+
+The result of those queries has the following structure:
+```typescript
+type IsEntitledResult = {
+  result: boolean,
+  justficiation?: string
+}
+```
+When `result: true`, then `justficiation` is not given.
+
+#### Closing the client
+To gracefully close the client:
+```javascript
+client.destroy();
+```
+
 ### Working with the REST API
 
 Frontegg provides a comprehensive REST API for your application.
@@ -218,7 +282,7 @@ await httpClient.post(
 );
 ```
 
-### Validating JWT manually
+### <a name="validating-jwt-manually"></a>Validating JWT manually
 
 If required you can implement your own middleware which will validate the Frontegg JWT using the `IdentityClient`
 
