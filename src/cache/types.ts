@@ -1,8 +1,8 @@
 export interface IIORedisCacheOptions {
   host: string;
-  password: string;
+  password?: string;
   port: number;
-  db: number;
+  db?: number;
 }
 
 export interface IRedisCacheOptions {
