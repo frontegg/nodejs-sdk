@@ -1,11 +1,5 @@
-import {
-  IFronteggOptions,
-  IIORedisCacheOptions,
-  ILocalCacheOptions,
-  IRedisCacheOptions,
-} from '../frontegg-context/types';
+import { IIORedisCacheOptions, ILocalCacheOptions, IRedisCacheOptions } from '../frontegg-context/types';
 import { FronteggContext } from '../frontegg-context';
-import { FronteggWarningCodes } from '../../utils/warning';
 
 describe('FronteggContext', () => {
   beforeEach(() => {
@@ -59,30 +53,6 @@ describe('FronteggContext', () => {
       },
       expectedCacheName: 'RedisCacheManager',
     },
-    {
-      cacheConfigInfo: "type of 'ioredis' in `$.accessTokensOptions.cache` and empty `$.cache`",
-      config: {
-        accessTokensOptions: {
-          cache: {
-            type: 'ioredis',
-            options: { host: 'foo', password: 'bar', db: 0, port: 6372 },
-          } as IIORedisCacheOptions,
-        },
-      } as IFronteggOptions,
-      expectedCacheName: 'IORedisCacheManager',
-    },
-    {
-      cacheConfigInfo: "type of 'redis' in `$.accessTokensOptions.cache` and empty `$.cache`",
-      config: {
-        accessTokensOptions: {
-          cache: {
-            type: 'redis',
-            options: { url: 'redis://url:6372' },
-          } as IRedisCacheOptions,
-        },
-      } as IFronteggOptions,
-      expectedCacheName: 'RedisCacheManager',
-    },
   ])('given $cacheConfigInfo configuration in FronteggContext', ({ config, expectedCacheName }) => {
     let expectedCache;
 
@@ -108,34 +78,6 @@ describe('FronteggContext', () => {
 
       // then
       expect(cache).toBe(expectedCache);
-    });
-  });
-
-  describe('given cache defined in deprecated `$.accessTokensOptions.cache`', () => {
-    it('when cache is initialized, then Node warning is issued.', async () => {
-      // given
-      const { FronteggContext } = require('../frontegg-context');
-      FronteggContext.init(
-        {
-          FRONTEGG_CLIENT_ID: 'foo',
-          FRONTEGG_API_KEY: 'bar',
-        },
-        {
-          accessTokensOptions: {
-            cache: {
-              type: 'local',
-            },
-          },
-        },
-      );
-
-      // when
-      await require('./index').FronteggCache.getInstance();
-
-      // then
-      expect(
-        require('../../utils/warning').warning.emitted.get(FronteggWarningCodes.CONFIG_KEY_MOVED_DEPRECATION),
-      ).toBeTruthy();
     });
   });
 });

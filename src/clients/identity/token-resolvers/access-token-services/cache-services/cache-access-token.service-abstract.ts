@@ -73,5 +73,4 @@ export abstract class CacheAccessTokenServiceAbstract<T extends IAccessToken> im
   private isEmptyAccessToken(accessToken: IEntityWithRoles | IEmptyAccessToken): accessToken is IEmptyAccessToken {
     return 'empty' in accessToken && accessToken.empty;
   }
-
 }

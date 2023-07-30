@@ -3,13 +3,7 @@ import { FronteggAuthenticator } from '../../authenticator';
 import { config } from '../../config';
 import Logger from '../../components/logger';
 import { FronteggContext } from '../../components/frontegg-context';
-import {
-  AuthHeaderType,
-  ExtractCredentialsResult,
-  IUser,
-  IValidateTokenOptions,
-  TEntity,
-} from './types';
+import { AuthHeaderType, ExtractCredentialsResult, IUser, IValidateTokenOptions, TEntity } from './types';
 import { accessTokenHeaderResolver, authorizationHeaderResolver, TokenResolver } from './token-resolvers';
 import { FailedToAuthenticateException } from './exceptions/failed-to-authenticate.exception';
 import { IFronteggContext } from '../../components/frontegg-context/types';

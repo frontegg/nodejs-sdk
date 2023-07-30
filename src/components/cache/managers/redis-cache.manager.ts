@@ -12,10 +12,7 @@ export interface IRedisOptions {
 export class RedisCacheManager<T> extends PrefixedManager implements ICacheManager<T> {
   private readonly isReadyPromise: Promise<void>;
 
-  private constructor(
-    private readonly redisManager: Redis.RedisClientType,
-    prefix = ''
-  ) {
+  private constructor(private readonly redisManager: Redis.RedisClientType, prefix = '') {
     super(prefix);
 
     this.isReadyPromise = this.redisManager.connect();
@@ -25,10 +22,7 @@ export class RedisCacheManager<T> extends PrefixedManager implements ICacheManag
   static create<Scope>(options: IRedisOptions, prefix = ''): Promise<RedisCacheManager<Scope>> {
     const { createClient } = PackageUtils.loadPackage('redis') as typeof Redis;
 
-    return new RedisCacheManager<Scope>(
-      createClient(options),
-      prefix
-    ).ready();
+    return new RedisCacheManager<Scope>(createClient(options), prefix).ready();
   }
 
   ready(): Promise<this> {
@@ -55,9 +49,6 @@ export class RedisCacheManager<T> extends PrefixedManager implements ICacheManag
   }
 
   forScope<Scope>(prefix?: string): ICacheManager<Scope> {
-    return new RedisCacheManager<Scope>(
-      this.redisManager,
-      prefix ?? this.prefix
-    );
+    return new RedisCacheManager<Scope>(this.redisManager, prefix ?? this.prefix);
   }
 }

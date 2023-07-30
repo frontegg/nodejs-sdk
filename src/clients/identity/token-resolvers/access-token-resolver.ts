@@ -51,10 +51,8 @@ export class AccessTokenResolver extends TokenResolver<IAccessToken> {
     }
 
     return {
-      ...(entityWithRoles || (
-        options?.withRolesAndPermissions ? await this.getEntity(entity) : {}
-      )),
-      ...entity
+      ...(entityWithRoles || (options?.withRolesAndPermissions ? await this.getEntity(entity) : {})),
+      ...entity,
     };
   }
 

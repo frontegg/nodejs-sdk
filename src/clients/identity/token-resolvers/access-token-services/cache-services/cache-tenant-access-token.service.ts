@@ -4,10 +4,7 @@ import { AccessTokenService } from '../services/access-token.service';
 import { CacheAccessTokenServiceAbstract } from './cache-access-token.service-abstract';
 
 export class CacheTenantAccessTokenService extends CacheAccessTokenServiceAbstract<ITenantAccessToken> {
-  constructor(
-    cacheManager: ICacheManager<any>,
-    tenantAccessTokenService: AccessTokenService<ITenantAccessToken>,
-  ) {
+  constructor(cacheManager: ICacheManager<any>, tenantAccessTokenService: AccessTokenService<ITenantAccessToken>) {
     super(cacheManager, tenantAccessTokenService, tokenTypes.TenantAccessToken);
   }
 

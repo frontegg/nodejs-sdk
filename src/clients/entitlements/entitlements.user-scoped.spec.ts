@@ -26,16 +26,16 @@ const userApiTokenBase: Pick<
 const userAccessTokenBase: Pick<IUserAccessToken, 'type' | 'id' | 'sub'> = {
   type: tokenTypes.UserAccessToken,
   id: 'irrelevant',
-  sub: 'irrelevant'
-}
+  sub: 'irrelevant',
+};
 
 const userTokenBase: Pick<IUser, 'type' | 'id' | 'userId' | 'roles' | 'metadata'> = {
   type: tokenTypes.UserToken,
   id: 'irrelevant',
   userId: 'irrelevant',
   roles: ['irrelevant'],
-  metadata: {}
-}
+  metadata: {},
+};
 
 describe(EntitlementsUserScoped.name, () => {
   const cacheMock = mock<EntitlementsCache>();
@@ -46,13 +46,14 @@ describe(EntitlementsUserScoped.name, () => {
   });
 
   describe.each([
-    { tokenType: tokenTypes.UserApiToken,
+    {
+      tokenType: tokenTypes.UserApiToken,
       entity: {
         ...userApiTokenBase,
         permissions: ['foo'],
         userId: 'the-user-id',
         tenantId: 'the-tenant-id',
-      } as IUserApiToken
+      } as IUserApiToken,
     },
     {
       tokenType: tokenTypes.UserAccessToken,
@@ -61,18 +62,18 @@ describe(EntitlementsUserScoped.name, () => {
         userId: 'the-user-id',
         tenantId: 'the-tenant-id',
         roles: [],
-        permissions: ['foo']
-      } as TEntityWithRoles<IUserAccessToken>
+        permissions: ['foo'],
+      } as TEntityWithRoles<IUserAccessToken>,
     },
     {
       tokenType: tokenTypes.UserToken,
       entity: {
         ...userTokenBase,
-        permissions: [ 'foo' ],
+        permissions: ['foo'],
         sub: 'the-user-id',
-        tenantId: 'the-tenant-id'
-      } as IUser
-    }
+        tenantId: 'the-tenant-id',
+      } as IUser,
+    },
   ])('given the authenticated user using $tokenType with permission "foo" granted', ({ entity }) => {
     beforeEach(() => {
       cut = new EntitlementsUserScoped(entity, cacheMock);

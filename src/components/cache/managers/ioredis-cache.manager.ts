@@ -1,13 +1,13 @@
 import { ICacheManager, SetOptions } from './cache.manager.interface';
 import { PackageUtils } from '../../../utils/package-loader';
 import { PrefixedManager } from './prefixed-manager.abstract';
-import type { Redis } from "ioredis";
+import type { Redis } from 'ioredis';
 
 export interface IIORedisOptions {
   host: string;
-  password: string;
+  password?: string;
   port: number;
-  db: number;
+  db?: number;
 }
 
 export class IORedisCacheManager<T> extends PrefixedManager implements ICacheManager<T> {
@@ -18,10 +18,7 @@ export class IORedisCacheManager<T> extends PrefixedManager implements ICacheMan
   static async create<T>(options?: IIORedisOptions, prefix = ''): Promise<IORedisCacheManager<T>> {
     const RedisCtor = PackageUtils.loadPackage<any>('ioredis');
 
-    return new IORedisCacheManager<T>(
-      new RedisCtor(options),
-      prefix
-    );
+    return new IORedisCacheManager<T>(new RedisCtor(options), prefix);
   }
 
   public async set<T>(key: string, data: T, options?: SetOptions): Promise<void> {
@@ -44,6 +41,6 @@ export class IORedisCacheManager<T> extends PrefixedManager implements ICacheMan
   }
 
   forScope<S>(prefix?: string): ICacheManager<S> {
-    return new IORedisCacheManager(this.redisManager, prefix ?? this.prefix)
+    return new IORedisCacheManager(this.redisManager, prefix ?? this.prefix);
   }
 }
