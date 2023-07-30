@@ -57,7 +57,7 @@ export class FronteggContext {
   private validateIORedisOptions(redisOptions: IIORedisCacheOptions): void {
     PackageUtils.loadPackage('ioredis');
 
-    const requiredProperties: (keyof IIORedisCacheOptions)[] = ['host', 'password', 'port', 'db'];
+    const requiredProperties: (keyof IIORedisCacheOptions)[] = ['host', 'port'];
     requiredProperties.forEach((requiredProperty) => {
       if (redisOptions[requiredProperty] === undefined) {
         throw new Error(`${requiredProperty} is missing from ioredis cache options`);
