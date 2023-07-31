@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 export class PackageUtils {
-  public static loadPackage(name: string): unknown {
+  public static loadPackage<T = unknown>(name: string): T {
     const packagePath = path.resolve(process.cwd() + '/node_modules/' + name);
 
     try {

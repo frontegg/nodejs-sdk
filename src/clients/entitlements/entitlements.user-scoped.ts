@@ -31,7 +31,7 @@ export class EntitlementsUserScoped<T extends TEntity = TEntity> {
         return entity.sub;
       case tokenTypes.UserApiToken:
       case tokenTypes.UserAccessToken:
-        return  entity.userId;
+        return entity.userId;
     }
   }
 

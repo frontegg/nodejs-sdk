@@ -1,6 +1,6 @@
 import { IORedisCacheManager } from './ioredis-cache.manager';
 
-jest.mock('../utils/package-loader', () => ({
+jest.mock('../../../utils/package-loader', () => ({
   PackageUtils: {
     loadPackage: (name: string) => {
       switch (name) {
@@ -12,8 +12,12 @@ jest.mock('../utils/package-loader', () => ({
 }));
 
 describe('IORedis cache manager', () => {
-  //@ts-ignore
-  const redisCacheManager = new IORedisCacheManager<{ data: string }>();
+  let redisCacheManager: IORedisCacheManager<{ data: string }>;
+
+  beforeEach(async () => {
+    redisCacheManager = await IORedisCacheManager.create();
+  });
+
   const cacheKey = 'key';
   const cacheValue = { data: 'value' };
 

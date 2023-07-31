@@ -1,18 +1,17 @@
-import { ICacheManager } from '../../../../../cache/cache.manager.interface';
-import { IEmptyAccessToken, IEntityWithRoles, IUserAccessToken, tokenTypes } from '../../../types';
+import { ICacheManager } from '../../../../../components/cache/managers/cache.manager.interface';
+import { IUserAccessToken, tokenTypes } from '../../../types';
 import { AccessTokenService } from '../services/access-token.service';
-import { CacheAccessTokenService } from './cache-access-token.service';
+import { CacheAccessTokenServiceAbstract } from './cache-access-token.service-abstract';
 
-export class CacheUserAccessTokenService extends CacheAccessTokenService<IUserAccessToken> {
+export class CacheUserAccessTokenService extends CacheAccessTokenServiceAbstract<IUserAccessToken> {
   constructor(
-    public readonly entityCacheManager: ICacheManager<IEntityWithRoles | IEmptyAccessToken>,
-    public readonly activeAccessTokensCacheManager: ICacheManager<string[]>,
+    cacheManager: ICacheManager<any>,
     public readonly userAccessTokenService: AccessTokenService<IUserAccessToken>,
   ) {
-    super(entityCacheManager, activeAccessTokensCacheManager, userAccessTokenService, tokenTypes.UserAccessToken);
+    super(cacheManager, userAccessTokenService, tokenTypes.UserAccessToken);
   }
 
   protected getCachePrefix(): string {
-    return 'frontegg_sdk_v1_tenant_access_tokens';
+    return 'frontegg_sdk_v1_tenant_access_tokens_';
   }
 }
