@@ -1,3 +1,25 @@
+# [6.0.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.1.1-alpha.1...6.0.0-alpha.1) (2023-07-31)
+
+
+### Code Refactoring
+
+* **sdk:** removed irrelevant accessTokenOptions; refactored cache manager implementations ([3bbe939](https://github.com/frontegg/nodejs-sdk/commit/3bbe93926e52eda261db11bb6fbdd65671074e4e))
+
+
+### Bug Fixes
+
+* **cache:** Bringing back the ICacheManager generic to the class level ([7d04440](https://github.com/frontegg/nodejs-sdk/commit/7d04440ab94e66d0155032597d42ec8b17c4b1da))
+
+
+### Features
+
+* **cache:** decoupled cache managers from AccessTokens ([85db523](https://github.com/frontegg/nodejs-sdk/commit/85db5230d7530e2e61dcea8e79174148e9cb1f6f))
+
+
+### BREAKING CHANGES
+
+* **sdk:** removed accessTokenOptions from FronteggContext configuration
+
 ## [5.1.1-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.1.0...5.1.1-alpha.1) (2023-07-30)
 
 
