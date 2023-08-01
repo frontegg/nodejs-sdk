@@ -3,7 +3,9 @@ import { BundlesSource, ExpirationTime, FeatureSource, NO_EXPIRE, UNBUNDLED_SRC_
 
 export class DtoToCacheSourcesMapper {
   map(dto: VendorEntitlementsDto): BundlesSource {
-    const { data: { features, entitlements, featureBundles } } = dto;
+    const {
+      data: { features, entitlements, featureBundles },
+    } = dto;
 
     const bundlesMap: BundlesSource = new Map();
     const unbundledFeaturesIds: Set<FeatureId> = new Set();

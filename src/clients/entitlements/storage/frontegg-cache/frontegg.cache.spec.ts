@@ -76,7 +76,7 @@ describe(FronteggEntitlementsCache.name, () => {
 
   describe('given input data with multiple time-restricted entitlements to bundle with feature "foo" (no permissions) for user "u-1" and tenant "t-2"', () => {
     beforeEach(async () => {
-      cut =  await FronteggEntitlementsCacheInitializer.initialize({
+      cut = await FronteggEntitlementsCacheInitializer.initialize({
         snapshotOffset: 4,
         data: {
           features: [['f-1', 'foo', []]],

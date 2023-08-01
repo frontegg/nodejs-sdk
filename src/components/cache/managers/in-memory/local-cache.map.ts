@@ -2,11 +2,7 @@ import * as NodeCache from 'node-cache';
 import { ICacheManagerMap } from '../cache.manager.interface';
 
 export class LocalCacheMap<T> implements ICacheManagerMap<T> {
-  constructor(
-    private readonly key: string,
-    private readonly cache: NodeCache
-  ) {
-  }
+  constructor(private readonly key: string, private readonly cache: NodeCache) {}
 
   private ensureMapInCache<T>(): Map<string, T> {
     if (!this.cache.has(this.key)) {

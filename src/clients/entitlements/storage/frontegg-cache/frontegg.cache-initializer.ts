@@ -13,9 +13,7 @@ import { ICacheManager } from '../../../../components/cache/managers';
 import { FronteggCache } from '../../../../components/cache';
 
 export class FronteggEntitlementsCacheInitializer {
-
-  constructor(private readonly cache: ICacheManager<any>) {
-  }
+  constructor(private readonly cache: ICacheManager<any>) {}
 
   // TODO: make use of revPrefix !!
   static async initialize(dto: VendorEntitlementsDto): Promise<FronteggEntitlementsCache> {
@@ -24,7 +22,7 @@ export class FronteggEntitlementsCacheInitializer {
     const cache = await FronteggCache.getInstance();
     const cacheInitializer = new FronteggEntitlementsCacheInitializer(cache);
 
-    const sources = (new DtoToCacheSourcesMapper()).map(dto);
+    const sources = new DtoToCacheSourcesMapper().map(dto);
 
     await cacheInitializer.setupPermissionsReadModel(sources);
     await cacheInitializer.setupEntitlementsReadModel(sources);
@@ -50,28 +48,25 @@ export class FronteggEntitlementsCacheInitializer {
     // iterating over bundles..
     for (const singleBundle of src.values()) {
       // iterating over tenant&user entitlements
-      for (const [ tenantId, usersOfTenantEntitlements ] of singleBundle.user_entitlements) {
+      for (const [tenantId, usersOfTenantEntitlements] of singleBundle.user_entitlements) {
         // iterating over per-user entitlements
-        for (const [ userId, expTimes ] of usersOfTenantEntitlements) {
+        for (const [userId, expTimes] of usersOfTenantEntitlements) {
           const entitlementExpTime = pickExpTimestamp(expTimes);
 
           await Promise.all(
-            [...singleBundle.features.values()]
-              .map(feature => entitlementsHashMap.set(
-                getFeatureEntitlementKey(feature.key, tenantId, userId), entitlementExpTime)
-              )
+            [...singleBundle.features.values()].map((feature) =>
+              entitlementsHashMap.set(getFeatureEntitlementKey(feature.key, tenantId, userId), entitlementExpTime),
+            ),
           );
         }
       }
 
       // iterating over tenant entitlements
-      for (const [ tenantId, expTimes ] of singleBundle.tenant_entitlements) {
+      for (const [tenantId, expTimes] of singleBundle.tenant_entitlements) {
         for (const feature of singleBundle.features.values()) {
           const entitlementExpTime = pickExpTimestamp(expTimes);
 
-          await entitlementsHashMap.set(
-            getFeatureEntitlementKey(feature.key, tenantId), entitlementExpTime
-          );
+          await entitlementsHashMap.set(getFeatureEntitlementKey(feature.key, tenantId), entitlementExpTime);
         }
       }
     }

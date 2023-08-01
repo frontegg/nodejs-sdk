@@ -4,17 +4,17 @@ import { ENTITLEMENTS_MAP_KEY, getFeatureEntitlementKey, getPermissionMappingKey
 import { ICacheManager } from '../../../../components/cache/managers';
 
 export class FronteggEntitlementsCache implements IEntitlementsCache {
-
-  constructor(
-    private readonly cache: ICacheManager<any>, readonly revision: number
-  ) {
-  }
+  constructor(private readonly cache: ICacheManager<any>, readonly revision: number) {}
 
   clear(): Promise<void> {
     return Promise.resolve(undefined);
   }
 
-  async getEntitlementExpirationTime(featKey: FeatureKey, tenantId: string, userId?: string): Promise<ExpirationTime | undefined> {
+  async getEntitlementExpirationTime(
+    featKey: FeatureKey,
+    tenantId: string,
+    userId?: string,
+  ): Promise<ExpirationTime | undefined> {
     const entitlementKey = getFeatureEntitlementKey(featKey, tenantId, userId);
     const result = await this.cache.map(ENTITLEMENTS_MAP_KEY).get<number>(entitlementKey);
 
@@ -28,5 +28,4 @@ export class FronteggEntitlementsCache implements IEntitlementsCache {
   shutdown(): Promise<void> {
     return Promise.resolve(undefined);
   }
-
 }

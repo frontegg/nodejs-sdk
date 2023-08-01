@@ -6,9 +6,8 @@ export class RedisCacheMap implements ICacheManagerMap<CacheValue> {
   constructor(
     private readonly key: string,
     private readonly redis: RedisClientType,
-    private readonly serializer: ICacheValueSerializer
-  ) {
-  }
+    private readonly serializer: ICacheValueSerializer,
+  ) {}
 
   async set<T extends CacheValue>(field: string, data: T): Promise<void> {
     await this.redis.HSET(this.key, field, this.serializer.serialize(data));
@@ -17,9 +16,7 @@ export class RedisCacheMap implements ICacheManagerMap<CacheValue> {
   async get<T extends CacheValue>(field: string): Promise<T | null> {
     const raw = await this.redis.HGET(this.key, field);
 
-    return raw !== undefined ?
-      this.serializer.deserialize<T>(raw) :
-      null;
+    return raw !== undefined ? this.serializer.deserialize<T>(raw) : null;
   }
 
   async del(field: string): Promise<void> {

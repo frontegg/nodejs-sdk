@@ -27,15 +27,12 @@ export class EntitlementsClient extends events.EventEmitter {
   private constructor(
     private readonly httpClient: HttpClient,
     cache: ICacheManager<CacheValue>,
-    options: Partial<EntitlementsClientOptions> = {}
+    options: Partial<EntitlementsClientOptions> = {},
   ) {
     super();
 
     this.options = this.parseOptions(options);
-    this.cacheManager = new CacheRevisionManager(
-      this.options.instanceId,
-      cache
-    );
+    this.cacheManager = new CacheRevisionManager(this.options.instanceId, cache);
 
     this.readyPromise = new Promise((resolve) => {
       this.once(EntitlementsClientEvents.INITIALIZED, () => resolve(this));

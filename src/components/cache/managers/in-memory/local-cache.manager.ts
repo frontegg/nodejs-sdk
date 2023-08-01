@@ -16,9 +16,12 @@ export class LocalCacheManager<T extends CacheValue> extends PrefixedManager imp
   }
 
   static async create<Scope extends CacheValue>(prefix = ''): Promise<LocalCacheManager<Scope>> {
-    return new LocalCacheManager<Scope>(new NodeCache({
-      useClones: false
-    }), prefix);
+    return new LocalCacheManager<Scope>(
+      new NodeCache({
+        useClones: false,
+      }),
+      prefix,
+    );
   }
 
   public async set<T>(key: string, data: T, options?: SetOptions): Promise<void> {
@@ -52,6 +55,6 @@ export class LocalCacheManager<T extends CacheValue> extends PrefixedManager imp
   }
 
   async close(): Promise<void> {
-    this.nodeCache.close()
+    this.nodeCache.close();
   }
 }

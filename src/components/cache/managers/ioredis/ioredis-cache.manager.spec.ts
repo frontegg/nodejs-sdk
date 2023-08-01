@@ -11,7 +11,6 @@ function delay(ms: number): Promise<void> {
 }
 
 describe(IORedisCacheManager.name, () => {
-
   let cut: IORedisCacheManager<CacheValue>;
   let redisTestConnection: IORedis;
 
@@ -22,7 +21,7 @@ describe(IORedisCacheManager.name, () => {
     // initial clean-up of used key
     await redisTestConnection.del('key');
 
-    cut = await IORedisCacheManager.create({ host: 'localhost', port: 36279 })
+    cut = await IORedisCacheManager.create({ host: 'localhost', port: 36279 });
   });
 
   afterEach(async () => {
@@ -138,5 +137,4 @@ describe(IORedisCacheManager.name, () => {
       });
     });
   });
-
 });

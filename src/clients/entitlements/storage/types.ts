@@ -5,7 +5,6 @@ export const NO_EXPIRE = -1;
 export type ExpirationTime = number | typeof NO_EXPIRE;
 
 export interface IEntitlementsCache {
-
   /**
    * The revision number to compare next entitlements cache versions.
    */

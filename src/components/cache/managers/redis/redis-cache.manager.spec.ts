@@ -11,7 +11,6 @@ function delay(ms: number): Promise<void> {
 }
 
 describe(RedisCacheManager.name, () => {
-
   let cut: RedisCacheManager<CacheValue>;
   let redisTestConnection: IORedis;
 
@@ -141,5 +140,4 @@ describe(RedisCacheManager.name, () => {
       });
     });
   });
-
 });

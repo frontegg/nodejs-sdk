@@ -8,10 +8,7 @@ export interface RetryOptions {
   };
 }
 
-export const retry = async (
-  func: () => Promise<unknown> | unknown,
-  { numberOfTries, delayRangeMs }: RetryOptions,
-) => {
+export const retry = async (func: () => Promise<unknown> | unknown, { numberOfTries, delayRangeMs }: RetryOptions) => {
   try {
     return await func();
   } catch (error) {
@@ -19,8 +16,7 @@ export const retry = async (
     if (numberOfTries === 1) {
       throw error;
     }
-    const delayTime =
-      Math.floor(Math.random() * (delayRangeMs.max - delayRangeMs.min + 1)) + delayRangeMs.min;
+    const delayTime = Math.floor(Math.random() * (delayRangeMs.max - delayRangeMs.min + 1)) + delayRangeMs.min;
     Logger.debug(`trying again in ${delayTime} ms`);
     await delay(delayTime);
 

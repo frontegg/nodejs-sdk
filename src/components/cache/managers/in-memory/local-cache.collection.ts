@@ -2,11 +2,7 @@ import * as NodeCache from 'node-cache';
 import { ICacheManagerCollection } from '../cache.manager.interface';
 
 export class LocalCacheCollection<T> implements ICacheManagerCollection<T> {
-  constructor(
-    private readonly key: string,
-    private readonly cache: NodeCache
-  ) {
-  }
+  constructor(private readonly key: string, private readonly cache: NodeCache) {}
 
   private ensureSetInCache<T>(): Set<T> {
     if (!this.cache.has(this.key)) {

@@ -2,14 +2,7 @@ export interface SetOptions {
   expiresInSeconds: number;
 }
 
-type Primitive =
-  | bigint
-  | boolean
-  | null
-  | number
-  | string
-  | undefined
-  | object;
+type Primitive = bigint | boolean | null | number | string | undefined | object;
 
 type JSONValue = Primitive | JSONObject | JSONArray;
 export interface JSONObject {

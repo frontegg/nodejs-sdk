@@ -6,7 +6,7 @@ import { RedisCacheCollection } from './redis-cache.collection';
 import { ICacheValueSerializer } from '../../serializers/types';
 import { JsonSerializer } from '../../serializers/json.serializer';
 import { PrefixedManager } from '../prefixed-manager.abstract';
-import type * as Redis from "redis";
+import type * as Redis from 'redis';
 import {
   CacheValue,
   ICacheManager,
@@ -57,9 +57,9 @@ export class RedisCacheManager<T extends CacheValue> extends PrefixedManager imp
 
   public async set<V extends T>(key: string, data: V, options?: SetOptions): Promise<void> {
     if (options?.expiresInSeconds) {
-      await this.redisManager.set(
-        this.withPrefix(key), this.serializer.serialize(data), { EX: options.expiresInSeconds }
-      );
+      await this.redisManager.set(this.withPrefix(key), this.serializer.serialize(data), {
+        EX: options.expiresInSeconds,
+      });
     } else {
       await this.redisManager.set(this.withPrefix(key), this.serializer.serialize(data));
     }

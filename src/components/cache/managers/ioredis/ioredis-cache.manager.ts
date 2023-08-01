@@ -12,7 +12,7 @@ import { IORedisCacheMap } from './ioredis-cache.map';
 import { IORedisCacheCollection } from './ioredis-cache.collection';
 import { ICacheValueSerializer } from '../../serializers/types';
 import { JsonSerializer } from '../../serializers/json.serializer';
-import type { RedisOptions } from "ioredis";
+import type { RedisOptions } from 'ioredis';
 
 export interface IIORedisOptions {
   host: string;
@@ -66,7 +66,6 @@ export class IORedisCacheManager<T extends CacheValue> extends PrefixedManager i
   collection(key: string): ICacheManagerCollection<T> {
     return new IORedisCacheCollection(this.withPrefix(key), this.redisManager, this.serializer);
   }
-
 
   async close(): Promise<void> {
     await this.redisManager.quit();

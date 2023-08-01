@@ -15,29 +15,34 @@ export class CacheRevisionManager {
     public readonly instanceId: string,
     private readonly cache: ICacheManager<CacheValue>,
     private readonly options: {
-      maxUpdateLockTime: number
+      maxUpdateLockTime: number;
     } = {
-      maxUpdateLockTime: 5
-    }
-  ) {
-  }
+      maxUpdateLockTime: 5,
+    },
+  ) {}
 
   async waitUntilUpdated(): Promise<void> {
     return new Promise((resolve, reject) => {
-        retry(async () => {
+      retry(
+        async () => {
           if (await this.isUpdateInProgress()) {
             throw new Error();
           }
-        }, { numberOfTries: 3, delayRangeMs: {
-          min: 100,
-          max: 2000
-        }})
-          .then(resolve)
-          .catch(err => reject(err));
+        },
+        {
+          numberOfTries: 3,
+          delayRangeMs: {
+            min: 100,
+            max: 2000,
+          },
+        },
+      )
+        .then(resolve)
+        .catch((err) => reject(err));
     });
   }
 
-  async loadSnapshot(dto: VendorEntitlementsDto): Promise<{ isUpdated: boolean, rev: number }> {
+  async loadSnapshot(dto: VendorEntitlementsDto): Promise<{ isUpdated: boolean; rev: number }> {
     await this.waitUntilUpdated();
 
     const currentOffset = await this.getOffset();
@@ -56,7 +61,7 @@ export class CacheRevisionManager {
     await oldCache?.clear();
     await oldCache?.shutdown();
 
-    return { isUpdated: true, rev: dto.snapshotOffset }
+    return { isUpdated: true, rev: dto.snapshotOffset };
   }
 
   async hasRecentSnapshot(dto: VendorEntitlementsSnapshotOffsetDto): Promise<boolean> {
@@ -73,7 +78,7 @@ export class CacheRevisionManager {
   }
 
   async isUpdateInProgress(): Promise<boolean> {
-    return await this.cache.get(UPDATE_IN_PROGRESS_KEY) !== null;
+    return (await this.cache.get(UPDATE_IN_PROGRESS_KEY)) !== null;
   }
 
   private async setOffset(offset: number): Promise<void> {
@@ -81,7 +86,7 @@ export class CacheRevisionManager {
   }
 
   async getOffset(): Promise<number> {
-    return await this.cache.get(CURRENT_OFFSET_KEY) || 0;
+    return (await this.cache.get(CURRENT_OFFSET_KEY)) || 0;
   }
 
   getCache(): IEntitlementsCache | undefined {

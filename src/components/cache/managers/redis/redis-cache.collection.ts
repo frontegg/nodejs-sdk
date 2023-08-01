@@ -6,9 +6,8 @@ export class RedisCacheCollection implements ICacheManagerCollection<CacheValue>
   constructor(
     private readonly key: string,
     private readonly redis: RedisClientType,
-    private readonly serializer: ICacheValueSerializer
-  ) {
-  }
+    private readonly serializer: ICacheValueSerializer,
+  ) {}
 
   async set<T extends CacheValue>(value: T): Promise<void> {
     await this.redis.SADD(this.key, this.serializer.serialize(value));
@@ -19,7 +18,7 @@ export class RedisCacheCollection implements ICacheManagerCollection<CacheValue>
   }
 
   async getAll<T extends CacheValue>(): Promise<Set<T>> {
-    const members = (await this.redis.SMEMBERS(this.key)).map(v => this.serializer.deserialize<T>(v));
+    const members = (await this.redis.SMEMBERS(this.key)).map((v) => this.serializer.deserialize<T>(v));
 
     return new Set(members);
   }
