@@ -1,9 +1,10 @@
 import { LocalCacheManager } from './local-cache.manager';
 import { LocalCacheCollection } from './local-cache.collection';
 import { LocalCacheMap } from './local-cache.map';
+import { CacheValue } from '../cache.manager.interface';
 
 describe('Local cache manager', () => {
-  let localCacheManager: LocalCacheManager;
+  let localCacheManager: LocalCacheManager<CacheValue>;
 
   const cacheKey = 'key';
   const cacheValue = { data: 'value' };
@@ -50,7 +51,7 @@ describe('Local cache manager', () => {
   });
 
   describe('given collection instance is received by .collection(key)', () => {
-    let cut: LocalCacheManager;
+    let cut: LocalCacheManager<CacheValue>;
 
     beforeEach(async () => {
       cut = await LocalCacheManager.create();
@@ -93,7 +94,7 @@ describe('Local cache manager', () => {
   });
 
   describe('given map instance is received by .map(key)', () => {
-    let cut: LocalCacheManager;
+    let cut: LocalCacheManager<CacheValue>;
 
     beforeEach(async () => {
       cut = await LocalCacheManager.create();

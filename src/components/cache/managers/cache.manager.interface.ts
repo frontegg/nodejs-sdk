@@ -19,7 +19,7 @@ type JSONArray = JSONValue[];
 
 export type CacheValue = JSONValue;
 
-export interface ICacheManager<T = CacheValue> {
+export interface ICacheManager<T extends CacheValue> {
   set<V extends T>(key: string, data: V, options?: SetOptions): Promise<void>;
   get<V extends T>(key: string): Promise<V | null>;
   del(key: string[]): Promise<unknown>;
@@ -33,7 +33,7 @@ export interface ICacheManager<T = CacheValue> {
    *
    * If prefix is not given, the prefix of current instance should be used.
    */
-  forScope<S>(prefix?: string): ICacheManager<S>;
+  forScope<S extends CacheValue>(prefix?: string): ICacheManager<S>;
 }
 
 export interface ICacheManagerMap<Base> {

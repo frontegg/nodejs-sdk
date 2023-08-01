@@ -9,7 +9,8 @@ import * as Sinon from 'sinon';
 import { useFakeTimers } from 'sinon';
 import { IUserAccessTokenWithRoles, tokenTypes } from '../identity/types';
 import { EntitlementsUserScoped } from './entitlements.user-scoped';
-import { InMemoryEntitlementsCache } from './storage/in-memory/in-memory.cache';
+import { FronteggCache } from '../../components/cache';
+import { LocalCacheManager } from '../../components/cache/managers';
 
 const { EntitlementsUserScoped: EntitlementsUserScopedActual } = jest.requireActual('./entitlements.user-scoped');
 
@@ -19,11 +20,15 @@ const httpMock = mock<HttpClient>();
 jest.mock('../../authenticator');
 jest.mock('../http');
 jest.mock('./entitlements.user-scoped');
+jest.mock('../../components/cache');
 
 describe(EntitlementsClient.name, () => {
   let entitlementsClient: EntitlementsClient;
 
   beforeEach(() => {
+    // given
+    jest.mocked(FronteggCache.getInstance).mockImplementation(async () => LocalCacheManager.create());
+
     // given
     jest.mocked(FronteggAuthenticator).mockReturnValue(authenticatorMock);
     authenticatorMock.init.mockResolvedValue(undefined);
@@ -210,7 +215,7 @@ describe(EntitlementsClient.name, () => {
       expect(scoped).toBeInstanceOf(EntitlementsUserScopedActual);
 
       // and
-      expect(EntitlementsUserScoped).toHaveBeenCalledWith(entity, expect.any(InMemoryEntitlementsCache));
+      expect(EntitlementsUserScoped).toHaveBeenCalledWith(entity, expect.anything());
     });
 
     afterEach(() => {

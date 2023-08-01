@@ -1,11 +1,19 @@
 import { FronteggEntitlementsCache } from './frontegg.cache';
 import { NO_EXPIRE } from '../types';
 import { FronteggEntitlementsCacheInitializer } from './frontegg.cache-initializer';
+import { FronteggCache } from '../../../../components/cache';
+import { CacheValue, ICacheManager, LocalCacheManager } from '../../../../components/cache/managers';
 
-// TODO: define all tests of IEntitlementsCache implementation in single file, only change the implementation for runs
+jest.mock('../../../../components/cache');
 
 describe(FronteggEntitlementsCache.name, () => {
   let cut: FronteggEntitlementsCache;
+  let cache: ICacheManager<CacheValue>;
+
+  beforeEach(async () => {
+    cache = await LocalCacheManager.create();
+    jest.mocked(FronteggCache.getInstance).mockResolvedValue(cache);
+  });
 
   describe('given input data with no entitlements and bundle with feature "foo"', () => {
     beforeEach(async () => {

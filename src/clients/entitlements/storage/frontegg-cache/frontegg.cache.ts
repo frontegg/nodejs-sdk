@@ -1,7 +1,7 @@
 import { ExpirationTime, IEntitlementsCache } from '../types';
-import { ICacheManager } from '../../../../cache';
 import { FeatureKey } from '../../types';
 import { ENTITLEMENTS_MAP_KEY, getFeatureEntitlementKey, getPermissionMappingKey } from './frontegg.cache-key.utils';
+import { ICacheManager } from '../../../../components/cache/managers';
 
 export class FronteggEntitlementsCache implements IEntitlementsCache {
 

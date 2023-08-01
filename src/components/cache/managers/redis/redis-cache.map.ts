@@ -1,6 +1,6 @@
 import { RedisClientType } from 'redis';
 import { ICacheValueSerializer } from '../../serializers/types';
-import { ICacheManagerMap } from '../cache.manager.interface';
+import { CacheValue, ICacheManagerMap } from '../cache.manager.interface';
 
 export class RedisCacheMap implements ICacheManagerMap<CacheValue> {
   constructor(

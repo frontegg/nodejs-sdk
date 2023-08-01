@@ -1,4 +1,4 @@
-import { ICacheManager } from '../../../cache';
+import { CacheValue, ICacheManager } from '../../../components/cache/managers';
 import { VendorEntitlementsDto, VendorEntitlementsSnapshotOffsetDto } from '../types';
 import { IEntitlementsCache } from './types';
 import { FronteggEntitlementsCacheInitializer } from './frontegg-cache/frontegg.cache-initializer';
@@ -13,7 +13,7 @@ export class CacheRevisionManager {
 
   constructor(
     public readonly instanceId: string,
-    private readonly cache: ICacheManager<any>,
+    private readonly cache: ICacheManager<CacheValue>,
     private readonly options: {
       maxUpdateLockTime: number
     } = {
@@ -73,7 +73,7 @@ export class CacheRevisionManager {
   }
 
   async isUpdateInProgress(): Promise<boolean> {
-    return await this.cache.get(UPDATE_IN_PROGRESS_KEY) === null;
+    return await this.cache.get(UPDATE_IN_PROGRESS_KEY) !== null;
   }
 
   private async setOffset(offset: number): Promise<void> {

@@ -11,8 +11,9 @@ import { EntitlementsClientEvents } from './entitlements-client.events';
 import { TEntity } from '../identity/types';
 import { EntitlementsUserScoped } from './entitlements.user-scoped';
 import { CacheRevisionManager } from './storage/cache.revision-manager';
-import { LocalCacheManager } from '../../cache';
+import { CacheValue, ICacheManager } from '../../components/cache/managers';
 import { hostname } from 'os';
+import { FronteggCache } from '../../components/cache';
 
 export class EntitlementsClient extends events.EventEmitter {
   // periodical refresh handler
@@ -23,14 +24,17 @@ export class EntitlementsClient extends events.EventEmitter {
   // cache handler
   private cacheManager: CacheRevisionManager;
 
-  private constructor(private readonly httpClient: HttpClient, options: Partial<EntitlementsClientOptions> = {}) {
+  private constructor(
+    private readonly httpClient: HttpClient,
+    cache: ICacheManager<CacheValue>,
+    options: Partial<EntitlementsClientOptions> = {}
+  ) {
     super();
 
     this.options = this.parseOptions(options);
     this.cacheManager = new CacheRevisionManager(
       this.options.instanceId,
-      // TODO: use FronteggCache.getInstance(); when it's merged
-      new LocalCacheManager()
+      cache
     );
 
     this.readyPromise = new Promise((resolve) => {
@@ -114,8 +118,9 @@ export class EntitlementsClient extends events.EventEmitter {
     await authenticator.init(context.FRONTEGG_CLIENT_ID, context.FRONTEGG_API_KEY);
 
     const httpClient = new HttpClient(authenticator, { baseURL: config.urls.entitlementsService });
+    const cache = await FronteggCache.getInstance();
 
-    return new EntitlementsClient(httpClient, options);
+    return new EntitlementsClient(httpClient, cache, options);
   }
 
   destroy(): void {

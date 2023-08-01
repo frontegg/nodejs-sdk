@@ -1,5 +1,4 @@
 import { FronteggEntitlementsCache } from './frontegg.cache';
-import { ICacheManager, LocalCacheManager } from '../../../../cache';
 import { VendorEntitlementsDto } from '../../types';
 import { BundlesSource } from '../types';
 import {
@@ -10,6 +9,8 @@ import {
 } from './frontegg.cache-key.utils';
 import { DtoToCacheSourcesMapper } from '../dto-to-cache-sources.mapper';
 import { pickExpTimestamp } from '../exp-time.utils';
+import { ICacheManager } from '../../../../components/cache/managers';
+import { FronteggCache } from '../../../../components/cache';
 
 export class FronteggEntitlementsCacheInitializer {
 
@@ -20,8 +21,7 @@ export class FronteggEntitlementsCacheInitializer {
   static async initialize(dto: VendorEntitlementsDto): Promise<FronteggEntitlementsCache> {
     const revision = dto.snapshotOffset;
 
-    // TODO: change to FronteggCache.getInstance()
-    const cache = new LocalCacheManager();
+    const cache = await FronteggCache.getInstance();
     const cacheInitializer = new FronteggEntitlementsCacheInitializer(cache);
 
     const sources = (new DtoToCacheSourcesMapper()).map(dto);
