@@ -14,12 +14,7 @@ import { ICacheValueSerializer } from '../../serializers/types';
 import { JsonSerializer } from '../../serializers/json.serializer';
 import type { RedisOptions } from 'ioredis';
 
-export interface IIORedisOptions {
-  host: string;
-  password?: string;
-  port: number;
-  db?: number;
-}
+export type IIORedisOptions = RedisOptions;
 
 export class IORedisCacheManager<T extends CacheValue> extends PrefixedManager implements ICacheManager<T> {
   private readonly serializer: ICacheValueSerializer;
@@ -33,7 +28,7 @@ export class IORedisCacheManager<T extends CacheValue> extends PrefixedManager i
   static async create<T extends CacheValue>(options?: IIORedisOptions, prefix = ''): Promise<IORedisCacheManager<T>> {
     const RedisCtor = PackageUtils.loadPackage<any>('ioredis');
 
-    return new IORedisCacheManager<T>(new RedisCtor(options as RedisOptions), prefix);
+    return new IORedisCacheManager<T>(new RedisCtor(options), prefix);
   }
 
   public async set<V extends T>(key: string, data: V, options?: SetOptions): Promise<void> {
@@ -55,6 +50,12 @@ export class IORedisCacheManager<T extends CacheValue> extends PrefixedManager i
     }
   }
 
+  async expire(keys: string[], ttlMs: number): Promise<void> {
+    for (const key of keys) {
+      await this.redisManager.pexpire(this.withPrefix(key), ttlMs);
+    }
+  }
+
   forScope<S extends CacheValue>(prefix?: string): ICacheManager<S> {
     return new IORedisCacheManager<S>(this.redisManager, prefix ?? this.prefix);
   }
@@ -65,6 +66,10 @@ export class IORedisCacheManager<T extends CacheValue> extends PrefixedManager i
 
   collection(key: string): ICacheManagerCollection<T> {
     return new IORedisCacheCollection(this.withPrefix(key), this.redisManager, this.serializer);
+  }
+
+  getRedis(): Redis {
+    return this.redisManager;
   }
 
   async close(): Promise<void> {

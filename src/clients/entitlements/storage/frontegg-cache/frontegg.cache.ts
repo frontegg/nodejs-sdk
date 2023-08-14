@@ -2,12 +2,21 @@ import { ExpirationTime, IEntitlementsCache } from '../types';
 import { FeatureKey } from '../../types';
 import { ENTITLEMENTS_MAP_KEY, getFeatureEntitlementKey, getPermissionMappingKey } from './frontegg.cache-key.utils';
 import { ICacheManager } from '../../../../components/cache/managers';
+import { FronteggEntitlementsCacheInitializer } from './frontegg.cache-initializer';
 
 export class FronteggEntitlementsCache implements IEntitlementsCache {
-  constructor(private readonly cache: ICacheManager<any>, readonly revision: number) {}
+  private readonly cache: ICacheManager<any>;
+
+  constructor(cache: ICacheManager<any>, readonly revision: number) {
+    this.cache = cache.forScope(FronteggEntitlementsCache.getCachePrefix(revision));
+  }
+
+  static getCachePrefix(revision: number): string {
+    return `vendor_entitlements_${revision}_`;
+  }
 
   clear(): Promise<void> {
-    return Promise.resolve(undefined);
+    return new FronteggEntitlementsCacheInitializer(this).clear();
   }
 
   async getEntitlementExpirationTime(
@@ -26,6 +35,10 @@ export class FronteggEntitlementsCache implements IEntitlementsCache {
   }
 
   shutdown(): Promise<void> {
-    return Promise.resolve(undefined);
+    return this.cache.close();
+  }
+
+  getCacheManager(): ICacheManager<any> {
+    return this.cache;
   }
 }

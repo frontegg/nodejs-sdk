@@ -3,90 +3,69 @@ import { VendorEntitlementsDto, VendorEntitlementsSnapshotOffsetDto } from '../t
 import { IEntitlementsCache } from './types';
 import { FronteggEntitlementsCacheInitializer } from './frontegg-cache/frontegg.cache-initializer';
 import Logger from '../../../components/logger';
-import { retry } from '../../../utils';
 
-const CURRENT_OFFSET_KEY = 'snapshot-offset';
-const UPDATE_IN_PROGRESS_KEY = 'snapshot-updating';
+export const CURRENT_CACHE_REVISION = 'latest-cache-rev';
+
+type IsUpdatedToRev = { isUpdated: boolean; revision: number };
 
 export class CacheRevisionManager {
   private entitlementsCache?: IEntitlementsCache;
 
-  constructor(
-    public readonly instanceId: string,
-    private readonly cache: ICacheManager<CacheValue>,
-    private readonly options: {
-      maxUpdateLockTime: number;
-    } = {
-      maxUpdateLockTime: 5,
-    },
-  ) {}
+  private localRev?: number;
 
-  async waitUntilUpdated(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      retry(
-        async () => {
-          if (await this.isUpdateInProgress()) {
-            throw new Error();
-          }
-        },
-        {
-          numberOfTries: 3,
-          delayRangeMs: {
-            min: 100,
-            max: 2000,
-          },
-        },
-      )
-        .then(resolve)
-        .catch((err) => reject(err));
-    });
-  }
+  constructor(private readonly cache: ICacheManager<CacheValue>) {}
 
-  async loadSnapshot(dto: VendorEntitlementsDto): Promise<{ isUpdated: boolean; rev: number }> {
-    await this.waitUntilUpdated();
+  async loadSnapshotAsCurrent(dto: VendorEntitlementsDto): Promise<IsUpdatedToRev> {
+    const currentRevision = await this.getCurrentCacheRevision();
+    const givenRevision = dto.snapshotOffset;
 
-    const currentOffset = await this.getOffset();
-    if (currentOffset === dto.snapshotOffset) return { isUpdated: false, rev: currentOffset };
-
-    await this.cache.set(UPDATE_IN_PROGRESS_KEY, this.instanceId, { expiresInSeconds: this.options.maxUpdateLockTime });
+    if (currentRevision === givenRevision) return { isUpdated: false, revision: currentRevision };
 
     // re-initialize the cache
-    const newCache = await FronteggEntitlementsCacheInitializer.initialize(dto);
     const oldCache = this.entitlementsCache;
+    this.entitlementsCache = await FronteggEntitlementsCacheInitializer.forLeader(dto);
 
-    this.entitlementsCache = newCache;
-    await this.setOffset(dto.snapshotOffset);
+    await this.setCurrentCacheRevision(givenRevision);
+    this.localRev = givenRevision;
 
     // clean
     await oldCache?.clear();
-    await oldCache?.shutdown();
 
-    return { isUpdated: true, rev: dto.snapshotOffset };
+    return { isUpdated: true, revision: givenRevision };
   }
 
-  async hasRecentSnapshot(dto: VendorEntitlementsSnapshotOffsetDto): Promise<boolean> {
-    const currentOffset = await this.getOffset();
-    const isRecent = dto.snapshotOffset === currentOffset;
+  async followRevision(revision: number): Promise<IsUpdatedToRev> {
+    if (revision && this.localRev !== revision) {
+      this.localRev = revision;
+
+      // trigger the revision update here
+      this.entitlementsCache = await FronteggEntitlementsCacheInitializer.forFollower(revision);
+
+      return { isUpdated: true, revision };
+    }
+
+    return { isUpdated: false, revision: this.localRev || 0 };
+  }
+
+  async hasGivenSnapshot(dto: VendorEntitlementsSnapshotOffsetDto): Promise<boolean> {
+    const currentOffset = await this.getCurrentCacheRevision();
+    const isEqual = dto.snapshotOffset === currentOffset;
 
     Logger.debug('[entitlements] Offsets compared.', {
-      isRecent,
+      isEqual,
       serverOffset: dto.snapshotOffset,
       localOffset: currentOffset,
     });
 
-    return isRecent;
+    return isEqual;
   }
 
-  async isUpdateInProgress(): Promise<boolean> {
-    return (await this.cache.get(UPDATE_IN_PROGRESS_KEY)) !== null;
+  private async setCurrentCacheRevision(offset: number): Promise<void> {
+    await this.cache.set(CURRENT_CACHE_REVISION, offset);
   }
 
-  private async setOffset(offset: number): Promise<void> {
-    await this.cache.set(CURRENT_OFFSET_KEY, offset);
-  }
-
-  async getOffset(): Promise<number> {
-    return (await this.cache.get(CURRENT_OFFSET_KEY)) || 0;
+  async getCurrentCacheRevision(): Promise<number> {
+    return (await this.cache.get(CURRENT_CACHE_REVISION)) || 0;
   }
 
   getCache(): IEntitlementsCache | undefined {

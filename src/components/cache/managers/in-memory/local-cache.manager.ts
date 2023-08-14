@@ -42,6 +42,12 @@ export class LocalCacheManager<T extends CacheValue> extends PrefixedManager imp
     }
   }
 
+  async expire(keys: string[], ttlMs: number): Promise<void> {
+    const ttlSec = Math.round(ttlMs / 1000);
+
+    keys.forEach((key) => this.nodeCache.ttl(this.withPrefix(key), ttlSec));
+  }
+
   map(key: string): ICacheManagerMap<T> {
     return new LocalCacheMap(this.withPrefix(key), this.nodeCache);
   }

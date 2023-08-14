@@ -16,6 +16,7 @@ export interface ICacheManager<T extends CacheValue> {
   set<V extends T>(key: string, data: V, options?: SetOptions): Promise<void>;
   get<V extends T>(key: string): Promise<V | null>;
   del(key: string[]): Promise<unknown>;
+  expire(keys: string[], ttlMs: number): Promise<void>;
   map(key: string): ICacheManagerMap<T>;
   collection(key: string): ICacheManagerCollection<T>;
   close(): Promise<void>;

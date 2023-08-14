@@ -76,6 +76,16 @@ export class RedisCacheManager<T extends CacheValue> extends PrefixedManager imp
     }
   }
 
+  async expire(keys: string[], ttlMs: number): Promise<void> {
+    for (const key of keys) {
+      await this.redisManager.PEXPIRE(this.withPrefix(key), ttlMs);
+    }
+  }
+
+  getRedis(): RedisClientType {
+    return this.redisManager;
+  }
+
   close(): Promise<void> {
     return this.redisManager.disconnect();
   }
