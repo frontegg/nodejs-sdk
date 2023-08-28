@@ -13,6 +13,7 @@ module.exports = {
       lines: 18,
     },
   },
+  setupFilesAfterEnv: ['jest-extended/all'],
   reporters: [
     'default',
     [

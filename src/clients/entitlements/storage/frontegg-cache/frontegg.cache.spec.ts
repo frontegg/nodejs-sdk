@@ -1,12 +1,23 @@
-import { InMemoryEntitlementsCache } from './in-memory.cache';
+import { FronteggEntitlementsCache } from './frontegg.cache';
 import { NO_EXPIRE } from '../types';
+import { FronteggEntitlementsCacheInitializer } from './frontegg.cache-initializer';
+import { FronteggCache } from '../../../../components/cache';
+import { CacheValue, ICacheManager, LocalCacheManager } from '../../../../components/cache/managers';
 
-describe(InMemoryEntitlementsCache.name, () => {
-  let cut: InMemoryEntitlementsCache;
+jest.mock('../../../../components/cache');
+
+describe(FronteggEntitlementsCache.name, () => {
+  let cut: FronteggEntitlementsCache;
+  let cache: ICacheManager<CacheValue>;
+
+  beforeEach(async () => {
+    cache = await LocalCacheManager.create();
+    jest.mocked(FronteggCache.getInstance).mockResolvedValue(cache);
+  });
 
   describe('given input data with no entitlements and bundle with feature "foo"', () => {
-    beforeEach(() => {
-      cut = InMemoryEntitlementsCache.initialize({
+    beforeEach(async () => {
+      cut = await FronteggEntitlementsCacheInitializer.forLeader({
         snapshotOffset: 1,
         data: {
           entitlements: [],
@@ -23,8 +34,8 @@ describe(InMemoryEntitlementsCache.name, () => {
   });
 
   describe('given input data with entitlement to bundle with feature "foo" (no permissions) for user "u-1"', () => {
-    beforeEach(() => {
-      cut = InMemoryEntitlementsCache.initialize({
+    beforeEach(async () => {
+      cut = await FronteggEntitlementsCacheInitializer.forLeader({
         snapshotOffset: 2,
         data: {
           features: [['f-1', 'foo', []]],
@@ -41,8 +52,8 @@ describe(InMemoryEntitlementsCache.name, () => {
   });
 
   describe('given input data with entitlement to bundle with feature "foo" (no permissions) for tenant "t-1"', () => {
-    beforeEach(() => {
-      cut = InMemoryEntitlementsCache.initialize({
+    beforeEach(async () => {
+      cut = await FronteggEntitlementsCacheInitializer.forLeader({
         snapshotOffset: 3,
         data: {
           features: [['f-1', 'foo', []]],
@@ -64,8 +75,8 @@ describe(InMemoryEntitlementsCache.name, () => {
   });
 
   describe('given input data with multiple time-restricted entitlements to bundle with feature "foo" (no permissions) for user "u-1" and tenant "t-2"', () => {
-    beforeEach(() => {
-      cut = InMemoryEntitlementsCache.initialize({
+    beforeEach(async () => {
+      cut = await FronteggEntitlementsCacheInitializer.forLeader({
         snapshotOffset: 4,
         data: {
           features: [['f-1', 'foo', []]],
@@ -92,8 +103,8 @@ describe(InMemoryEntitlementsCache.name, () => {
   });
 
   describe('given input data with mix of time-restricted and unrestricted entitlements to bundle with feature "foo" (no permissions) for user "u-1" and tenant "t-2"', () => {
-    beforeEach(() => {
-      cut = InMemoryEntitlementsCache.initialize({
+    beforeEach(async () => {
+      cut = await FronteggEntitlementsCacheInitializer.forLeader({
         snapshotOffset: 4,
         data: {
           features: [['f-1', 'foo', []]],
@@ -120,8 +131,8 @@ describe(InMemoryEntitlementsCache.name, () => {
   });
 
   describe('given input data with unbundled feature "foo" (with permission "bar.baz")', () => {
-    beforeEach(() => {
-      cut = InMemoryEntitlementsCache.initialize({
+    beforeEach(async () => {
+      cut = await FronteggEntitlementsCacheInitializer.forLeader({
         snapshotOffset: 5,
         data: {
           features: [['f-1', 'foo', ['bar.baz']]],

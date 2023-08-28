@@ -1,5 +1,6 @@
 import { RetryOptions } from '../../utils';
 import { Permission } from '../identity/types';
+import { ILeadershipElectionGivenOptions } from '../../components/leader-election/types';
 
 export enum EntitlementJustifications {
   MISSING_FEATURE = 'missing-feature',
@@ -39,7 +40,11 @@ export interface VendorEntitlementsSnapshotOffsetDto {
 }
 
 export interface EntitlementsClientOptions {
+  instanceId: string;
   initializationDelayMs: number;
   refreshTimeoutMs: number;
   retry: RetryOptions;
+  leaderElection: ILeadershipElectionGivenOptions;
 }
+
+export type EntitlementsClientGivenOptions = Partial<EntitlementsClientOptions>;

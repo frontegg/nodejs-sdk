@@ -1,6 +1,6 @@
 import { IAccessToken, IEmptyAccessToken, IEntityWithRoles, tokenTypes } from '../../../types';
 import { IAccessTokenService } from '../access-token.service.interface';
-import { ICacheManager } from '../../../../../components/cache/managers/cache.manager.interface';
+import { ICacheManager } from '../../../../../components/cache/managers';
 import { FailedToAuthenticateException } from '../../../exceptions';
 
 export abstract class CacheAccessTokenServiceAbstract<T extends IAccessToken> implements IAccessTokenService<T> {

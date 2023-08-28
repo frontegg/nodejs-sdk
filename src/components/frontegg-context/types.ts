@@ -22,7 +22,7 @@ export interface IIORedisCacheOptions extends IBaseCacheOptions {
   options: IIORedisOptions;
 }
 
-export interface IRedisCacheOptions extends IBaseCacheOptions, IRedisOptions {
+export interface IRedisCacheOptions extends IBaseCacheOptions {
   type: 'redis';
   options: IRedisOptions;
 }

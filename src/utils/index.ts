@@ -2,16 +2,13 @@ import Logger from '../components/logger';
 
 export interface RetryOptions {
   numberOfTries: number;
-  secondsDelayRange: {
+  delayRangeMs: {
     min: number;
     max: number;
   };
 }
 
-export const retry = async (
-  func: () => Promise<unknown> | unknown,
-  { numberOfTries, secondsDelayRange }: RetryOptions,
-) => {
+export const retry = async (func: () => Promise<unknown> | unknown, { numberOfTries, delayRangeMs }: RetryOptions) => {
   try {
     return await func();
   } catch (error) {
@@ -19,11 +16,11 @@ export const retry = async (
     if (numberOfTries === 1) {
       throw error;
     }
-    const delayTime =
-      Math.floor(Math.random() * (secondsDelayRange.max - secondsDelayRange.min + 1)) + secondsDelayRange.min;
-    Logger.debug(`trying again in ${delayTime} seconds`);
-    await delay(delayTime * 1000);
-    return retry(func, { numberOfTries: numberOfTries - 1, secondsDelayRange });
+    const delayTime = Math.floor(Math.random() * (delayRangeMs.max - delayRangeMs.min + 1)) + delayRangeMs.min;
+    Logger.debug(`trying again in ${delayTime} ms`);
+    await delay(delayTime);
+
+    return retry(func, { numberOfTries: numberOfTries - 1, delayRangeMs });
   }
 };
 
