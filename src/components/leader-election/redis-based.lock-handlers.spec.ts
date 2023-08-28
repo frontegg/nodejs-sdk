@@ -61,7 +61,10 @@ describe.each([
       await expect(testRedisConnection.get(RESOURCE_KEY)).resolves.toEqual('bar');
 
       // and: key is about to expire
-      await expect(testRedisConnection.pttl(RESOURCE_KEY)).resolves.toBeWithin(0, 1000);
+      const pttl = await testRedisConnection.pttl(RESOURCE_KEY);
+
+      expect(pttl).toBeGreaterThan(0);
+      expect(pttl).toBeLessThanOrEqual(1000);
     });
 
     it('when .tryToMaintainTheLock(..) is called, then it resolves to FALSE and no value is written to resource key.', async () => {

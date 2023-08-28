@@ -1,8 +1,32 @@
 import { FeatureId, VendorEntitlementsDto } from '../types';
 import { BundlesSource, ExpirationTime, FeatureSource, NO_EXPIRE, UNBUNDLED_SRC_ID } from './types';
 
+function ensureMapInMap<K, T extends Map<any, any>>(map: Map<K, T>, mapKey: K): T {
+  if (!map.has(mapKey)) {
+    map.set(mapKey, new Map() as T);
+  }
+
+  return map.get(mapKey)!;
+}
+
+function ensureArrayInMap<K, T>(map: Map<K, T[]>, mapKey: K): T[] {
+  if (!map.has(mapKey)) {
+    map.set(mapKey, []);
+  }
+
+  return map.get(mapKey)!;
+}
+
+function parseExpirationTime(time?: string | null): ExpirationTime {
+  if (time !== undefined && time !== null) {
+    return new Date(time).getTime();
+  }
+
+  return NO_EXPIRE;
+}
+
 export class DtoToCacheSourcesMapper {
-  map(dto: VendorEntitlementsDto): BundlesSource {
+  static map(dto: VendorEntitlementsDto): BundlesSource {
     const {
       data: { features, entitlements, featureBundles },
     } = dto;
@@ -56,15 +80,15 @@ export class DtoToCacheSourcesMapper {
       if (bundle) {
         if (userId) {
           // that's user-targeted entitlement
-          const tenantUserEntitlements = this.ensureMapInMap(bundle.user_entitlements, tenantId);
-          const usersEntitlements = this.ensureArrayInMap(tenantUserEntitlements, userId);
+          const tenantUserEntitlements = ensureMapInMap(bundle.user_entitlements, tenantId);
+          const usersEntitlements = ensureArrayInMap(tenantUserEntitlements, userId);
 
-          usersEntitlements.push(this.parseExpirationTime(expirationDate));
+          usersEntitlements.push(parseExpirationTime(expirationDate));
         } else {
           // that's tenant-targeted entitlement
-          const tenantEntitlements = this.ensureArrayInMap(bundle.tenant_entitlements, tenantId);
+          const tenantEntitlements = ensureArrayInMap(bundle.tenant_entitlements, tenantId);
 
-          tenantEntitlements.push(this.parseExpirationTime(expirationDate));
+          tenantEntitlements.push(parseExpirationTime(expirationDate));
         }
       } else {
         // TODO: issue warning here!
@@ -86,29 +110,5 @@ export class DtoToCacheSourcesMapper {
     });
 
     return bundlesMap;
-  }
-
-  private ensureMapInMap<K, T extends Map<any, any>>(map: Map<K, T>, mapKey: K): T {
-    if (!map.has(mapKey)) {
-      map.set(mapKey, new Map() as T);
-    }
-
-    return map.get(mapKey)!;
-  }
-
-  private ensureArrayInMap<K, T>(map: Map<K, T[]>, mapKey: K): T[] {
-    if (!map.has(mapKey)) {
-      map.set(mapKey, []);
-    }
-
-    return map.get(mapKey)!;
-  }
-
-  private parseExpirationTime(time?: string | null): ExpirationTime {
-    if (time !== undefined && time !== null) {
-      return new Date(time).getTime();
-    }
-
-    return NO_EXPIRE;
   }
 }

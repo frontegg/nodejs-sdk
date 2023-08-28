@@ -68,7 +68,7 @@ describe(CacheRevisionManager.name, () => {
           jest.mocked(FronteggEntitlementsCacheInitializer.forLeader).mockResolvedValue(expectedNewEntitlementsCache);
 
           // when
-          loadingSnapshotResult = await cut.loadSnapshotAsCurrent(getDTO(333));
+          loadingSnapshotResult = await cut.loadSnapshotAsCurrentRevision(getDTO(333));
         });
 
         it('then it resolves to IsUpdatedToRev structure telling with updated revision.', async () => {
@@ -97,7 +97,7 @@ describe(CacheRevisionManager.name, () => {
           jest.mocked(FronteggEntitlementsCacheInitializer.forFollower).mockClear();
 
           // when
-          loadingSnapshotResult = await cut.loadSnapshotAsCurrent(getDTO(1));
+          loadingSnapshotResult = await cut.loadSnapshotAsCurrentRevision(getDTO(1));
         });
 
         it('then it resolves to IsUpdatedToRev structure telling nothing got updated and revision (1).', async () => {

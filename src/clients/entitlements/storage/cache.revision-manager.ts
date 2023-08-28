@@ -15,7 +15,7 @@ export class CacheRevisionManager {
 
   constructor(private readonly cache: ICacheManager<CacheValue>) {}
 
-  async loadSnapshotAsCurrent(dto: VendorEntitlementsDto): Promise<IsUpdatedToRev> {
+  async loadSnapshotAsCurrentRevision(dto: VendorEntitlementsDto): Promise<IsUpdatedToRev> {
     const currentRevision = await this.getCurrentCacheRevision();
     const givenRevision = dto.snapshotOffset;
 

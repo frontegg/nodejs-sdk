@@ -25,7 +25,7 @@ export class FronteggEntitlementsCacheInitializer {
 
     const cacheInitializer = new FronteggEntitlementsCacheInitializer(entitlementsCache);
 
-    const sources = new DtoToCacheSourcesMapper().map(dto);
+    const sources = DtoToCacheSourcesMapper.map(dto);
 
     await cacheInitializer.setupPermissionsReadModel(sources);
     await cacheInitializer.setupEntitlementsReadModel(sources);
@@ -96,7 +96,7 @@ export class FronteggEntitlementsCacheInitializer {
     const allPermissions = await cache.collection(PERMISSIONS_COLLECTION_LIST).getAll<string>();
 
     for (const permission of allPermissions) {
-      await cache.expire([ getPermissionMappingKey(permission)], FronteggEntitlementsCacheInitializer.CLEAR_TTL);
+      await cache.expire([getPermissionMappingKey(permission)], FronteggEntitlementsCacheInitializer.CLEAR_TTL);
     }
 
     // clear static fields

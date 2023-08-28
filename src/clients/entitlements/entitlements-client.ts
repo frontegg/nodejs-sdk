@@ -126,7 +126,7 @@ export class EntitlementsClient extends TypedEmitter<IEntitlementsClientEvents> 
     const entitlementsData = await this.httpClient.get<VendorEntitlementsDto>('/api/v1/vendor-entitlements');
     const vendorEntitlementsDto = entitlementsData.data;
 
-    const { isUpdated, revision } = await this.cacheManager.loadSnapshotAsCurrent(vendorEntitlementsDto);
+    const { isUpdated, revision } = await this.cacheManager.loadSnapshotAsCurrentRevision(vendorEntitlementsDto);
 
     if (isUpdated) {
       this.emit(EntitlementsClientEventsEnum.SNAPSHOT_UPDATED, revision);
