@@ -1,5 +1,5 @@
 import { RetryOptions } from '../../utils';
-import { Permission } from '../identity/types';
+import { DTO } from '@frontegg/entitlements-service-types';
 
 export enum EntitlementJustifications {
   MISSING_FEATURE = 'missing-feature',
@@ -17,22 +17,11 @@ export type TenantId = string;
 export type UserId = string;
 
 export type FeatureId = string;
-export type FeatureTuple = [FeatureId, FeatureKey, Permission[]];
 
-export type FeatureBundleId = string;
-export type FeatureBundleTuple = [FeatureBundleId, FeatureId[]];
-
-export type ExpirationDate = string | null;
-export type EntitlementTuple = [FeatureBundleId, TenantId, UserId?, ExpirationDate?];
-
-export interface VendorEntitlementsDto {
-  data: {
-    features: FeatureTuple[];
-    featureBundles: FeatureBundleTuple[];
-    entitlements: EntitlementTuple[];
-  };
-  snapshotOffset: number;
-}
+export type FeatureTuple = DTO.VendorEntitlementsV1.Entitlements.Feature.Tuple;
+export type FeatureBundleTuple = DTO.VendorEntitlementsV1.Entitlements.FeatureSet.Tuple;
+export type EntitlementTuple = DTO.VendorEntitlementsV1.Entitlements.Tuple;
+export type FeatureFlagTuple = DTO.VendorEntitlementsV1.FeatureFlags.Tuple;
 
 export interface VendorEntitlementsSnapshotOffsetDto {
   snapshotOffset: number;

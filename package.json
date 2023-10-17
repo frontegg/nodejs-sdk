@@ -22,6 +22,7 @@
   "license": "ISC",
   "homepage": "https://github.com/frontegg/nodejs-sdk",
   "dependencies": {
+    "@frontegg/entitlements-javascript-commons": "^1.0.0-alpha.12",
     "@slack/web-api": "^6.7.2",
     "axios": "^0.27.2",
     "jsonwebtoken": "^9.0.0",
@@ -41,6 +42,8 @@
     }
   },
   "devDependencies": {
+    "@fast-check/jest": "^1.7.3",
+    "@frontegg/entitlements-service-types": "^0.29.0",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
     "@types/axios-mock-adapter": "^1.10.0",

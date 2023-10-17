@@ -7,7 +7,11 @@ import { IUser, IUserAccessToken, IUserApiToken, TEntityWithRoles, tokenTypes } 
 import { mock, mockReset } from 'jest-mock-extended';
 import { EntitlementsCache, NO_EXPIRE } from './storage/types';
 import { EntitlementJustifications } from './types';
+import { evaluateFeatureFlag, TreatmentEnum } from '@frontegg/entitlements-javascript-commons';
 import SpyInstance = jest.SpyInstance;
+import { FeatureFlag } from '@frontegg/entitlements-javascript-commons/dist/feature-flags/types';
+
+jest.mock('@frontegg/entitlements-javascript-commons');
 
 const userApiTokenBase: Pick<
   IUserApiToken,
@@ -43,6 +47,7 @@ describe(EntitlementsUserScoped.name, () => {
 
   afterEach(() => {
     mockReset(cacheMock);
+    jest.mocked(evaluateFeatureFlag).mockReset();
   });
 
   describe.each([
@@ -117,6 +122,9 @@ describe(EntitlementsUserScoped.name, () => {
           cacheMock.getEntitlementExpirationTime
             .calledWith('bar', 'the-tenant-id', undefined)
             .mockResolvedValue(undefined);
+          cacheMock.getFeatureFlags.calledWith('bar').mockResolvedValue([
+            // given: no feature flags
+          ]);
         });
 
         afterEach(() => {
@@ -146,6 +154,52 @@ describe(EntitlementsUserScoped.name, () => {
               result: false,
               justification: EntitlementJustifications.BUNDLE_EXPIRED,
             });
+          });
+        });
+      });
+
+      describe('and no entitlement to "bar" has ever been granted to user', () => {
+        const dummyFF: FeatureFlag = {
+          on: true,
+          offTreatment: TreatmentEnum.False,
+          defaultTreatment: TreatmentEnum.True,
+        };
+
+        beforeEach(() => {
+          cacheMock.getFeatureFlags.calledWith('bar').mockResolvedValue([dummyFF]);
+          cacheMock.getEntitlementExpirationTime
+            .calledWith('bar', entity.tenantId, entity.userId)
+            .mockResolvedValue(undefined);
+        });
+
+        describe('and feature flag is enabled for the user', () => {
+          beforeEach(() => {
+            jest.mocked(evaluateFeatureFlag).mockReturnValue({ treatment: TreatmentEnum.True });
+          });
+
+          it('when .isEntitledTo({ permissionKey: "foo" }) is executed, then it resolves to TRUE treatment.', async () => {
+            await expect(cut.isEntitledTo({ permissionKey: 'foo' })).resolves.toEqual({
+              result: true,
+            });
+
+            // and: feature flag has been evaluated
+            expect(evaluateFeatureFlag).toHaveBeenCalledWith(dummyFF, expect.anything());
+          });
+        });
+
+        describe('and feature flag is disabled for the user', () => {
+          beforeEach(() => {
+            jest.mocked(evaluateFeatureFlag).mockReturnValue({ treatment: TreatmentEnum.False });
+          });
+
+          it('when .isEntitledTo({ permissionKey: "foo" }) is executed, then the user is not entitled with "missing feature" justification.', async () => {
+            await expect(cut.isEntitledTo({ permissionKey: 'foo' })).resolves.toEqual({
+              result: false,
+              justification: EntitlementJustifications.MISSING_FEATURE,
+            });
+
+            // and: feature flag has been evaluated
+            expect(evaluateFeatureFlag).toHaveBeenCalledWith(dummyFF, expect.anything());
           });
         });
       });
@@ -200,7 +254,7 @@ describe(EntitlementsUserScoped.name, () => {
       await cut.isEntitledTo({ permissionKey: 'foo' });
 
       // then
-      expect(isEntitledToPermissionSpy).toHaveBeenCalledWith('foo');
+      expect(isEntitledToPermissionSpy).toHaveBeenCalledWith('foo', {});
       expect(isEntitledToFeatureSpy).not.toHaveBeenCalled();
     });
 
@@ -210,8 +264,32 @@ describe(EntitlementsUserScoped.name, () => {
 
       // then
       expect(isEntitledToPermissionSpy).not.toHaveBeenCalled();
-      expect(isEntitledToFeatureSpy).toHaveBeenCalledWith('foo');
+      expect(isEntitledToFeatureSpy).toHaveBeenCalledWith('foo', {});
     });
+
+    it.each([
+      {
+        key: 'featureKey' as const,
+        method: 'isEntitledToFeature',
+        run: (attrs) => cut.isEntitledTo({ featureKey: 'foo' }, attrs),
+        getSpy: () => isEntitledToFeatureSpy,
+      },
+      {
+        key: 'permissionKey' as const,
+        method: 'isEntitledToPermission',
+        run: (attrs) => cut.isEntitledTo({ permissionKey: 'foo' }, attrs),
+        getSpy: () => isEntitledToPermissionSpy,
+      },
+    ])(
+      'with $key and additional attributes, then they are passed down to $method method.',
+      async ({ key, run, getSpy }) => {
+        // when
+        await run({ bar: 'baz' });
+
+        // then
+        expect(getSpy()).toHaveBeenCalledWith('foo', { bar: 'baz' });
+      },
+    );
 
     it('with both featureKey and permissionKey, then the Error is thrown.', async () => {
       // when & then
