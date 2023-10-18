@@ -1,7 +1,7 @@
 import { FronteggAuthenticator } from './src/authenticator';
 import { FronteggContext } from './src/components/frontegg-context';
 import { withAuthentication } from './src/middlewares';
-import { AuditsClient, HttpClient, IdentityClient, EntitlementsClient } from './src/clients';
+import { AuditsClient, EntitlementsClient, EventsClient, HttpClient, IdentityClient } from './src/clients';
 
 export {
   AuditsClient,
@@ -11,5 +11,6 @@ export {
   HttpClient,
   IdentityClient,
   EntitlementsClient,
+  EventsClient,
 };
 export * from './src/clients/hosted-login';
