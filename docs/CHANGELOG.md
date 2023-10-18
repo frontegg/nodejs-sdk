@@ -1,3 +1,10 @@
+## [5.1.2](https://github.com/frontegg/nodejs-sdk/compare/5.1.1...5.1.2) (2023-10-18)
+
+
+### Bug Fixes
+
+* **events:** export missing events client ([0f5b63e](https://github.com/frontegg/nodejs-sdk/commit/0f5b63e81b6ffcfec824d314f674228b238b9d69))
+
 ## [5.1.1](https://github.com/frontegg/nodejs-sdk/compare/5.1.0...5.1.1) (2023-08-06)
 
 
