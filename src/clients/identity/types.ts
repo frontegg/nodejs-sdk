@@ -34,19 +34,19 @@ export type TTenantEntity = ITenantApiToken | ITenantAccessToken | ITenantAccess
 
 export type TEntity = TUserEntity | TTenantEntity;
 
-export interface IEntity {
+export type IEntity = {
   id?: string;
   sub: string;
   tenantId: string;
   type: tokenTypes;
-}
+};
 
-export interface IEntityWithRoles extends IEntity {
+export type IEntityWithRoles = IEntity & {
   roles: Role[];
   permissions: Permission[];
-}
+};
 
-export interface IUser extends IEntityWithRoles {
+export type IUser = IEntityWithRoles & {
   type: tokenTypes.UserToken;
   metadata: Record<string, any>;
   userId: string;
@@ -57,37 +57,37 @@ export interface IUser extends IEntityWithRoles {
   tenantIds?: string[];
   profilePictureUrl?: string;
   superUser?: true;
-}
+};
 
-export interface IApiToken extends IEntityWithRoles {
+export type IApiToken = IEntityWithRoles & {
   createdByUserId: string;
   type: tokenTypes.TenantApiToken | tokenTypes.UserApiToken;
   metadata: Record<string, unknown>;
-}
+};
 
-export interface ITenantApiToken extends IApiToken {
+export type ITenantApiToken = IApiToken & {
   type: tokenTypes.TenantApiToken;
-}
+};
 
-export interface IUserApiToken extends IApiToken {
+export type IUserApiToken = IApiToken & {
   type: tokenTypes.UserApiToken;
   email: string;
   userMetadata: Record<string, unknown>;
   userId: string;
-}
+};
 
-export interface IAccessToken extends IEntity {
+export type IAccessToken = IEntity & {
   type: tokenTypes.TenantAccessToken | tokenTypes.UserAccessToken;
-}
+};
 
-export interface ITenantAccessToken extends IAccessToken {
+export type ITenantAccessToken = IAccessToken & {
   type: tokenTypes.TenantAccessToken;
-}
+};
 
-export interface IUserAccessToken extends IAccessToken {
+export type IUserAccessToken = IAccessToken & {
   type: tokenTypes.UserAccessToken;
   userId: string;
-}
+};
 
 export interface IEmptyAccessToken {
   empty: true;

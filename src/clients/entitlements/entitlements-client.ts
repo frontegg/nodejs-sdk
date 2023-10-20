@@ -1,7 +1,7 @@
 import { IFronteggContext } from '../../components/frontegg-context/types';
 import { FronteggContext } from '../../components/frontegg-context';
 import { FronteggAuthenticator } from '../../authenticator';
-import { EntitlementsClientOptions, VendorEntitlementsDto, VendorEntitlementsSnapshotOffsetDto } from './types';
+import { EntitlementsClientOptions, VendorEntitlementsSnapshotOffsetDto } from './types';
 import { config } from '../../config';
 import { HttpClient } from '../http';
 import Logger from '../../components/logger';
@@ -12,6 +12,9 @@ import { EntitlementsCache } from './storage/types';
 import { InMemoryEntitlementsCache } from './storage/in-memory/in-memory.cache';
 import { TEntity } from '../identity/types';
 import { EntitlementsUserScoped } from './entitlements.user-scoped';
+import { DTO } from '@frontegg/entitlements-service-types';
+import { IdentityClient } from '../identity';
+import { JwtAttributes, prepareAttributes } from '@frontegg/entitlements-javascript-commons';
 
 export class EntitlementsClient extends events.EventEmitter {
   // periodical refresh handler
@@ -64,8 +67,24 @@ export class EntitlementsClient extends events.EventEmitter {
     return new EntitlementsUserScoped<T>(entity, this.cache);
   }
 
+  async forFronteggToken(token: string): Promise<EntitlementsUserScoped> {
+    if (!this.cache) {
+      throw new Error('EntitlementsClient is not initialized yet.');
+    }
+
+    const tokenData = await IdentityClient.getInstance().validateToken(token);
+
+    return new EntitlementsUserScoped(
+      tokenData,
+      this.cache,
+      prepareAttributes({
+        jwt: tokenData,
+      }),
+    );
+  }
+
   private async loadVendorEntitlements(): Promise<void> {
-    const entitlementsData = await this.httpClient.get<VendorEntitlementsDto>('/api/v1/vendor-entitlements');
+    const entitlementsData = await this.httpClient.get<DTO.VendorEntitlementsV1.GetDTO>('/api/v1/vendor-entitlements');
 
     const vendorEntitlementsDto = entitlementsData.data;
     const newOffset = entitlementsData.data.snapshotOffset;

@@ -2,6 +2,7 @@ import { EntitlementJustifications, IsEntitledResult } from './types';
 import { IEntityWithRoles, Permission, TEntity, tokenTypes, TUserEntity } from '../identity/types';
 import { EntitlementsCache, NO_EXPIRE } from './storage/types';
 import { pickExpTimestamp } from './storage/exp-time.utils';
+import { evaluateFeatureFlag, TreatmentEnum } from '@frontegg/entitlements-javascript-commons';
 
 export type IsEntitledToPermissionInput = { permissionKey: string };
 export type IsEntitledToFeatureInput = { featureKey: string };
@@ -11,7 +12,11 @@ export class EntitlementsUserScoped<T extends TEntity = TEntity> {
   private readonly userId?: string;
   private readonly permissions: Permission[];
 
-  constructor(private readonly entity: T, private readonly cache: EntitlementsCache) {
+  constructor(
+    private readonly entity: T,
+    private readonly cache: EntitlementsCache,
+    private readonly predefinedAttributes: Record<string, any> = {},
+  ) {
     this.tenantId = entity.tenantId;
 
     const entityWithUserId = entity as TUserEntity;
@@ -35,7 +40,22 @@ export class EntitlementsUserScoped<T extends TEntity = TEntity> {
     }
   }
 
-  async isEntitledToFeature(featureKey: string): Promise<IsEntitledResult> {
+  async isEntitledToFeature(featureKey: string, attributes: Record<string, any> = {}): Promise<IsEntitledResult> {
+    const isEntitledResult = await this.getEntitlementResult(featureKey);
+
+    if (!isEntitledResult.result) {
+      const ffResult = await this.getFeatureFlagResult(featureKey, { ...this.predefinedAttributes, ...attributes });
+
+      if (ffResult.result) {
+        return ffResult;
+      }
+      // else: just return result & justification of entitlements
+    }
+
+    return isEntitledResult;
+  }
+
+  private async getEntitlementResult(featureKey: string): Promise<IsEntitledResult> {
     const tenantEntitlementExpTime = await this.cache.getEntitlementExpirationTime(featureKey, this.tenantId);
     const userEntitlementExpTime = this.userId
       ? await this.cache.getEntitlementExpirationTime(featureKey, this.tenantId, this.userId)
@@ -62,7 +82,23 @@ export class EntitlementsUserScoped<T extends TEntity = TEntity> {
     }
   }
 
-  async isEntitledToPermission(permissionKey: string): Promise<IsEntitledResult> {
+  private async getFeatureFlagResult(featureKey: string, attributes: Record<string, any>): Promise<IsEntitledResult> {
+    const featureFlags = await this.cache.getFeatureFlags(featureKey);
+
+    for (const flag of featureFlags) {
+      const ffResult = evaluateFeatureFlag(flag, attributes);
+      if (ffResult?.treatment === TreatmentEnum.True) {
+        return { result: true };
+      }
+    }
+
+    return {
+      result: false,
+      justification: EntitlementJustifications.MISSING_FEATURE,
+    };
+  }
+
+  async isEntitledToPermission(permissionKey: string, attributes: Record<string, any> = {}): Promise<IsEntitledResult> {
     if (this.permissions === undefined || this.permissions.indexOf(permissionKey) < 0) {
       return {
         result: false,
@@ -78,7 +114,7 @@ export class EntitlementsUserScoped<T extends TEntity = TEntity> {
 
     let hasExpired = false;
     for (const feature of features) {
-      const isEntitledToFeatureResult = await this.isEntitledToFeature(feature);
+      const isEntitledToFeatureResult = await this.isEntitledToFeature(feature, attributes);
 
       if (isEntitledToFeatureResult.result === true) {
         return {
@@ -95,21 +131,30 @@ export class EntitlementsUserScoped<T extends TEntity = TEntity> {
     };
   }
 
-  isEntitledTo(featureOrPermission: IsEntitledToPermissionInput): Promise<IsEntitledResult>;
-  isEntitledTo(featureOrPermission: IsEntitledToFeatureInput): Promise<IsEntitledResult>;
-  async isEntitledTo({
-    featureKey,
-    permissionKey,
-  }: {
-    permissionKey?: string;
-    featureKey?: string;
-  }): Promise<IsEntitledResult> {
+  isEntitledTo(
+    featureOrPermission: IsEntitledToPermissionInput,
+    attributes?: Record<string, any>,
+  ): Promise<IsEntitledResult>;
+  isEntitledTo(
+    featureOrPermission: IsEntitledToFeatureInput,
+    attributes?: Record<string, any>,
+  ): Promise<IsEntitledResult>;
+  async isEntitledTo(
+    {
+      featureKey,
+      permissionKey,
+    }: {
+      permissionKey?: string;
+      featureKey?: string;
+    },
+    attributes: Record<string, any> = {},
+  ): Promise<IsEntitledResult> {
     if (featureKey && permissionKey) {
       throw new Error('Cannot check both feature and permission entitlement at the same time.');
     } else if (featureKey !== undefined) {
-      return this.isEntitledToFeature(featureKey!);
+      return this.isEntitledToFeature(featureKey!, attributes);
     } else if (permissionKey !== undefined) {
-      return this.isEntitledToPermission(permissionKey!);
+      return this.isEntitledToPermission(permissionKey!, attributes);
     } else {
       throw new Error('Neither feature, nor permission key is provided.');
     }

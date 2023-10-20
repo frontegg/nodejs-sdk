@@ -1,24 +1,20 @@
-import { EntitlementsCache, ExpirationTime, NO_EXPIRE } from '../types';
-import {
-  EntitlementTuple,
-  FeatureBundleTuple,
-  FeatureTuple,
-  FeatureKey,
-  TenantId,
-  UserId,
-  VendorEntitlementsDto,
-  FeatureId,
-} from '../../types';
+import { EntitlementsCache, ExpirationTime } from '../types';
+import { FeatureKey, TenantId, UserId } from '../../types';
 import {
   ENTITLEMENTS_MAP_KEY,
   PERMISSIONS_MAP_KEY,
   SRC_BUNDLES_KEY,
+  FEAT_TO_FLAG_MAP_KEY,
   getFeatureEntitlementKey,
 } from './in-memory.cache-key.utils';
 import NodeCache = require('node-cache');
 import { pickExpTimestamp } from '../exp-time.utils';
-import { BundlesSource, EntitlementsMap, FeatureSource, PermissionsMap, UNBUNDLED_SRC_ID } from './types';
+import { BundlesSource, EntitlementsMap, FeatureFlagsSource, PermissionsMap } from './types';
 import { Permission } from '../../../identity/types';
+import { DTO } from '@frontegg/entitlements-service-types';
+import { FeatureFlag } from '@frontegg/entitlements-javascript-commons/dist/feature-flags/types';
+import { SourcesMapper } from './mappers/sources.mapper';
+import { ensureSetInMap } from './mappers/helper';
 
 export class InMemoryEntitlementsCache implements EntitlementsCache {
   private nodeCache: NodeCache;
@@ -56,108 +52,24 @@ export class InMemoryEntitlementsCache implements EntitlementsCache {
     return mapping || new Set();
   }
 
-  static initialize(data: VendorEntitlementsDto, revPrefix?: string): InMemoryEntitlementsCache {
-    const cache = new InMemoryEntitlementsCache(revPrefix ?? data.snapshotOffset.toString());
-
-    const {
-      data: { features, entitlements, featureBundles },
-    } = data;
-
-    // build source structure
-    const sourceData = cache.buildSource(featureBundles, features, entitlements);
-    cache.nodeCache.set(SRC_BUNDLES_KEY, sourceData);
-
-    // setup data for SDK to work
-    cache.setupEntitlementsReadModel(sourceData);
-    cache.setupPermissionsReadModel(sourceData);
-
-    return cache;
+  async getFeatureFlags(featureKey: string): Promise<FeatureFlag[]> {
+    return this.nodeCache.get<FeatureFlagsSource>(FEAT_TO_FLAG_MAP_KEY)?.get(featureKey) || [];
   }
 
-  private buildSource(
-    bundles: FeatureBundleTuple[],
-    features: FeatureTuple[],
-    entitlements: EntitlementTuple[],
-  ): BundlesSource {
-    const bundlesMap: BundlesSource = new Map();
-    const unbundledFeaturesIds: Set<FeatureId> = new Set();
+  static initialize(data: DTO.VendorEntitlementsV1.GetDTO, revPrefix?: string): InMemoryEntitlementsCache {
+    const cache = new InMemoryEntitlementsCache(revPrefix ?? data.snapshotOffset.toString());
 
-    // helper features maps
-    const featuresMap: Map<string, FeatureSource> = new Map();
-    features.forEach((feat) => {
-      const [id, key, permissions] = feat;
-      featuresMap.set(id, {
-        id,
-        key,
-        permissions: new Set(permissions || []),
-      });
-      unbundledFeaturesIds.add(id);
-    });
+    // build source structure
+    const { entitlements: e10sSourceData, featureFlags: ffSourceData } = new SourcesMapper(data.data).buildSources();
 
-    // initialize bundles map
-    bundles.forEach((bundle) => {
-      const [id, featureIds] = bundle;
-      bundlesMap.set(id, {
-        id,
-        user_entitlements: new Map(),
-        tenant_entitlements: new Map(),
-        features: new Map(
-          featureIds.reduce<Array<[string, FeatureSource]>>((prev, fId) => {
-            const featSource = featuresMap.get(fId);
+    cache.nodeCache.set(SRC_BUNDLES_KEY, e10sSourceData);
 
-            if (!featSource) {
-              // TODO: issue warning here!
-            } else {
-              prev.push([featSource.key, featSource]);
+    // setup data for SDK to work
+    cache.setupEntitlementsReadModel(e10sSourceData);
+    cache.setupPermissionsReadModel(e10sSourceData);
+    cache.setupFeatureFlagsReadModel(ffSourceData);
 
-              // mark feature as bundled
-              unbundledFeaturesIds.delete(fId);
-            }
-
-            return prev;
-          }, []),
-        ),
-      });
-    });
-
-    // fill bundles with entitlements
-    entitlements.forEach((entitlement) => {
-      const [featureBundleId, tenantId, userId, expirationDate] = entitlement;
-      const bundle = bundlesMap.get(featureBundleId);
-
-      if (bundle) {
-        if (userId) {
-          // that's user-targeted entitlement
-          const tenantUserEntitlements = this.ensureMapInMap(bundle.user_entitlements, tenantId);
-          const usersEntitlements = this.ensureArrayInMap(tenantUserEntitlements, userId);
-
-          usersEntitlements.push(this.parseExpirationTime(expirationDate));
-        } else {
-          // that's tenant-targeted entitlement
-          const tenantEntitlements = this.ensureArrayInMap(bundle.tenant_entitlements, tenantId);
-
-          tenantEntitlements.push(this.parseExpirationTime(expirationDate));
-        }
-      } else {
-        // TODO: issue warning here!
-      }
-    });
-
-    // make "dummy" bundle for unbundled features
-    bundlesMap.set(UNBUNDLED_SRC_ID, {
-      id: UNBUNDLED_SRC_ID,
-      user_entitlements: new Map(),
-      tenant_entitlements: new Map(),
-      features: new Map(
-        [...unbundledFeaturesIds.values()].map((fId) => {
-          const featSource = featuresMap.get(fId)!;
-
-          return [featSource.key, featSource];
-        }),
-      ),
-    });
-
-    return bundlesMap;
+    return cache;
   }
 
   private setupEntitlementsReadModel(src: BundlesSource): void {
@@ -196,7 +108,7 @@ export class InMemoryEntitlementsCache implements EntitlementsCache {
     src.forEach((singleBundle) => {
       singleBundle.features.forEach((feature) => {
         feature.permissions.forEach((permission) => {
-          this.ensureSetInMap(permissionsReadModel, permission).add(feature.key);
+          ensureSetInMap(permissionsReadModel, permission).add(feature.key);
         });
       });
     });
@@ -204,36 +116,8 @@ export class InMemoryEntitlementsCache implements EntitlementsCache {
     this.nodeCache.set(PERMISSIONS_MAP_KEY, permissionsReadModel);
   }
 
-  private ensureSetInMap<K, T>(map: Map<K, Set<T>>, mapKey: K): Set<T> {
-    if (!map.has(mapKey)) {
-      map.set(mapKey, new Set());
-    }
-
-    return map.get(mapKey)!;
-  }
-
-  private ensureMapInMap<K, T extends Map<any, any>>(map: Map<K, T>, mapKey: K): T {
-    if (!map.has(mapKey)) {
-      map.set(mapKey, new Map() as T);
-    }
-
-    return map.get(mapKey)!;
-  }
-
-  private ensureArrayInMap<K, T>(map: Map<K, T[]>, mapKey: K): T[] {
-    if (!map.has(mapKey)) {
-      map.set(mapKey, []);
-    }
-
-    return map.get(mapKey)!;
-  }
-
-  private parseExpirationTime(time?: string | null): ExpirationTime {
-    if (time !== undefined && time !== null) {
-      return new Date(time).getTime();
-    }
-
-    return NO_EXPIRE;
+  private setupFeatureFlagsReadModel(src: FeatureFlagsSource): void {
+    this.nodeCache.set(FEAT_TO_FLAG_MAP_KEY, src);
   }
 
   async clear(): Promise<void> {

@@ -3,13 +3,14 @@ import { FronteggContext } from '../../components/frontegg-context';
 import { FronteggAuthenticator } from '../../authenticator';
 import { HttpClient } from '../http';
 import { mock, mockClear } from 'jest-mock-extended';
-import { VendorEntitlementsDto, VendorEntitlementsSnapshotOffsetDto } from './types';
+import { VendorEntitlementsSnapshotOffsetDto } from './types';
 import { AxiosResponse } from 'axios';
 import * as Sinon from 'sinon';
 import { useFakeTimers } from 'sinon';
 import { IUserAccessTokenWithRoles, tokenTypes } from '../identity/types';
 import { EntitlementsUserScoped } from './entitlements.user-scoped';
 import { InMemoryEntitlementsCache } from './storage/in-memory/in-memory.cache';
+import type { DTO } from '@frontegg/entitlements-service-types';
 
 const { EntitlementsUserScoped: EntitlementsUserScopedActual } = jest.requireActual('./entitlements.user-scoped');
 
@@ -38,10 +39,11 @@ describe(EntitlementsClient.name, () => {
           entitlements: [],
           features: [],
           featureBundles: [],
+          featureFlags: [],
         },
         snapshotOffset: 1234,
       },
-    } as unknown as AxiosResponse<VendorEntitlementsDto>);
+    } as unknown as AxiosResponse<DTO.VendorEntitlementsV1.GetDTO>);
     httpMock.get.calledWith('/api/v1/vendor-entitlements-snapshot-offset').mockResolvedValue({
       data: {
         snapshotOffset: 1234,
@@ -123,10 +125,11 @@ describe(EntitlementsClient.name, () => {
               entitlements: [],
               features: [],
               featureBundles: [],
+              featureFlags: [],
             },
             snapshotOffset: 2345,
           },
-        } as unknown as AxiosResponse<VendorEntitlementsDto>);
+        } as unknown as AxiosResponse<DTO.VendorEntitlementsV1.GetDTO>);
 
         mockClear(httpMock);
       });

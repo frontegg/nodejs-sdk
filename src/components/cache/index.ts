@@ -1,10 +1,10 @@
-import { ICacheManager, IORedisCacheManager, LocalCacheManager, RedisCacheManager } from './managers';
+import { CacheValue, ICacheManager, IORedisCacheManager, LocalCacheManager, RedisCacheManager } from './managers';
 import { FronteggContext } from '../frontegg-context';
 
-let cacheInstance: ICacheManager<unknown>;
+let cacheInstance: ICacheManager<any>;
 
 export class FronteggCache {
-  static async getInstance<T>(): Promise<ICacheManager<T>> {
+  static async getInstance<T extends CacheValue>(): Promise<ICacheManager<T>> {
     if (!cacheInstance) {
       cacheInstance = await FronteggCache.initialize<T>();
     }
@@ -12,7 +12,7 @@ export class FronteggCache {
     return cacheInstance as ICacheManager<T>;
   }
 
-  private static async initialize<T>(): Promise<ICacheManager<T>> {
+  private static async initialize<T extends CacheValue>(): Promise<ICacheManager<T>> {
     const options = FronteggContext.getOptions();
     const { cache } = options;
 

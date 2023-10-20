@@ -12,6 +12,7 @@ describe(InMemoryEntitlementsCache.name, () => {
           entitlements: [],
           features: [['f-1', 'foo', []]],
           featureBundles: [['b-1', ['f-1']]],
+          featureFlags: [],
         },
       });
     });
@@ -29,7 +30,8 @@ describe(InMemoryEntitlementsCache.name, () => {
         data: {
           features: [['f-1', 'foo', []]],
           featureBundles: [['b-1', ['f-1']]],
-          entitlements: [['b-1', 't-1', 'u-1']],
+          entitlements: [['b-1', 't-1', 'u-1', undefined]],
+          featureFlags: [],
         },
       });
     });
@@ -47,7 +49,8 @@ describe(InMemoryEntitlementsCache.name, () => {
         data: {
           features: [['f-1', 'foo', []]],
           featureBundles: [['b-1', ['f-1']]],
-          entitlements: [['b-1', 't-1']],
+          entitlements: [['b-1', 't-1', undefined, undefined]],
+          featureFlags: [],
         },
       });
     });
@@ -76,6 +79,7 @@ describe(InMemoryEntitlementsCache.name, () => {
             ['b-1', 't-2', undefined, '2022-02-01T12:00:00+00:00'], // TS: 1643716800000
             ['b-1', 't-2', undefined, '2022-03-01T12:00:00+00:00'], // TS: 1646136000000
           ],
+          featureFlags: [],
         },
       });
     });
@@ -100,10 +104,11 @@ describe(InMemoryEntitlementsCache.name, () => {
           featureBundles: [['b-1', ['f-1']]],
           entitlements: [
             ['b-1', 't-1', 'u-1', '2022-06-01T12:00:00+00:00'], // TS: 1654084800000
-            ['b-1', 't-1', 'u-1'],
+            ['b-1', 't-1', 'u-1', undefined],
             ['b-1', 't-2', undefined, '2022-02-01T12:00:00+00:00'], // TS: 1643716800000
-            ['b-1', 't-2'],
+            ['b-1', 't-2', undefined, undefined],
           ],
+          featureFlags: [],
         },
       });
     });
@@ -127,6 +132,7 @@ describe(InMemoryEntitlementsCache.name, () => {
           features: [['f-1', 'foo', ['bar.baz']]],
           featureBundles: [],
           entitlements: [],
+          featureFlags: [],
         },
       });
     });
