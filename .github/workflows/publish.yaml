@@ -5,8 +5,13 @@ on:
     branches: [ master, next ]
 
 env:
-  GH_TOKEN: ${{ secrets.GH_ADMIN_REPO_TOKEN }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
 
 jobs:
   publish:
@@ -15,13 +20,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GH_ADMIN_REPO_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Set git config
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.event.pusher.email }}"
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_ADMIN_REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Use Node.js 18
         uses: actions/setup-node@v3
         with:
