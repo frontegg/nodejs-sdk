@@ -1,3 +1,10 @@
+# [5.2.0-alpha.3](https://github.com/frontegg/nodejs-sdk/compare/5.2.0-alpha.2...5.2.0-alpha.3) (2023-10-31)
+
+
+### Bug Fixes
+
+* general fixes ([#173](https://github.com/frontegg/nodejs-sdk/issues/173)) ([d386c5d](https://github.com/frontegg/nodejs-sdk/commit/d386c5d9c8b1c8593ed5f22330a620aec4d75bd7))
+
 # [5.2.0-alpha.2](https://github.com/frontegg/nodejs-sdk/compare/5.2.0-alpha.1...5.2.0-alpha.2) (2023-10-31)
 
 
