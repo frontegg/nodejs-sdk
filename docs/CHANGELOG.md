@@ -1,3 +1,10 @@
+# [5.2.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.1.3-alpha.1...5.2.0-alpha.1) (2023-10-31)
+
+
+### Features
+
+* **feature-flags:** introduced feature-flags functionality ([#165](https://github.com/frontegg/nodejs-sdk/issues/165)) ([1923129](https://github.com/frontegg/nodejs-sdk/commit/1923129f669811f52ff2afc451de6cbf7e033b67))
+
 ## [5.1.3-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.1.2...5.1.3-alpha.1) (2023-10-31)
 
 
