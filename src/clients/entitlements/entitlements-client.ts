@@ -1,7 +1,7 @@
 import { IFronteggContext } from '../../components/frontegg-context/types';
 import { FronteggContext } from '../../components/frontegg-context';
 import { FronteggAuthenticator } from '../../authenticator';
-import { EntitlementsClientOptions, VendorEntitlementsDto, VendorEntitlementsSnapshotOffsetDto } from './types';
+import { EntitlementsClientOptions, VendorEntitlementsSnapshotOffsetDto } from './types';
 import { config } from '../../config';
 import { HttpClient } from '../http';
 import Logger from '../../components/logger';
@@ -10,8 +10,12 @@ import * as events from 'events';
 import { EntitlementsClientEvents } from './entitlements-client.events';
 import { EntitlementsCache } from './storage/types';
 import { InMemoryEntitlementsCache } from './storage/in-memory/in-memory.cache';
-import { TEntity } from '../identity/types';
+import { TEntity, TUserEntity } from '../identity/types';
 import { EntitlementsUserScoped } from './entitlements.user-scoped';
+import type { VendorEntitlementsV1 } from './api-types';
+import { IdentityClient } from '../identity';
+import { CustomAttributes, prepareAttributes } from '@frontegg/entitlements-javascript-commons';
+import { appendUserIdAttribute } from './helpers/frontegg-entity.helper';
 
 export class EntitlementsClient extends events.EventEmitter {
   // periodical refresh handler
@@ -64,8 +68,24 @@ export class EntitlementsClient extends events.EventEmitter {
     return new EntitlementsUserScoped<T>(entity, this.cache);
   }
 
+  async forFronteggToken(token: string): Promise<EntitlementsUserScoped> {
+    if (!this.cache) {
+      throw new Error('EntitlementsClient is not initialized yet.');
+    }
+
+    const tokenData = await IdentityClient.getInstance().validateToken(token);
+    const customAttributes = appendUserIdAttribute(
+      prepareAttributes({
+        jwt: tokenData,
+      }) as CustomAttributes,
+      tokenData as TUserEntity,
+    );
+
+    return new EntitlementsUserScoped(tokenData, this.cache, customAttributes);
+  }
+
   private async loadVendorEntitlements(): Promise<void> {
-    const entitlementsData = await this.httpClient.get<VendorEntitlementsDto>('/api/v1/vendor-entitlements');
+    const entitlementsData = await this.httpClient.get<VendorEntitlementsV1.GetDTO>('/api/v1/vendor-entitlements');
 
     const vendorEntitlementsDto = entitlementsData.data;
     const newOffset = entitlementsData.data.snapshotOffset;
