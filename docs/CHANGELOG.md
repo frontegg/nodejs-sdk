@@ -1,3 +1,10 @@
+# [5.2.0-alpha.2](https://github.com/frontegg/nodejs-sdk/compare/5.2.0-alpha.1...5.2.0-alpha.2) (2023-10-31)
+
+
+### Bug Fixes
+
+* upgrade commons lib ([#172](https://github.com/frontegg/nodejs-sdk/issues/172)) ([674ec51](https://github.com/frontegg/nodejs-sdk/commit/674ec5142b6f89a25612d22be2edeeb2c77be01a))
+
 # [5.2.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.1.3-alpha.1...5.2.0-alpha.1) (2023-10-31)
 
 
