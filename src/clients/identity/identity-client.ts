@@ -101,7 +101,6 @@ export class IdentityClient {
     Logger.info('got identity service configuration');
     // Get the public key
     const { publicKey } = response.data;
-    // And save it as member of the class
     Logger.info('going to extract public key from response');
     this.publicKey = publicKey;
     await authenticator.shutdown();
