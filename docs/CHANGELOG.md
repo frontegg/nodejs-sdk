@@ -1,3 +1,31 @@
+# [5.2.0-alpha.3](https://github.com/frontegg/nodejs-sdk/compare/5.2.0-alpha.2...5.2.0-alpha.3) (2023-10-31)
+
+
+### Bug Fixes
+
+* general fixes ([#173](https://github.com/frontegg/nodejs-sdk/issues/173)) ([d386c5d](https://github.com/frontegg/nodejs-sdk/commit/d386c5d9c8b1c8593ed5f22330a620aec4d75bd7))
+
+# [5.2.0-alpha.2](https://github.com/frontegg/nodejs-sdk/compare/5.2.0-alpha.1...5.2.0-alpha.2) (2023-10-31)
+
+
+### Bug Fixes
+
+* upgrade commons lib ([#172](https://github.com/frontegg/nodejs-sdk/issues/172)) ([674ec51](https://github.com/frontegg/nodejs-sdk/commit/674ec5142b6f89a25612d22be2edeeb2c77be01a))
+
+# [5.2.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.1.3-alpha.1...5.2.0-alpha.1) (2023-10-31)
+
+
+### Features
+
+* **feature-flags:** introduced feature-flags functionality ([#165](https://github.com/frontegg/nodejs-sdk/issues/165)) ([1923129](https://github.com/frontegg/nodejs-sdk/commit/1923129f669811f52ff2afc451de6cbf7e033b67))
+
+## [5.1.3-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.1.2...5.1.3-alpha.1) (2023-10-31)
+
+
+### Bug Fixes
+
+* remove redundant imports ([#166](https://github.com/frontegg/nodejs-sdk/issues/166)) ([680a54f](https://github.com/frontegg/nodejs-sdk/commit/680a54f880a123f9c7d7e39080e49a4f88acf5f8))
+
 ## [5.1.2](https://github.com/frontegg/nodejs-sdk/compare/5.1.1...5.1.2) (2023-10-18)
 
 
