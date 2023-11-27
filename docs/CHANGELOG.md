@@ -1,3 +1,10 @@
+## [5.2.1](https://github.com/frontegg/nodejs-sdk/compare/5.2.0...5.2.1) (2023-11-27)
+
+
+### Bug Fixes
+
+* bump axios version (security) ([09bbdf0](https://github.com/frontegg/nodejs-sdk/commit/09bbdf0050b01f42fd38e245acade35288a92c41))
+
 # [5.2.0](https://github.com/frontegg/nodejs-sdk/compare/5.1.2...5.2.0) (2023-11-02)
 
 
