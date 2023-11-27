@@ -10,25 +10,21 @@ export class HttpClient {
   }
 
   private setupRequestInterceptor() {
-    this.axios.interceptors.request.use(
-      async (request: AxiosRequestConfig) => {
-        await this.authenticator.validateAuthentication();
 
-        request.headers = {
-          ...request.headers,
-          ['x-access-token']: this.authenticator.accessToken,
-        };
+    this.axios.interceptors.request.use(async (request)=>{
+      await this.authenticator.validateAuthentication();
 
-        if (request.baseURL) {
-          if (request.headers?.['frontegg-vendor-host']) {
-            request.baseURL = request.baseURL.replace('api', request.headers['frontegg-vendor-host'] as string);
-          }
+
+      request.headers.set('x-access-token', this.authenticator.accessToken);
+
+      if (request.baseURL) {
+        if (request.headers?.['frontegg-vendor-host']) {
+          request.baseURL = request.baseURL.replace('api', request.headers['frontegg-vendor-host'] as string);
         }
+      }
 
-        return request;
-      },
-      (err) => Promise.reject(err),
-    );
+      return request;
+    });
   }
 
   public async get<T = any>(url: string, headers?: Record<string, any>): Promise<AxiosResponse<T>> {
