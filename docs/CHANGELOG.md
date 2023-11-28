@@ -1,3 +1,10 @@
+# [5.3.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.2.1...5.3.0-alpha.1) (2023-11-28)
+
+
+### Features
+
+* **step-up:** add stepup validator ([#176](https://github.com/frontegg/nodejs-sdk/issues/176)) ([94559ae](https://github.com/frontegg/nodejs-sdk/commit/94559aef699d939dcc73771c7ba4b2ed5ecb332a))
+
 ## [5.2.1](https://github.com/frontegg/nodejs-sdk/compare/5.2.0...5.2.1) (2023-11-27)
 
 
