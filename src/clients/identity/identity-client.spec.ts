@@ -128,7 +128,7 @@ describe('Identity client', () => {
       fail('should throw');
     } catch (e: any) {
       expect(e.statusCode).toEqual(401);
-      expect(e.message).toEqual('Amr is missing');
+      expect(e.message).toEqual('AMR is missing');
     }
   });
 
