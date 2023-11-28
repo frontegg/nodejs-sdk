@@ -143,7 +143,7 @@ describe('Identity client', () => {
       fail('should throw');
     } catch (e: any) {
       expect(e.statusCode).toEqual(401);
-      expect(e.message).toEqual('Missing acr: http://schemas.openid.net/pape/policies/2007/06/multi-factor');
+      expect(e.message).toEqual('Missing ACR: http://schemas.openid.net/pape/policies/2007/06/multi-factor');
     }
   });
 
