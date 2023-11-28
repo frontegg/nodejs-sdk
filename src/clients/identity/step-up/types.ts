@@ -5,5 +5,5 @@ export interface ValidateStepupFields {
 }
 
 export interface IValidateStepupTokenOptions {
-  maxAge: number;
+  maxAge?: number;
 }
