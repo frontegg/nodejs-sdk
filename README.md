@@ -219,7 +219,20 @@ const userOrTenantEntity = await identityClient.validateToken(token, { withRoles
 > entitlement decision-making, so remember to add option flag: `withRolesAndPermissions: true`. 
 
 (see <a href="#validating-jwt-manually">Validating JWT manually</a> section for more details).
- 
+
+#### step-up
+The client can be used to verify whether an authorized user has undergone step-up authentication.
+> You can also require session max age to determine a stepped up user
+```javascript
+// Validate the token and decode its properties for a stepped-up user
+const steppedUpUserEntity = await identityClient.validateToken(token, { stepUp: true });
+
+// Validate the token with session maximum age requirement (up to one hour) for a stepped-up user
+const steppedUpUserEntityWithMaxAge = await identityClient.validateToken(token, { stepUp: { maxAge: 3600 } });
+```
+
+#### entitlements
+
 When the user/tenant entity is resolved, you can start querying the entitlements engine:
 ```javascript
 const userEntitlementsClient = client.forUser(userOrTenantEntity);
