@@ -1,3 +1,24 @@
+## [5.2.1](https://github.com/frontegg/nodejs-sdk/compare/5.2.0...5.2.1) (2023-11-27)
+
+
+### Bug Fixes
+
+* bump axios version (security) ([09bbdf0](https://github.com/frontegg/nodejs-sdk/commit/09bbdf0050b01f42fd38e245acade35288a92c41))
+
+# [5.2.0](https://github.com/frontegg/nodejs-sdk/compare/5.1.2...5.2.0) (2023-11-02)
+
+
+### Bug Fixes
+
+* general fixes ([#173](https://github.com/frontegg/nodejs-sdk/issues/173)) ([d386c5d](https://github.com/frontegg/nodejs-sdk/commit/d386c5d9c8b1c8593ed5f22330a620aec4d75bd7))
+* remove redundant imports ([#166](https://github.com/frontegg/nodejs-sdk/issues/166)) ([680a54f](https://github.com/frontegg/nodejs-sdk/commit/680a54f880a123f9c7d7e39080e49a4f88acf5f8))
+* upgrade commons lib ([#172](https://github.com/frontegg/nodejs-sdk/issues/172)) ([674ec51](https://github.com/frontegg/nodejs-sdk/commit/674ec5142b6f89a25612d22be2edeeb2c77be01a))
+
+
+### Features
+
+* **feature-flags:** introduced feature-flags functionality ([#165](https://github.com/frontegg/nodejs-sdk/issues/165)) ([1923129](https://github.com/frontegg/nodejs-sdk/commit/1923129f669811f52ff2afc451de6cbf7e033b67))
+
 # [5.2.0-alpha.3](https://github.com/frontegg/nodejs-sdk/compare/5.2.0-alpha.2...5.2.0-alpha.3) (2023-10-31)
 
 
