@@ -1,3 +1,5 @@
+import { IValidateStepupTokenOptions } from './step-up';
+
 export enum AuthHeaderType {
   JWT = 'JWT',
   AccessToken = 'AccessToken',
@@ -12,6 +14,7 @@ export interface IValidateTokenOptions {
   roles?: string[];
   permissions?: string[];
   withRolesAndPermissions?: boolean;
+  stepUp?: IValidateStepupTokenOptions;
 }
 
 export enum tokenTypes {
@@ -57,6 +60,9 @@ export type IUser = IEntityWithRoles & {
   tenantIds?: string[];
   profilePictureUrl?: string;
   superUser?: true;
+  amr?: string[];
+  acr?: string;
+  auth_time?: number;
 };
 
 export type IApiToken = IEntityWithRoles & {

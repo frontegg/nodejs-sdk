@@ -2,8 +2,18 @@ import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import { config } from '../../config';
 import { IdentityClient } from './identity-client';
-import { AuthHeaderType, ITenantAccessToken, IUser, IUserAccessToken, TEntityWithRoles, tokenTypes } from './types';
+import {
+  AuthHeaderType,
+  ITenantAccessToken,
+  IUser,
+  IUserAccessToken,
+  IUserApiToken,
+  TEntityWithRoles,
+  tokenTypes,
+} from './types';
 import { accessTokenHeaderResolver, authorizationHeaderResolver } from './token-resolvers';
+import { AMR_METHOD_VALUE, AMR_MFA_VALUE, STEP_UP_ACR_VALUE } from './step-up';
+import { MissingAmrException } from './exceptions';
 
 jest.setTimeout(60000);
 
@@ -20,6 +30,19 @@ const fakeUser: IUser = {
   profilePictureUrl: 'fake-pic-url',
   roles: ['role-key'],
   permissions: ['permission-key'],
+};
+
+const fakeUserApiToken: IUserApiToken = {
+  createdByUserId: 'fake-created-by-user-id',
+  sub: 'fake-sub',
+  tenantId: 'fake-tenant-id',
+  type: tokenTypes.UserApiToken,
+  userId: 'fake-user-id',
+  metadata: {},
+  email: 'fake-email',
+  permissions: ['permission-key'],
+  roles: ['role-key'],
+  userMetadata: {},
 };
 
 const fakeUserAccessToken: IUserAccessToken = {
@@ -70,6 +93,7 @@ describe('Identity client', () => {
     try {
       //@ts-ignore
       await IdentityClient.getInstance().validateToken('fake-token', {}, 'invalid-header-type');
+      fail('should throw');
     } catch (e: any) {
       expect(e.statusCode).toEqual(401);
       expect(e.message).toEqual('Failed to verify authentication');
@@ -81,6 +105,79 @@ describe('Identity client', () => {
     jest.spyOn(authorizationHeaderResolver, 'verifyAsync').mockImplementation(() => fakeUser);
     const res = await IdentityClient.getInstance().validateToken('fake-token', {}, AuthHeaderType.JWT);
     expect(res).toEqual(fakeUser);
+  });
+
+  it('should not throw if stepup is required and token type is not user token', async () => {
+    //@ts-ignore
+    jest.spyOn(authorizationHeaderResolver, 'verifyAsync').mockImplementation(() => fakeUserApiToken);
+    const res = await IdentityClient.getInstance().validateToken(
+      'fake-token',
+      { stepUp: { maxAge: 2 } },
+      AuthHeaderType.JWT,
+    );
+    expect(res).toEqual(fakeUserApiToken);
+  });
+
+  it('should throw if stepup is required and token has no amr value', async () => {
+    //@ts-ignore
+    jest
+      .spyOn(authorizationHeaderResolver, 'verifyAsync')
+      .mockImplementation(() => ({ ...fakeUser, acr: STEP_UP_ACR_VALUE, amr: [] }));
+    try {
+      await IdentityClient.getInstance().validateToken('fake-token', { stepUp: {} }, AuthHeaderType.JWT);
+      fail('should throw');
+    } catch (e: any) {
+      expect(e.statusCode).toEqual(401);
+      expect(e.message).toEqual('Amr is missing');
+    }
+  });
+
+  it('should throw if stepup is required and token has wrong acr value', async () => {
+    //@ts-ignore
+    jest
+      .spyOn(authorizationHeaderResolver, 'verifyAsync')
+      .mockImplementation(() => ({ ...fakeUser, acr: 'not-stepup-acr' }));
+    try {
+      await IdentityClient.getInstance().validateToken('fake-token', { stepUp: {} }, AuthHeaderType.JWT);
+      fail('should throw');
+    } catch (e: any) {
+      expect(e.statusCode).toEqual(401);
+      expect(e.message).toEqual('Missing acr: http://schemas.openid.net/pape/policies/2007/06/multi-factor');
+    }
+  });
+
+  it('should throw if stepup is required and maxAge exceeded', async () => {
+    //@ts-ignore
+    jest.spyOn(authorizationHeaderResolver, 'verifyAsync').mockImplementation(() => ({
+      ...fakeUser,
+      acr: STEP_UP_ACR_VALUE,
+      amr: [AMR_MFA_VALUE, AMR_METHOD_VALUE[0]],
+      auth_time: Date.now() / 1000 - 20,
+    }));
+    try {
+      await IdentityClient.getInstance().validateToken('fake-token', { stepUp: { maxAge: 5 } }, AuthHeaderType.JWT);
+      fail('should throw');
+    } catch (e: any) {
+      expect(e.statusCode).toEqual(401);
+      expect(e.message).toEqual('Max age exceeded');
+    }
+  });
+
+  it('should not throw if stepup is required and maxAge is not exceeded', async () => {
+    const fakeSteppedUpUser = {
+      ...fakeUser,
+      acr: STEP_UP_ACR_VALUE,
+      amr: [AMR_MFA_VALUE, AMR_METHOD_VALUE[0]],
+      auth_time: Date.now() / 1000 - 20,
+    };
+    //@ts-ignore
+    jest.spyOn(authorizationHeaderResolver, 'verifyAsync').mockImplementation(() => fakeSteppedUpUser);
+    const res = await IdentityClient.getInstance().validateToken(
+      'fake-token',
+      { stepUp: { maxAge: 1000 } },
+      AuthHeaderType.JWT,
+    );
+    expect(res).toEqual(fakeSteppedUpUser);
   });
 
   it.each([{ claims: fakeUserAccessToken }, { claims: fakeTenantAccessToken }])(
