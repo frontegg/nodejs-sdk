@@ -13,7 +13,6 @@ import {
 } from './types';
 import { accessTokenHeaderResolver, authorizationHeaderResolver } from './token-resolvers';
 import { AMR_METHOD_VALUE, AMR_MFA_VALUE, STEP_UP_ACR_VALUE } from './step-up';
-import { MissingAmrException } from './exceptions';
 
 jest.setTimeout(60000);
 
@@ -119,12 +118,13 @@ describe('Identity client', () => {
   });
 
   it('should throw if stepup is required and token has no amr value', async () => {
-    //@ts-ignore
     jest
+      //@ts-ignore
       .spyOn(authorizationHeaderResolver, 'verifyAsync')
+      //@ts-ignore
       .mockImplementation(() => ({ ...fakeUser, acr: STEP_UP_ACR_VALUE, amr: [] }));
     try {
-      await IdentityClient.getInstance().validateToken('fake-token', { stepUp: {} }, AuthHeaderType.JWT);
+      await IdentityClient.getInstance().validateToken('fake-token', { stepUp: true }, AuthHeaderType.JWT);
       fail('should throw');
     } catch (e: any) {
       expect(e.statusCode).toEqual(401);
@@ -133,9 +133,10 @@ describe('Identity client', () => {
   });
 
   it('should throw if stepup is required and token has wrong acr value', async () => {
-    //@ts-ignore
     jest
+      //@ts-ignore
       .spyOn(authorizationHeaderResolver, 'verifyAsync')
+      //@ts-ignore
       .mockImplementation(() => ({ ...fakeUser, acr: 'not-stepup-acr' }));
     try {
       await IdentityClient.getInstance().validateToken('fake-token', { stepUp: {} }, AuthHeaderType.JWT);

@@ -14,7 +14,7 @@ export interface IValidateTokenOptions {
   roles?: string[];
   permissions?: string[];
   withRolesAndPermissions?: boolean;
-  stepUp?: IValidateStepupTokenOptions;
+  stepUp?: boolean | IValidateStepupTokenOptions;
 }
 
 export enum tokenTypes {
