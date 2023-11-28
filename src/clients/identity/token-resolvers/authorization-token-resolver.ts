@@ -1,4 +1,5 @@
-import { AuthHeaderType, IEntityWithRoles, IValidateTokenOptions, tokenTypes } from '../types';
+import { AuthHeaderType, IEntityWithRoles, IUser, IValidateTokenOptions, tokenTypes } from '../types';
+import { StepupValidator } from '../step-up/';
 import { TokenResolver } from './token-resolver';
 
 export class AuthorizationJWTResolver extends TokenResolver<IEntityWithRoles> {
@@ -15,6 +16,10 @@ export class AuthorizationJWTResolver extends TokenResolver<IEntityWithRoles> {
 
     if (options?.permissions?.length || options?.roles?.length) {
       await this.validateRolesAndPermissions(entity, options);
+    }
+
+    if (entity.type === tokenTypes.UserToken && options?.stepUp) {
+      StepupValidator.validateStepUp(<IUser>entity, typeof options.stepUp === 'boolean' ? {} : options.stepUp);
     }
 
     return entity;
