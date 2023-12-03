@@ -1,3 +1,10 @@
+# [5.3.0-alpha.2](https://github.com/frontegg/nodejs-sdk/compare/5.3.0-alpha.1...5.3.0-alpha.2) (2023-12-03)
+
+
+### Bug Fixes
+
+* **step-up:** add sso as amr method for unenrolled mfa users ([cc9e916](https://github.com/frontegg/nodejs-sdk/commit/cc9e916e4afbf5a5dae817bbc8d0ec8db8e54e12))
+
 # [5.3.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.2.1...5.3.0-alpha.1) (2023-11-28)
 
 
