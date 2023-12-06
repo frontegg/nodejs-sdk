@@ -18,7 +18,7 @@ export class AuthorizationJWTResolver extends TokenResolver<IEntityWithRoles> {
       await this.validateRolesAndPermissions(entity, options);
     }
 
-    if (entity.type === tokenTypes.UserToken && options?.stepUp) {
+    if ([tokenTypes.UserToken, tokenTypes.UserApiToken] && options?.stepUp) {
       StepupValidator.validateStepUp(<IUser>entity, typeof options.stepUp === 'boolean' ? {} : options.stepUp);
     }
 

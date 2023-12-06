@@ -22,3 +22,4 @@ export {
   EventsClient,
 };
 export * from './src/clients/hosted-login';
+export * from './src/clients/identity';
