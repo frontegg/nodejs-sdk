@@ -7,7 +7,6 @@ import {
   EventsClient,
   HttpClient,
   IdentityClient,
-  StepupValidator,
 } from './src/clients';
 
 export {
@@ -18,7 +17,6 @@ export {
   HttpClient,
   IdentityClient,
   EntitlementsClient,
-  StepupValidator,
   EventsClient,
 };
 export * from './src/clients/hosted-login';
