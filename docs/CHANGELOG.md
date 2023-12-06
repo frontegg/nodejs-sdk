@@ -1,3 +1,12 @@
+# [5.3.0-alpha.3](https://github.com/frontegg/nodejs-sdk/compare/5.3.0-alpha.2...5.3.0-alpha.3) (2023-12-06)
+
+
+### Bug Fixes
+
+* **step-up:** export type ([e66abb3](https://github.com/frontegg/nodejs-sdk/commit/e66abb3588f05ae5f7bd34ded3a80681f850c321))
+* **step-up:** export validator ([f131d36](https://github.com/frontegg/nodejs-sdk/commit/f131d36242c759ac9f514e31264fb1214cd16a4f))
+* **step-up:** fix validation condition ([2cd16f4](https://github.com/frontegg/nodejs-sdk/commit/2cd16f4e04245adf4cadc4388544ac4b872f2f1c))
+
 # [5.3.0-alpha.2](https://github.com/frontegg/nodejs-sdk/compare/5.3.0-alpha.1...5.3.0-alpha.2) (2023-12-03)
 
 
