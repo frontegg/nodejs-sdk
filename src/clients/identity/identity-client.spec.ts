@@ -5,6 +5,7 @@ import { IdentityClient } from './identity-client';
 import {
   AuthHeaderType,
   ITenantAccessToken,
+  ITenantApiToken,
   IUser,
   IUserAccessToken,
   IUserApiToken,
@@ -31,17 +32,14 @@ const fakeUser: IUser = {
   permissions: ['permission-key'],
 };
 
-const fakeUserApiToken: IUserApiToken = {
+const fakeTenantApiToken: ITenantApiToken = {
   createdByUserId: 'fake-created-by-user-id',
   sub: 'fake-sub',
   tenantId: 'fake-tenant-id',
-  type: tokenTypes.UserApiToken,
-  userId: 'fake-user-id',
+  type: tokenTypes.TenantApiToken,
   metadata: {},
-  email: 'fake-email',
   permissions: ['permission-key'],
   roles: ['role-key'],
-  userMetadata: {},
 };
 
 const fakeUserAccessToken: IUserAccessToken = {
@@ -104,17 +102,6 @@ describe('Identity client', () => {
     jest.spyOn(authorizationHeaderResolver, 'verifyAsync').mockImplementation(() => fakeUser);
     const res = await IdentityClient.getInstance().validateToken('fake-token', {}, AuthHeaderType.JWT);
     expect(res).toEqual(fakeUser);
-  });
-
-  it('should not throw if stepup is required and token type is not user token', async () => {
-    //@ts-ignore
-    jest.spyOn(authorizationHeaderResolver, 'verifyAsync').mockImplementation(() => fakeUserApiToken);
-    const res = await IdentityClient.getInstance().validateToken(
-      'fake-token',
-      { stepUp: { maxAge: 2 } },
-      AuthHeaderType.JWT,
-    );
-    expect(res).toEqual(fakeUserApiToken);
   });
 
   it('should throw if stepup is required and token has no amr value', async () => {
