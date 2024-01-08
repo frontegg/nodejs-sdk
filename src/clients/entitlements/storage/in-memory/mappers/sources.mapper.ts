@@ -128,12 +128,17 @@ export class SourcesMapper {
   }
   private buildPlansSources(bundles: FeatureBundleTuple[], features: FeatureTuple[]): PlansSource {
     const source: PlansSource = new Map();
+    const featureIdToFeatureKeyMap = new Map<string, string>();
+
     features.forEach(([featureId, featureKey]) => {
-      bundles.forEach((tuple) => {
-        const featureIds = tuple[1];
-        if (featureIds.includes(featureId)) {
-          ensureArrayInMap(source, featureKey).push(mapPlanFromTuple(tuple));
-        }
+      featureIdToFeatureKeyMap.set(featureId, featureKey);
+    });
+
+    bundles.forEach((tuple) => {
+      const featureIds = tuple[1];
+      featureIds.forEach((featureId) => {
+        const featureKey = featureIdToFeatureKeyMap.get(featureId);
+        ensureArrayInMap(source, featureKey).push(mapPlanFromTuple(tuple));
       });
     });
 
