@@ -78,6 +78,7 @@ export class InMemoryEntitlementsCache implements EntitlementsCache {
     cache.setupPermissionsReadModel(e10sSourceData);
     cache.setupFeatureFlagsReadModel(ffSourceData);
     cache.setupPlansReadModel(plansSourceData);
+    
     return cache;
   }
 
