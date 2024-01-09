@@ -6,6 +6,7 @@ import {
   createPermissionCheckRegex,
   CustomAttributes,
   evaluateFeatureFlag,
+  evaluatePlan,
   TreatmentEnum,
 } from '@frontegg/entitlements-javascript-commons';
 import { findUserId } from './helpers/frontegg-entity.helper';
@@ -29,9 +30,9 @@ export class EntitlementsUserScoped<T extends TEntity = TEntity> {
 
     const entityWithPossiblePermissions = entity as IEntityWithRoles;
     if (Array.isArray(entityWithPossiblePermissions.permissions)) {
-      entityWithPossiblePermissions.permissions.forEach(permission => {
+      entityWithPossiblePermissions.permissions.forEach((permission) => {
         if (permission.includes('*')) {
-          this.permissionRegexps.push(createPermissionCheckRegex(permission))
+          this.permissionRegexps.push(createPermissionCheckRegex(permission));
         } else {
           this.permissions.push(permission);
         }
@@ -47,6 +48,15 @@ export class EntitlementsUserScoped<T extends TEntity = TEntity> {
 
       if (ffResult.result) {
         return ffResult;
+      }
+
+      const targetingRulesResult = await this.getPlanTargetingRulesResult(featureKey, {
+        ...attributes,
+        ...this.predefinedAttributes,
+      });
+
+      if (targetingRulesResult.result) {
+        return targetingRulesResult;
       }
       // else: just return result & justification of entitlements
     }
@@ -97,9 +107,28 @@ export class EntitlementsUserScoped<T extends TEntity = TEntity> {
     };
   }
 
+  private async getPlanTargetingRulesResult(
+    featureKey: string,
+    attributes: Record<string, any>,
+  ): Promise<IsEntitledResult> {
+    const plans = await this.cache.getPlans(featureKey);
+    for (const plan of plans) {
+      const planTargetingRulesResult = evaluatePlan(plan, attributes);
+      if (planTargetingRulesResult.treatment === TreatmentEnum.True) {
+        return { result: true };
+      }
+    }
+
+    return {
+      result: false,
+      justification: EntitlementJustifications.MISSING_FEATURE,
+    };
+  }
+
   private hasPermission(permissionKey: string): boolean {
-    return this.permissions.includes(permissionKey) ||
-      this.permissionRegexps.some(regex => regex.test(permissionKey));
+    return (
+      this.permissions.includes(permissionKey) || this.permissionRegexps.some((regex) => regex.test(permissionKey))
+    );
   }
 
   async isEntitledToPermission(permissionKey: string, attributes: CustomAttributes = {}): Promise<IsEntitledResult> {

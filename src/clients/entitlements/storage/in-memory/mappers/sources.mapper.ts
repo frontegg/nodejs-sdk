@@ -1,8 +1,9 @@
 import type { EntitlementTuple, FeatureBundleTuple, FeatureId, FeatureTuple } from '../../../types';
-import { BundlesSource, FeatureFlagsSource, FeatureSource, Sources, UNBUNDLED_SRC_ID } from '../types';
+import { BundlesSource, FeatureFlagsSource, FeatureSource, PlansSource, Sources, UNBUNDLED_SRC_ID } from '../types';
 import type { VendorEntitlementsV1 } from '../../../api-types';
 import type { FeatureFlagTuple } from '../../../types';
 import { mapFromTuple } from './feature-flag-tuple.mapper';
+import { mapFromTuple as mapPlanFromTuple } from './plan-tuple.mapper';
 import { ExpirationTime, NO_EXPIRE } from '../../types';
 import { ensureArrayInMap, ensureMapInMap } from './helper';
 
@@ -13,6 +14,7 @@ export class SourcesMapper {
     return {
       entitlements: this.buildEntitlementsSources(this.dto.featureBundles, this.dto.features, this.dto.entitlements),
       featureFlags: this.buildFeatureFlagsSources(this.dto.featureFlags, this.dto.features),
+      plans: this.buildPlansSources(this.dto.featureBundles, this.dto.features),
     };
   }
 
@@ -123,5 +125,23 @@ export class SourcesMapper {
     }
 
     return NO_EXPIRE;
+  }
+  private buildPlansSources(bundles: FeatureBundleTuple[], features: FeatureTuple[]): PlansSource {
+    const source: PlansSource = new Map();
+    const featureIdToFeatureKeyMap = new Map<string, string>();
+
+    features.forEach(([featureId, featureKey]) => {
+      featureIdToFeatureKeyMap.set(featureId, featureKey);
+    });
+
+    bundles.forEach((tuple) => {
+      const featureIds = tuple[1];
+      featureIds.forEach((featureId) => {
+        const featureKey = featureIdToFeatureKeyMap.get(featureId);
+        ensureArrayInMap(source, featureKey).push(mapPlanFromTuple(tuple));
+      });
+    });
+
+    return source;
   }
 }

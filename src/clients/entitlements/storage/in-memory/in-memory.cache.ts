@@ -6,15 +6,16 @@ import {
   SRC_BUNDLES_KEY,
   FEAT_TO_FLAG_MAP_KEY,
   getFeatureEntitlementKey,
+  SRC_PLANS,
 } from './in-memory.cache-key.utils';
 import NodeCache = require('node-cache');
 import { pickExpTimestamp } from '../exp-time.utils';
-import type { BundlesSource, EntitlementsMap, FeatureFlagsSource, PermissionsMap } from './types';
+import type { BundlesSource, EntitlementsMap, FeatureFlagsSource, PermissionsMap, PlansSource } from './types';
 import type { Permission } from '../../../identity/types';
 import type { VendorEntitlementsV1 } from '../../api-types';
-import type { FeatureFlag } from '@frontegg/entitlements-javascript-commons/dist/feature-flags/types';
 import { SourcesMapper } from './mappers/sources.mapper';
 import { ensureSetInMap } from './mappers/helper';
+import { Plan, FeatureFlag } from '@frontegg/entitlements-javascript-commons';
 
 export class InMemoryEntitlementsCache implements EntitlementsCache {
   private nodeCache: NodeCache;
@@ -56,11 +57,19 @@ export class InMemoryEntitlementsCache implements EntitlementsCache {
     return this.nodeCache.get<FeatureFlagsSource>(FEAT_TO_FLAG_MAP_KEY)?.get(featureKey) || [];
   }
 
+  async getPlans(featureKey: string): Promise<Plan[]> {
+    return this.nodeCache.get<PlansSource>(SRC_PLANS)?.get(featureKey) || [];
+  }
+
   static initialize(data: VendorEntitlementsV1.GetDTO, revPrefix?: string): InMemoryEntitlementsCache {
     const cache = new InMemoryEntitlementsCache(revPrefix ?? data.snapshotOffset.toString());
 
     // build source structure
-    const { entitlements: e10sSourceData, featureFlags: ffSourceData } = new SourcesMapper(data.data).buildSources();
+    const {
+      entitlements: e10sSourceData,
+      featureFlags: ffSourceData,
+      plans: plansSourceData,
+    } = new SourcesMapper(data.data).buildSources();
 
     cache.nodeCache.set(SRC_BUNDLES_KEY, e10sSourceData);
 
@@ -68,7 +77,8 @@ export class InMemoryEntitlementsCache implements EntitlementsCache {
     cache.setupEntitlementsReadModel(e10sSourceData);
     cache.setupPermissionsReadModel(e10sSourceData);
     cache.setupFeatureFlagsReadModel(ffSourceData);
-
+    cache.setupPlansReadModel(plansSourceData);
+    
     return cache;
   }
 
@@ -118,6 +128,10 @@ export class InMemoryEntitlementsCache implements EntitlementsCache {
 
   private setupFeatureFlagsReadModel(src: FeatureFlagsSource): void {
     this.nodeCache.set(FEAT_TO_FLAG_MAP_KEY, src);
+  }
+
+  private setupPlansReadModel(src: PlansSource): void {
+    this.nodeCache.set(SRC_PLANS, src);
   }
 
   async clear(): Promise<void> {

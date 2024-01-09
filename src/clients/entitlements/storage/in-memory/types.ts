@@ -1,8 +1,8 @@
+import { FeatureFlag, Plan } from '@frontegg/entitlements-javascript-commons';
 import { Permission } from '../../../identity/types';
 import { FeatureKey, TenantId, UserId } from '../../types';
 import { ExpirationTime } from '../types';
 // TODO: make that lib VVV export types as well
-import { FeatureFlag } from '@frontegg/entitlements-javascript-commons/dist/feature-flags/types';
 
 export const UNBUNDLED_SRC_ID = '__unbundled__';
 export type FeatureEntitlementKey = string; // tenant & user & feature key
@@ -26,8 +26,10 @@ export type SingleBundleSource = {
 
 export type BundlesSource = Map<string, SingleBundleSource>;
 export type FeatureFlagsSource = Map<FeatureKey, FeatureFlag[]>;
+export type PlansSource = Map<FeatureKey, Plan[]>;
 
 export type Sources = {
   entitlements: BundlesSource;
   featureFlags: FeatureFlagsSource;
+  plans: PlansSource;
 };
