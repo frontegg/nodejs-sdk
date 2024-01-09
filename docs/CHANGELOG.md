@@ -1,3 +1,10 @@
+# [5.3.0-alpha.4](https://github.com/frontegg/nodejs-sdk/compare/5.3.0-alpha.3...5.3.0-alpha.4) (2024-01-09)
+
+
+### Features
+
+* **plans:** add plan evaluation to entitlements ([c1de677](https://github.com/frontegg/nodejs-sdk/commit/c1de677776795cace230cc036bf53aefb0ab172c))
+
 # [5.3.0-alpha.3](https://github.com/frontegg/nodejs-sdk/compare/5.3.0-alpha.2...5.3.0-alpha.3) (2023-12-06)
 
 
