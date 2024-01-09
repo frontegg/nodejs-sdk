@@ -22,7 +22,7 @@
   "license": "ISC",
   "homepage": "https://github.com/frontegg/nodejs-sdk",
   "dependencies": {
-    "@frontegg/entitlements-javascript-commons": "1.1.0",
+    "@frontegg/entitlements-javascript-commons": "^1.1.0",
     "axios": "^1.6.2",
     "jsonwebtoken": "^9.0.0",
     "node-cache": "^5.1.2",
