@@ -1,3 +1,10 @@
+# [5.3.0-alpha.5](https://github.com/frontegg/nodejs-sdk/compare/5.3.0-alpha.4...5.3.0-alpha.5) (2024-01-28)
+
+
+### Bug Fixes
+
+* **entitlements:** bump js common package version ([b3691db](https://github.com/frontegg/nodejs-sdk/commit/b3691dbe19e5669964f9d3f3bec1200cf06b7844))
+
 # [5.3.0-alpha.4](https://github.com/frontegg/nodejs-sdk/compare/5.3.0-alpha.3...5.3.0-alpha.4) (2024-01-09)
 
 
