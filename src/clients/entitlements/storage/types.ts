@@ -1,5 +1,5 @@
 import { FeatureKey } from '../types';
-import { FeatureFlag } from '@frontegg/entitlements-javascript-commons/dist/feature-flags/types';
+import { FeatureFlag, Plan } from '@frontegg/entitlements-javascript-commons';
 
 export const NO_EXPIRE = -1;
 export type ExpirationTime = number | typeof NO_EXPIRE;
@@ -23,6 +23,11 @@ export interface EntitlementsCache {
    * Get all feature-flags with given feature configured.
    */
   getFeatureFlags(featureKey: string): Promise<FeatureFlag[]>;
+
+  /**
+   * Get all plans with given feature configured
+   */
+  getPlans(featureKey: string): Promise<Plan[]>;
 
   /**
    * Remove all cached data.

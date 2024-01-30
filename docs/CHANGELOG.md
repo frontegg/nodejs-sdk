@@ -1,3 +1,40 @@
+# [5.3.0-alpha.5](https://github.com/frontegg/nodejs-sdk/compare/5.3.0-alpha.4...5.3.0-alpha.5) (2024-01-28)
+
+
+### Bug Fixes
+
+* **entitlements:** bump js common package version ([b3691db](https://github.com/frontegg/nodejs-sdk/commit/b3691dbe19e5669964f9d3f3bec1200cf06b7844))
+
+# [5.3.0-alpha.4](https://github.com/frontegg/nodejs-sdk/compare/5.3.0-alpha.3...5.3.0-alpha.4) (2024-01-09)
+
+
+### Features
+
+* **plans:** add plan evaluation to entitlements ([c1de677](https://github.com/frontegg/nodejs-sdk/commit/c1de677776795cace230cc036bf53aefb0ab172c))
+
+# [5.3.0-alpha.3](https://github.com/frontegg/nodejs-sdk/compare/5.3.0-alpha.2...5.3.0-alpha.3) (2023-12-06)
+
+
+### Bug Fixes
+
+* **step-up:** export type ([e66abb3](https://github.com/frontegg/nodejs-sdk/commit/e66abb3588f05ae5f7bd34ded3a80681f850c321))
+* **step-up:** export validator ([f131d36](https://github.com/frontegg/nodejs-sdk/commit/f131d36242c759ac9f514e31264fb1214cd16a4f))
+* **step-up:** fix validation condition ([2cd16f4](https://github.com/frontegg/nodejs-sdk/commit/2cd16f4e04245adf4cadc4388544ac4b872f2f1c))
+
+# [5.3.0-alpha.2](https://github.com/frontegg/nodejs-sdk/compare/5.3.0-alpha.1...5.3.0-alpha.2) (2023-12-03)
+
+
+### Bug Fixes
+
+* **step-up:** add sso as amr method for unenrolled mfa users ([cc9e916](https://github.com/frontegg/nodejs-sdk/commit/cc9e916e4afbf5a5dae817bbc8d0ec8db8e54e12))
+
+# [5.3.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.2.1...5.3.0-alpha.1) (2023-11-28)
+
+
+### Features
+
+* **step-up:** add stepup validator ([#176](https://github.com/frontegg/nodejs-sdk/issues/176)) ([94559ae](https://github.com/frontegg/nodejs-sdk/commit/94559aef699d939dcc73771c7ba4b2ed5ecb332a))
+
 ## [5.2.1](https://github.com/frontegg/nodejs-sdk/compare/5.2.0...5.2.1) (2023-11-27)
 
 

@@ -2,7 +2,7 @@ import type { Feature } from '../entitlements';
 import type { OperationEnum } from '@frontegg/entitlements-javascript-commons';
 
 type On = boolean;
-type TreatmentEnum = 'true' | 'false';
+export type TreatmentEnum = 'true' | 'false';
 type DefaultTreatment = TreatmentEnum;
 type OffTreatment = TreatmentEnum;
 type TreatmentType = 'boolean';

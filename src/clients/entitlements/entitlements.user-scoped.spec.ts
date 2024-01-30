@@ -7,9 +7,14 @@ import { IUser, IUserAccessToken, IUserApiToken, TEntityWithRoles, tokenTypes } 
 import { mock, mockReset } from 'jest-mock-extended';
 import { EntitlementsCache, NO_EXPIRE } from './storage/types';
 import { EntitlementJustifications } from './types';
-import { evaluateFeatureFlag, TreatmentEnum } from '@frontegg/entitlements-javascript-commons';
+import {
+  evaluateFeatureFlag,
+  evaluatePlan,
+  FeatureFlag,
+  Plan,
+  TreatmentEnum,
+} from '@frontegg/entitlements-javascript-commons';
 import SpyInstance = jest.SpyInstance;
-import { FeatureFlag } from '@frontegg/entitlements-javascript-commons/dist/feature-flags/types';
 
 jest.mock('@frontegg/entitlements-javascript-commons');
 
@@ -30,16 +35,16 @@ const userApiTokenBase: Pick<
 const userAccessTokenBase: Pick<IUserAccessToken, 'type' | 'id' | 'sub'> = {
   type: tokenTypes.UserAccessToken,
   id: 'irrelevant',
-  sub: 'irrelevant'
-}
+  sub: 'irrelevant',
+};
 
 const userTokenBase: Pick<IUser, 'type' | 'id' | 'userId' | 'roles' | 'metadata'> = {
   type: tokenTypes.UserToken,
   id: 'irrelevant',
   userId: 'irrelevant',
   roles: ['irrelevant'],
-  metadata: {}
-}
+  metadata: {},
+};
 
 describe(EntitlementsUserScoped.name, () => {
   const cacheMock = mock<EntitlementsCache>();
@@ -51,13 +56,14 @@ describe(EntitlementsUserScoped.name, () => {
   });
 
   describe.each([
-    { tokenType: tokenTypes.UserApiToken,
+    {
+      tokenType: tokenTypes.UserApiToken,
       entity: {
         ...userApiTokenBase,
         permissions: ['foo'],
         userId: 'the-user-id',
         tenantId: 'the-tenant-id',
-      } as IUserApiToken
+      } as IUserApiToken,
     },
     {
       tokenType: tokenTypes.UserAccessToken,
@@ -66,18 +72,18 @@ describe(EntitlementsUserScoped.name, () => {
         userId: 'the-user-id',
         tenantId: 'the-tenant-id',
         roles: [],
-        permissions: ['foo']
-      } as TEntityWithRoles<IUserAccessToken>
+        permissions: ['foo'],
+      } as TEntityWithRoles<IUserAccessToken>,
     },
     {
       tokenType: tokenTypes.UserToken,
       entity: {
         ...userTokenBase,
-        permissions: [ 'foo' ],
+        permissions: ['foo'],
         sub: 'the-user-id',
-        tenantId: 'the-tenant-id'
-      } as IUser
-    }
+        tenantId: 'the-tenant-id',
+      } as IUser,
+    },
   ])('given the authenticated user using $tokenType with permission "foo" granted', ({ entity }) => {
     beforeEach(() => {
       cut = new EntitlementsUserScoped(entity, cacheMock);
@@ -124,6 +130,9 @@ describe(EntitlementsUserScoped.name, () => {
           cacheMock.getFeatureFlags.calledWith('bar').mockResolvedValue([
             // given: no feature flags
           ]);
+          cacheMock.getPlans.calledWith('bar').mockResolvedValue([
+            // given: no plans
+          ]);
         });
 
         afterEach(() => {
@@ -164,8 +173,13 @@ describe(EntitlementsUserScoped.name, () => {
           defaultTreatment: TreatmentEnum.True,
         };
 
+        const dummyPlan: Plan = {
+          defaultTreatment: TreatmentEnum.False,
+        };
+
         beforeEach(() => {
           cacheMock.getFeatureFlags.calledWith('bar').mockResolvedValue([dummyFF]);
+          cacheMock.getPlans.calledWith('bar').mockResolvedValue([dummyPlan]);
           cacheMock.getEntitlementExpirationTime
             .calledWith('bar', entity.tenantId, entity.userId)
             .mockResolvedValue(undefined);
@@ -191,14 +205,37 @@ describe(EntitlementsUserScoped.name, () => {
             jest.mocked(evaluateFeatureFlag).mockReturnValue({ treatment: TreatmentEnum.False });
           });
 
-          it('when .isEntitledTo({ permissionKey: "foo" }) is executed, then the user is not entitled with "missing feature" justification.', async () => {
-            await expect(cut.isEntitledTo({ permissionKey: 'foo' })).resolves.toEqual({
-              result: false,
-              justification: EntitlementJustifications.MISSING_FEATURE,
+          describe('and plan is enabled for the user', () => {
+            beforeEach(() => {
+              jest.mocked(evaluatePlan).mockReturnValue({ treatment: TreatmentEnum.True });
             });
 
-            // and: feature flag has been evaluated
-            expect(evaluateFeatureFlag).toHaveBeenCalledWith(dummyFF, expect.anything());
+            it('when .isEntitledTo({ permissionKey: "foo" }) is executed, then it resolves to TRUE treatment.', async () => {
+              await expect(cut.isEntitledTo({ permissionKey: 'foo' })).resolves.toEqual({
+                result: true,
+              });
+
+              // and: feature flag has been evaluated
+              expect(evaluateFeatureFlag).toHaveBeenCalledWith(dummyFF, expect.anything());
+              expect(evaluatePlan).toHaveBeenCalledWith(dummyPlan, expect.anything());
+            });
+          });
+
+          describe('and plan is disabled for the user', () => {
+            beforeEach(() => {
+              jest.mocked(evaluatePlan).mockReturnValue({ treatment: TreatmentEnum.False });
+            });
+
+            it('when .isEntitledTo({ permissionKey: "foo" }) is executed, then the user is not entitled with "missing feature" justification.', async () => {
+              await expect(cut.isEntitledTo({ permissionKey: 'foo' })).resolves.toEqual({
+                result: false,
+                justification: EntitlementJustifications.MISSING_FEATURE,
+              });
+
+              // and: feature flag has been evaluated
+              expect(evaluateFeatureFlag).toHaveBeenCalledWith(dummyFF, expect.anything());
+              expect(evaluatePlan).toHaveBeenCalledWith(dummyPlan, expect.anything());
+            });
           });
         });
       });
