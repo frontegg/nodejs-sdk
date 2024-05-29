@@ -181,6 +181,19 @@ describe('Identity client', () => {
     },
   );
 
+  it.each([{ claims: fakeUserAccessToken }, { claims: fakeTenantAccessToken }])(
+      'should validate access token entity without fetching roles',
+      async ({ claims }) => {
+        //@ts-ignore
+        jest.spyOn(accessTokenHeaderResolver, 'verifyAsync').mockImplementation(() => claims);
+        //@ts-ignore
+        jest.spyOn(accessTokenHeaderResolver, 'getActiveAccessTokenIds').mockImplementation(() => [claims.sub]);
+
+        const res = await IdentityClient.getInstance().validateIdentityOnToken('fake-token', {});
+        expect(res).toEqual(claims);
+      },
+  );
+
   it.each([
     { claims: fakeUserAccessToken, entity: fakeUserAccessTokenWithRoles },
     { claims: fakeTenantAccessTokenWithRoles, entity: fakeTenantAccessTokenWithRoles },
