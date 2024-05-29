@@ -8,7 +8,6 @@ import {
   ITenantApiToken,
   IUser,
   IUserAccessToken,
-  IUserApiToken,
   TEntityWithRoles,
   tokenTypes,
 } from './types';
