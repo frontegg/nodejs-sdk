@@ -188,6 +188,8 @@ describe('Identity client', () => {
         jest.spyOn(accessTokenHeaderResolver, 'verifyAsync').mockImplementation(() => claims);
         //@ts-ignore
         jest.spyOn(accessTokenHeaderResolver, 'getActiveAccessTokenIds').mockImplementation(() => [claims.sub]);
+        //@ts-ignore
+        jest.spyOn(authorizationHeaderResolver, 'verifyAsync').mockImplementation(() => claims);
 
         const res = await IdentityClient.getInstance().validateIdentityOnToken('fake-token', {});
         expect(res).toEqual(claims);
