@@ -7,7 +7,6 @@ import {
   AuthHeaderType,
   ExtractCredentialsResult, IAccessToken,
   IEntityWithRoles,
-  IUser,
   IValidateTokenOptions,
   TEntity,
 } from './types';
