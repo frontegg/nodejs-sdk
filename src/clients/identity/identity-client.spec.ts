@@ -8,7 +8,6 @@ import {
   ITenantApiToken,
   IUser,
   IUserAccessToken,
-  IUserApiToken,
   TEntityWithRoles,
   tokenTypes,
 } from './types';
@@ -179,6 +178,21 @@ describe('Identity client', () => {
       const res = await IdentityClient.getInstance().validateToken('fake-token', {}, AuthHeaderType.AccessToken);
       expect(res).toEqual(claims);
     },
+  );
+
+  it.each([{ claims: fakeUserAccessToken }, { claims: fakeTenantAccessToken }])(
+      'should validate access token entity without fetching roles',
+      async ({ claims }) => {
+        //@ts-ignore
+        jest.spyOn(accessTokenHeaderResolver, 'verifyAsync').mockImplementation(() => claims);
+        //@ts-ignore
+        jest.spyOn(accessTokenHeaderResolver, 'getActiveAccessTokenIds').mockImplementation(() => [claims.sub]);
+        //@ts-ignore
+        jest.spyOn(authorizationHeaderResolver, 'verifyAsync').mockImplementation(() => claims);
+
+        const res = await IdentityClient.getInstance().validateIdentityOnToken('fake-token', {});
+        expect(res).toEqual(claims);
+      },
   );
 
   it.each([

@@ -3,7 +3,13 @@ import { FronteggAuthenticator } from '../../authenticator';
 import { config } from '../../config';
 import Logger from '../../components/logger';
 import { FronteggContext } from '../../components/frontegg-context';
-import { AuthHeaderType, ExtractCredentialsResult, IUser, IValidateTokenOptions, TEntity } from './types';
+import {
+  AuthHeaderType,
+  ExtractCredentialsResult, IAccessToken,
+  IEntityWithRoles,
+  IValidateTokenOptions,
+  TEntity,
+} from './types';
 import { accessTokenHeaderResolver, authorizationHeaderResolver, TokenResolver } from './token-resolvers';
 import { FailedToAuthenticateException } from './exceptions';
 import { IFronteggContext } from '../../components/frontegg-context/types';
@@ -54,12 +60,21 @@ export class IdentityClient {
     return await resolver.validateToken(formattedToken, publicKey, options);
   }
 
-  public async validateIdentityOnToken(token: string, options?: IValidateTokenOptions): Promise<IUser> {
+  public async validateIdentityOnToken(token: string, options?: IValidateTokenOptions)
+      : Promise<IEntityWithRoles | IAccessToken> {
     const { token: formattedToken, publicKey } = await this.extractTokenCredentials(token, AuthHeaderType.JWT);
 
-    const entity = await authorizationHeaderResolver.validateToken(formattedToken, publicKey, options);
-
-    return entity as IUser;
+    for(let i = 0; i < tokenResolvers.length; i++){
+      try{
+        const res =  await tokenResolvers[i].validateToken(formattedToken, publicKey, options);
+        return res
+      }catch(e){
+        if(i === tokenResolvers.length - 1){
+          throw e;
+        }
+      }
+    }
+    throw new FailedToAuthenticateException();
   }
 
   private async extractTokenCredentials(token: string, type: AuthHeaderType): Promise<ExtractCredentialsResult> {
