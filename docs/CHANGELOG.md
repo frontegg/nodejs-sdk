@@ -1,5 +1,16 @@
-# [5.3.0](https://github.com/frontegg/nodejs-sdk/compare/5.2.1...5.3.0) (2024-01-30)
+## [5.3.1-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.3.0...5.3.1-alpha.1) (2024-06-02)
 
+
+### Bug Fixes
+
+* **access-token:** Ability to check access tokens ([#182](https://github.com/frontegg/nodejs-sdk/issues/182)) ([d530701](https://github.com/frontegg/nodejs-sdk/commit/d530701ad890a853395bfdb53e129eb541581c59))
+* **access-token:** Ability to check access tokens ([#182](https://github.com/frontegg/nodejs-sdk/issues/182)) ([#183](https://github.com/frontegg/nodejs-sdk/issues/183)) ([7544765](https://github.com/frontegg/nodejs-sdk/commit/7544765252be1c0e2525d42cbf263a7ccdddd5c8))
+
+# [5.3.0-alpha.6](https://github.com/frontegg/nodejs-sdk/compare/5.3.0-alpha.5...5.3.0-alpha.6) (2024-05-29)
+
+* **access-token:** Ability to check access tokens ([#182](https://github.com/frontegg/nodejs-sdk/issues/182)) ([d530701](https://github.com/frontegg/nodejs-sdk/commit/d530701ad890a853395bfdb53e129eb541581c59))
+
+# [5.3.0](https://github.com/frontegg/nodejs-sdk/compare/5.2.1...5.3.0) (2024-01-30)
 
 ### Bug Fixes
 

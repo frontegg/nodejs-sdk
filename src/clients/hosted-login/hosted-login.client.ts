@@ -97,7 +97,7 @@ export class HostedLoginClient {
   private getAuthorizationHeader(): string {
     if (!this._authorizationHeader) {
       const { clientId, apiKey } = this.getFronteggCredentials();
-      const buffer = new Buffer(`${clientId}:${apiKey}`);
+      const buffer = Buffer.from(`${clientId}:${apiKey}`);
       this._authorizationHeader = `Basic ${buffer.toString('base64')}`;
     }
     return this._authorizationHeader;
