@@ -1,3 +1,10 @@
+## [5.3.1](https://github.com/frontegg/nodejs-sdk/compare/5.3.0...5.3.1) (2024-06-02)
+
+
+### Bug Fixes
+
+* **access-tokens:** Bug fixes ([#184](https://github.com/frontegg/nodejs-sdk/issues/184)) ([30e69ae](https://github.com/frontegg/nodejs-sdk/commit/30e69aec777605dba8fd1e48f3d5c9acf492841f))
+
 ## [5.3.1-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.3.0...5.3.1-alpha.1) (2024-06-02)
 
 
