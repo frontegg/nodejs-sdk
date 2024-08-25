@@ -23,7 +23,7 @@
   "homepage": "https://github.com/frontegg/nodejs-sdk",
   "dependencies": {
     "@frontegg/entitlements-javascript-commons": "^1.1.2",
-    "axios": "^1.6.2",
+    "axios": "^1.7.4",
     "jsonwebtoken": "^9.0.0",
     "node-cache": "^5.1.2",
     "winston": "^3.8.2"
@@ -47,7 +47,7 @@
     "@types/axios-mock-adapter": "^1.10.0",
     "@types/express": "^4.17.14",
     "@types/jest": "^29.2.0",
-    "@types/jsonwebtoken": "^9.0.0",
+    "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "^12.20.55",
     "@types/sinon": "^10.0.15",
     "@typescript-eslint/eslint-plugin": "^5.38.1",
@@ -65,7 +65,7 @@
     "redis": "^4.6.7",
     "semantic-release": "^21.0.5",
     "sinon": "^15.2.0",
-    "ts-jest": "^28.0.8",
+    "ts-jest": "^29.2.4",
     "typescript": "^4.8.4"
   }
 }
