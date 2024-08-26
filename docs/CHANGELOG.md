@@ -1,3 +1,10 @@
+## [5.3.2](https://github.com/frontegg/nodejs-sdk/compare/5.3.1...5.3.2) (2024-08-26)
+
+
+### Bug Fixes
+
+* **vulnerability:** Updated axios and jsonwebtoken to latest ([b36d115](https://github.com/frontegg/nodejs-sdk/commit/b36d115231a55cb9f53df94ca86d7e30db6cfc2c))
+
 ## [5.3.2-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.3.1...5.3.2-alpha.1) (2024-08-26)
 
 
