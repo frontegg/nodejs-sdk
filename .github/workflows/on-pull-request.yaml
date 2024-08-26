@@ -10,6 +10,17 @@ on:
     branches: [ master, next ]
 
 jobs:
+  vulnerabilities-check:
+    name: Check dependencies vulnerabilities
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout codes
+        uses: actions/checkout@v3
+      - name: Vulnerabilities check
+        uses: frontegg/workflows/.github/shared-actions/vulnerabilities-check@master
+        with:
+          node_version: '18'
+
   call-lint:
     uses: ./.github/workflows/_lint.yaml
 
