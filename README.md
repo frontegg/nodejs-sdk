@@ -26,7 +26,7 @@
 ## Breaking Changes
 
 * ### As of version 3.0.0 and 4.0.0, we will no longer provide proxy middlewares
-* ### As of version 5.0.0, node 12 is no loner supported.
+* ### As of version 5.0.0, node 12 is no longer supported.
 
 To see an example implementation, head over to our
 <a href="https://github.com/frontegg-samples/nodejs-proxy-sample">sample proxy project</a>
@@ -145,7 +145,7 @@ FronteggContext.init(
 
 Frontegg provides various clients for seamless integration with the Frontegg API.
 
-For example, Frontegg’s Managed Audit Logs feature allows a SaaS company to embed an end-to-end working feature in just 5 lines of code
+For example, Frontegg's Managed Audit Logs feature allows a SaaS company to embed an end-to-end working feature in just 5 lines of code
 
 #### Create a new Audits client
 
@@ -258,10 +258,10 @@ The result of those queries has the following structure:
 ```typescript
 type IsEntitledResult = {
   result: boolean,
-  justficiation?: string
+  justification?: string
 }
 ```
-When `result: true`, then `justficiation` is not given.
+When `result: true`, then `justification` is not given.
 
 #### Closing the client
 To gracefully close the client:
