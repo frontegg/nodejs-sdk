@@ -185,9 +185,9 @@ export class EntitlementsUserScoped<T extends TEntity = TEntity> {
     if (featureKey && permissionKey) {
       throw new Error('Cannot check both feature and permission entitlement at the same time.');
     } else if (featureKey !== undefined) {
-      return this.isEntitledToFeature(featureKey!, attributes);
+      return this.isEntitledToFeature(featureKey, attributes);
     } else if (permissionKey !== undefined) {
-      return this.isEntitledToPermission(permissionKey!, attributes);
+      return this.isEntitledToPermission(permissionKey, attributes);
     } else {
       throw new Error('Neither feature, nor permission key is provided.');
     }

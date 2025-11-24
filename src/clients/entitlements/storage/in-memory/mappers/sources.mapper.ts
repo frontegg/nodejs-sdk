@@ -93,11 +93,15 @@ export class SourcesMapper {
       user_entitlements: new Map(),
       tenant_entitlements: new Map(),
       features: new Map(
-        [...unbundledFeaturesIds.values()].map((fId) => {
-          const featSource = featuresMap.get(fId)!;
-
-          return [featSource.key, featSource];
-        }),
+        [...unbundledFeaturesIds.values()]
+          .map((fId) => {
+            const featSource = featuresMap.get(fId);
+            if (!featSource) {
+              return null;
+            }
+            return [featSource.key, featSource] as [string, FeatureSource];
+          })
+          .filter((item): item is [string, FeatureSource] => item !== null),
       ),
     });
 
