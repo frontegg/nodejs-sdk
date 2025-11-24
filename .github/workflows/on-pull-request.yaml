@@ -19,7 +19,7 @@ jobs:
       - name: Vulnerabilities check
         uses: frontegg/workflows/.github/shared-actions/vulnerabilities-check@master
         with:
-          node_version: '18'
+          node_version: '22'
 
   call-lint:
     uses: ./.github/workflows/_lint.yaml
