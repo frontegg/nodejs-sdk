@@ -63,6 +63,12 @@ export type IUser = IEntityWithRoles & {
   amr?: string[];
   acr?: string;
   auth_time?: number;
+  exp?: number;
+  sid?: string;
+  applicationId?: string;
+  aud?: string;
+  iss?: string;
+  iat?: number;
 };
 
 export type IApiToken = IEntityWithRoles & {

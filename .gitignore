@@ -97,3 +97,6 @@ jest-junit.xml
 #ide
 .idea/
 .fleet/
+
+# MacOS
+.DS_Store
