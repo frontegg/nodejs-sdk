@@ -1,3 +1,10 @@
+# [5.4.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.3.2-alpha.1...5.4.0-alpha.1) (2025-11-26)
+
+
+### Features
+
+* add missing fields in JWT ([7e15fad](https://github.com/frontegg/nodejs-sdk/commit/7e15fad1f5dfa301cd465d347beb586ff00fbb09))
+
 ## [5.3.2-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.3.1...5.3.2-alpha.1) (2024-08-26)
 
 
