@@ -22,10 +22,10 @@ jobs:
           git config --global user.email "${{ github.event.pusher.email }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_ADMIN_REPO_TOKEN }}
-      - name: Use Node.js 18
+      - name: Use Node.js 22
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install
