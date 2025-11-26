@@ -26,8 +26,7 @@
 ## Breaking Changes
 
 * ### As of version 3.0.0 and 4.0.0, we will no longer provide proxy middlewares
-* ### As of version 5.4.0, node 12 is no longer supported.
-* ### As of version 5.4.0, node 22+ is required.
+* ### As of version 6.0.0, node 12 is no longer supported and node 22+ is required
 
 To see an example implementation, head over to our
 <a href="https://github.com/frontegg-samples/nodejs-proxy-sample">sample proxy project</a>
