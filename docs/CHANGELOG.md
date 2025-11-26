@@ -1,3 +1,13 @@
+# [7.0.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/6.0.0...7.0.0-alpha.1) (2025-11-26)
+
+
+* feat!: upgrade Node.js support to 22+ ([0ba846e](https://github.com/frontegg/nodejs-sdk/commit/0ba846eac21535a6088aa11d5fbebfa0af8604f0))
+
+
+### BREAKING CHANGES
+
+* Dropped support for Node.js versions below 22. All users must upgrade to Node.js 22 or higher.
+
 # [5.4.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.3.2-alpha.1...5.4.0-alpha.1) (2025-11-26)
 
 
