@@ -1,19 +1,9 @@
-# [7.0.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/6.0.0...7.0.0-alpha.1) (2025-11-26)
+## [5.3.2](https://github.com/frontegg/nodejs-sdk/compare/5.3.1...5.3.2) (2024-08-26)
 
 
-* feat!: upgrade Node.js support to 22+ ([0ba846e](https://github.com/frontegg/nodejs-sdk/commit/0ba846eac21535a6088aa11d5fbebfa0af8604f0))
+### Bug Fixes
 
-
-### BREAKING CHANGES
-
-* Dropped support for Node.js versions below 22. All users must upgrade to Node.js 22 or higher.
-
-# [5.4.0-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.3.2-alpha.1...5.4.0-alpha.1) (2025-11-26)
-
-
-### Features
-
-* add missing fields in JWT ([7e15fad](https://github.com/frontegg/nodejs-sdk/commit/7e15fad1f5dfa301cd465d347beb586ff00fbb09))
+* **vulnerability:** Updated axios and jsonwebtoken to latest ([b36d115](https://github.com/frontegg/nodejs-sdk/commit/b36d115231a55cb9f53df94ca86d7e30db6cfc2c))
 
 ## [5.3.2-alpha.1](https://github.com/frontegg/nodejs-sdk/compare/5.3.1...5.3.2-alpha.1) (2024-08-26)
 
