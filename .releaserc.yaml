@@ -1,7 +1,6 @@
 branches:
   - master
-  - name: next
-    prerelease: 'alpha'
+  - next
 tagFormat: "${version}"
 ci: true
 preset: "angular"
