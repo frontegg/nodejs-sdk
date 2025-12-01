@@ -1,3 +1,10 @@
+## [7.0.1](https://github.com/frontegg/nodejs-sdk/compare/7.0.0...7.0.1) (2025-12-01)
+
+
+### Bug Fixes
+
+* include src in build output ([81b2fbe](https://github.com/frontegg/nodejs-sdk/commit/81b2fbec42a45f7ccdfbc7dcf284d68c58436101))
+
 # [7.0.0](https://github.com/frontegg/nodejs-sdk/compare/6.0.0...7.0.0) (2025-11-27)
 
 
