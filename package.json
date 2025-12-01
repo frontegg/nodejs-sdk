@@ -4,6 +4,13 @@
   "description": "Frontegg Javascript Library for backend node servers",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "docs/CHANGELOG.md",
+    "LICENSE.md",
+    "README.md",
+    "audit-ci.jsonc"
+  ],
   "scripts": {
     "build": "rm -rf dist && tsc",
     "build:watch": "rm -rf dist && tsc --watch",
