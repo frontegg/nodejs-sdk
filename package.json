@@ -19,6 +19,7 @@
     "test": "npm run build && jest",
     "test:coverage": "npm test -- --coverage",
     "test:watch": "npm run build && jest --watch",
+    "test:e2e": "npm run build && jest --config jest.e2e.config.js",
     "dev": "tsc --watch"
   },
   "repository": {
@@ -30,8 +31,8 @@
   "homepage": "https://github.com/frontegg/nodejs-sdk",
   "dependencies": {
     "@frontegg/entitlements-javascript-commons": "^1.1.3",
-    "axios": "^1.7.4",
-    "jsonwebtoken": "^9.0.2",
+    "axios": "^1.15.0",
+    "jsonwebtoken": "^9.0.3",
     "node-cache": "^5.1.2",
     "winston": "^3.18.3"
   },
