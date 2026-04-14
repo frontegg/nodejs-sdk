@@ -1,6 +1,4 @@
 import { FronteggAuthenticator } from '../authenticator';
-import { HttpClient } from '../clients/http/http-client';
-import { FronteggContext } from '../components/frontegg-context';
 import { config } from '../config';
 import { E2E_CLIENT_ID, E2E_API_KEY, requireApiKey } from './setup';
 import axios from 'axios';

@@ -26,8 +26,6 @@ describe('FronteggAuthenticator E2E', () => {
 
   it('should refresh authentication', async () => {
     await authenticator.init(E2E_CLIENT_ID, E2E_API_KEY);
-    const firstToken = authenticator.accessToken;
-
     await authenticator.refreshAuthentication();
 
     expect(authenticator.accessToken).toBeTruthy();

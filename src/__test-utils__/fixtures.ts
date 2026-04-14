@@ -1,4 +1,12 @@
-import { IUser, IUserApiToken, ITenantApiToken, IUserAccessToken, ITenantAccessToken, IEntityWithRoles, tokenTypes } from '../clients/identity/types';
+import {
+  IUser,
+  IUserApiToken,
+  ITenantApiToken,
+  IUserAccessToken,
+  ITenantAccessToken,
+  IEntityWithRoles,
+  tokenTypes,
+} from '../clients/identity/types';
 
 export const fakeUser: IUser = {
   sub: 'fake-sub',

@@ -1,6 +1,5 @@
 import * as express from 'express';
 import * as http from 'http';
-import { FronteggAuthenticator } from '../authenticator';
 import { FronteggContext } from '../components/frontegg-context';
 import { withAuthentication } from '../middlewares/with-authentication';
 import { E2E_CLIENT_ID, E2E_API_KEY, requireApiKey } from './setup';
@@ -20,7 +19,8 @@ describe('withAuthentication middleware E2E', () => {
     app.get('/protected', withAuthentication(), (req, res) => {
       res.json({ user: (req as any).frontegg?.user });
     });
-    app.use((err: any, req: any, res: any, next: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    app.use((err: any, _req: any, res: any, _next: any) => {
       res.status(err.statusCode || 500).json({ error: err.message });
     });
 
