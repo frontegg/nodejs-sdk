@@ -19,6 +19,7 @@
     "test": "npm run build && jest",
     "test:coverage": "npm test -- --coverage",
     "test:watch": "npm run build && jest --watch",
+    "test:e2e": "npm run build && jest --config jest.e2e.config.js",
     "dev": "tsc --watch"
   },
   "repository": {
