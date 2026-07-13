@@ -21,6 +21,7 @@
     <li><a href="#breaking-changes">Breaking Changes</a></li>
     <li><a href="#installation">Installation</a></li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#security">Security</a></li>
 </ul>
 
 ## Breaking Changes
@@ -329,3 +330,19 @@ app.use('/protected', (req, res, next) => {
   next();
 });
 ```
+
+---
+
+## <a name="security"></a>Security
+
+The Frontegg Node.js Client is actively maintained, and its dependencies are kept on current, patched versions. Every pull request runs an automated dependency vulnerability check in CI (configured in [`audit-ci.jsonc`](audit-ci.jsonc)), which fails the build on any high or critical severity advisory in the SDK's production dependencies.
+
+To keep your application protected, always use the latest release:
+
+```bash
+npm install @frontegg/client@latest
+```
+
+### Reporting a vulnerability
+
+If you discover a security vulnerability in this SDK, please report it responsibly by emailing **security@frontegg.com**. Please do not open a public GitHub issue for security reports.
