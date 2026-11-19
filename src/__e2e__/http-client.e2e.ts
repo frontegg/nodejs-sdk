@@ -1,9 +1,9 @@
 import { FronteggAuthenticator } from '../authenticator';
 import { HttpClient } from '../clients/http/http-client';
 import { config } from '../config';
-import { E2E_CLIENT_ID, E2E_API_KEY, requireApiKey } from './setup';
+import { E2E_CLIENT_ID, E2E_API_KEY, requireApiKey, describeLive } from './setup';
 
-describe('HttpClient E2E', () => {
+describeLive('HttpClient E2E', () => {
   let authenticator: FronteggAuthenticator;
   let httpClient: HttpClient;
 

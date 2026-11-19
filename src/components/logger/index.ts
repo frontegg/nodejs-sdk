@@ -1,4 +1,5 @@
 import * as winston from 'winston';
+import { sanitize } from './sanitize';
 
 const logger = winston.createLogger({
   level: process.env.FRONTEGG_DEBUG_LEVEL || 'error',
@@ -12,22 +13,22 @@ const logger = winston.createLogger({
 
 export default class Logger {
   public static log(message: string, ...meta: any[]) {
-    logger.debug(message, meta);
+    logger.debug(message, sanitize(meta));
   }
 
   public static debug(message: string, ...meta: any[]) {
-    logger.debug(message, meta);
+    logger.debug(message, sanitize(meta));
   }
 
   public static info(message: string, ...meta: any[]) {
-    logger.info(message, meta);
+    logger.info(message, sanitize(meta));
   }
 
   public static warn(message: string, ...meta: any[]) {
-    logger.warn(message, meta);
+    logger.warn(message, sanitize(meta));
   }
 
   public static error(message: string, ...meta: any[]) {
-    logger.error(message, meta);
+    logger.error(message, sanitize(meta));
   }
 }

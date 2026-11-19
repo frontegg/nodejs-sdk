@@ -1,9 +1,9 @@
 import { FronteggAuthenticator } from '../authenticator';
 import { config } from '../config';
-import { E2E_CLIENT_ID, E2E_API_KEY, requireApiKey } from './setup';
+import { E2E_CLIENT_ID, E2E_API_KEY, requireApiKey, describeLive } from './setup';
 import axios from 'axios';
 
-describe('IdentityClient E2E', () => {
+describeLive('IdentityClient E2E', () => {
   let authenticator: FronteggAuthenticator;
 
   beforeAll(async () => {

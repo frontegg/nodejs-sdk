@@ -1,8 +1,8 @@
 import { FronteggAuthenticator } from '../authenticator';
 import { EventsClient } from '../clients/events/events';
-import { E2E_CLIENT_ID, E2E_API_KEY, requireApiKey } from './setup';
+import { E2E_CLIENT_ID, E2E_API_KEY, requireApiKey, describeLive } from './setup';
 
-describe('EventsClient E2E', () => {
+describeLive('EventsClient E2E', () => {
   let authenticator: FronteggAuthenticator;
   let eventsClient: EventsClient;
 

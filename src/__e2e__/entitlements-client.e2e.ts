@@ -1,8 +1,8 @@
 import { EntitlementsClient } from '../clients/entitlements/entitlements-client';
 import { FronteggContext } from '../components/frontegg-context';
-import { E2E_CLIENT_ID, E2E_API_KEY, requireApiKey } from './setup';
+import { E2E_CLIENT_ID, E2E_API_KEY, requireApiKey, describeLive } from './setup';
 
-describe('EntitlementsClient E2E', () => {
+describeLive('EntitlementsClient E2E', () => {
   let client: EntitlementsClient;
 
   beforeAll(async () => {

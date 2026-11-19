@@ -2,9 +2,9 @@ import * as express from 'express';
 import * as http from 'http';
 import { FronteggContext } from '../components/frontegg-context';
 import { withAuthentication } from '../middlewares/with-authentication';
-import { E2E_CLIENT_ID, E2E_API_KEY, requireApiKey } from './setup';
+import { E2E_CLIENT_ID, E2E_API_KEY, requireApiKey, describeLive } from './setup';
 
-describe('withAuthentication middleware E2E', () => {
+describeLive('withAuthentication middleware E2E', () => {
   let server: http.Server;
   let port: number;
 

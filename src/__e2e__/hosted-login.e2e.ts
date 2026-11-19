@@ -1,8 +1,8 @@
 import { HostedLoginClient } from '../clients/hosted-login/hosted-login.client';
 import { FronteggContext } from '../components/frontegg-context';
-import { E2E_CLIENT_ID, E2E_API_KEY, requireApiKey } from './setup';
+import { E2E_CLIENT_ID, E2E_API_KEY, requireApiKey, describeLive } from './setup';
 
-describe('HostedLoginClient E2E', () => {
+describeLive('HostedLoginClient E2E', () => {
   let client: HostedLoginClient;
 
   beforeAll(() => {
