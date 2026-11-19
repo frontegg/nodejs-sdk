@@ -34,3 +34,19 @@ export interface GetAuditStatsParams {
   tenantId: string;
   filters?: any;
 }
+
+export interface AuditV2RequestParams {
+  tenantId: string;
+  /** Number of records to retrieve (1–200). */
+  count: number;
+  offset: number;
+  created_from?: string;
+  created_to?: string;
+  tenant_ids?: string[];
+  users?: string[];
+  email?: string[];
+  sortBy?: AuditSortField;
+  sortDirection?: SortDirection;
+  filter?: string;
+  featureFlagId?: string;
+}

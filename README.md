@@ -172,6 +172,26 @@ await audits.sendAudit({
 });
 ```
 
+#### Fetching audits with structured filters (v2)
+
+```javascript
+const page = await audits.getAuditsV2({
+  tenantId: 'tenant-id',
+  count: 200,
+  offset: 0,
+  created_from: '2026-11-01T00:00:00Z',
+  users: ['user-id'],
+  email: ['user@example.com'],
+  sortBy: 'createdAt',
+  sortDirection: 'DESC',
+});
+```
+
+Use `count` from 1 to 200 and a nonnegative `offset` for each page. Date filters
+accept ISO 8601 strings; `tenant_ids`, `users`, and `email` accept arrays. This
+method calls the audit v2 endpoint and returns the API response unchanged.
+`getAudits` continues to use the legacy endpoint.
+
 #### Fetching audits
 
 ```javascript

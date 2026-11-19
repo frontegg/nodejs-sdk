@@ -2,7 +2,9 @@ import axios from 'axios';
 import { FronteggAuthenticator } from '../../authenticator';
 import { config } from '../../config';
 import Logger from '../../components/logger';
-import { AuditRequestParams, GetAuditStatsParams, SendAuditParams } from './types';
+import { AuditRequestParams, AuditV2RequestParams, GetAuditStatsParams, SendAuditParams } from './types';
+
+export type { AuditV2RequestParams } from './types';
 
 export class AuditsClient {
   private authenticator: FronteggAuthenticator = new FronteggAuthenticator();
@@ -47,6 +49,21 @@ export class AuditsClient {
 
     const { data } = response;
     return data;
+  }
+
+  /** Retrieve a page of audits using the v2 API's structured filters. */
+  public async getAuditsV2(params: AuditV2RequestParams) {
+    const { tenantId, ...query } = params;
+    await this.authenticator.validateAuthentication();
+    const response = await axios.get(`${config.urls.auditsService.replace(/\/$/, '')}/resources/audits/v2`, {
+      params: query,
+      paramsSerializer: { indexes: null },
+      headers: {
+        'x-access-token': this.authenticator.accessToken,
+        'frontegg-tenant-id': tenantId,
+      },
+    });
+    return response.data;
   }
 
   public async getAuditsStats(params: GetAuditStatsParams) {
