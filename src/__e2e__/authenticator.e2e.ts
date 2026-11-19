@@ -1,7 +1,7 @@
 import { FronteggAuthenticator } from '../authenticator';
-import { E2E_CLIENT_ID, E2E_API_KEY, requireApiKey } from './setup';
+import { E2E_CLIENT_ID, E2E_API_KEY, requireApiKey, describeLive } from './setup';
 
-describe('FronteggAuthenticator E2E', () => {
+describeLive('FronteggAuthenticator E2E', () => {
   let authenticator: FronteggAuthenticator;
 
   beforeAll(() => {

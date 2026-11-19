@@ -82,7 +82,7 @@ export class IdentityClient {
       try {
         token = token.replace('Bearer ', '');
       } catch (e) {
-        Logger.error('Failed to extract token - ', token);
+        Logger.error('Failed to extract token');
         throw new FailedToAuthenticateException();
       }
     }

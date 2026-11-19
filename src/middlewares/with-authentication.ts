@@ -23,8 +23,8 @@ export function withAuthentication({ roles = [], permissions = [] }: IWithAuthen
     try {
       user = await IdentityClient.getInstance().validateToken(token, { roles, permissions }, type);
     } catch (e) {
-      const { statusCode, message } = <StatusCodeError>e;
-      Logger.error(message);
+      const { statusCode } = <StatusCodeError>e;
+      Logger.error('Failed to verify authentication', e);
       res.status(statusCode).send(`Failed to verify authentication`);
       return next(e);
     }
